@@ -26,6 +26,10 @@ namespace P3bble.Core
                 case P3bbleEndpoint.Ping:
                     frame = new PingMessage();
                     break;
+                case P3bbleEndpoint.Version:
+                    frame = new VersionMessage();
+                    break;
+
                 default:
                     frame =  new P3bbleMessage(endpoint);
                     break;
@@ -65,6 +69,14 @@ namespace P3bble.Core
         protected virtual void GetContentFromMessage(List<byte> payload) 
         {
                 
+        }
+
+        public P3bbleEndpoint Endpoint
+        {
+            get
+            {
+                return _endpoint;
+            }
         }
     }
 }

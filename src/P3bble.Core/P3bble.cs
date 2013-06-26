@@ -63,6 +63,8 @@ namespace P3bble.Core
             {
                 await socket.ConnectAsync(HostName, "1");
                 _prot = new Protocol(socket);
+                _prot.MessageReceived += AsynMessageRecived;
+
                 if(Connected != null)
                     Connected(this, EventArgs.Empty);
             }
@@ -73,15 +75,40 @@ namespace P3bble.Core
             }
         }
 
+        private void AsynMessageRecived(object sender, P3bbleMessageReceivedEventArgs e)
+        {
+            Debug.WriteLine(e.Message.Endpoint);
+        }
+
         public void Ping()
         {
             _prot.WriteMessage(new PingMessage());
+        }
+
+        public void BadPing()
+        {
+            _prot.WriteMessage(new PingMessage(new byte[7]{1, 2, 3, 4, 5, 6, 7 }));
+        }
+
+        public void GetVersion()
+        {
+            _prot.WriteMessage(new VersionMessage());
             P3bbleMessage message = _prot.ReadMessage();
         }
 
         public void Reset()
         {
             _prot.WriteMessage(new ResetMessage());
+        }
+
+        public void SmsNotification(string sender, string message)
+        {
+            _prot.WriteMessage(new NotificationMessage(NotificationType.SMS, sender, message));
+        }
+
+        public void EmailNotification(string sender, string subject, string body)
+        {
+            _prot.WriteMessage(new NotificationMessage(NotificationType.EMAIL, sender, body, subject));
         }
 
 

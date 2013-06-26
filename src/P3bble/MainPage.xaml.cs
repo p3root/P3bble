@@ -14,6 +14,7 @@ namespace P3bble
     public partial class MainPage : PhoneApplicationPage
     {
         private P3bble.Core.P3bble _peb;
+        private bool _connected = false;
 
         public MainPage()
         {
@@ -42,7 +43,48 @@ namespace P3bble
 
         private void PebbleConnected(object sender, EventArgs e)
         {
-            _peb.Reset();
+            _connected = true;
+            _peb.GetVersion();
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            if (_connected)
+                _peb.Ping();
+            else
+            {
+                MessageBox.Show("Pebble not connected");
+            }
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            if (_connected)
+                _peb.BadPing();
+            else
+            {
+                MessageBox.Show("Pebble not connected");
+            }
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            if (_connected)
+                _peb.SmsNotification("+436604908028", "wow, what a cool app :)");
+            else
+            {
+                MessageBox.Show("Pebble not connected");
+            }
+        }
+
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+            if (_connected)
+                _peb.EmailNotification("root@p3.co.at", "P3bble", "youre sooo cooool :)");
+            else
+            {
+                MessageBox.Show("Pebble not connected");
+            }
         }
 
         // Sample code for building a localized ApplicationBar

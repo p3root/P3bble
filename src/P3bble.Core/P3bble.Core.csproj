@@ -85,8 +85,12 @@
   <ItemGroup>
     <Compile Include="Communication\Protocol.cs" />
     <Compile Include="Helper\ByteHelper.cs" />
+    <Compile Include="Helper\Util.cs" />
+    <Compile Include="Messages\LogsMessage.cs" />
+    <Compile Include="Messages\NotificationMessage.cs" />
     <Compile Include="Messages\PingMessage.cs" />
     <Compile Include="Messages\ResetMessage.cs" />
+    <Compile Include="Messages\VersionMessage.cs" />
     <Compile Include="P3bbleEndpoint.cs" />
     <Compile Include="P3bbleMessage.cs" />
     <Compile Include="P3bble.cs" />
