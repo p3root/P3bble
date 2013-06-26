@@ -1,0 +1,13 @@
+﻿<xapCache source="C:\dev\P3bble\P3bble\P3bble\Bin\Debug\P3bble_Debug_AnyCPU.xap" wasSigned="False" certificateThumbprint="" TimeStampUrl="" lastWriteTime="25.06.2013 20:48:51">
+  <file source="C:\dev\P3bble\P3bble\P3bble\obj\Debug\P3bble.dll" archivePath="P3bble.dll" lastWriteTime="25.06.2013 20:48:50" />
+  <file source="C:\dev\P3bble\P3bble\P3bble\Assets\AlignmentGrid.png" archivePath="Assets\AlignmentGrid.png" lastWriteTime="25.06.2013 17:46:28" />
+  <file source="C:\dev\P3bble\P3bble\P3bble\Assets\Tiles\FlipCycleTileLarge.png" archivePath="Assets\Tiles\FlipCycleTileLarge.png" lastWriteTime="25.06.2013 17:46:28" />
+  <file source="C:\dev\P3bble\P3bble\P3bble\Assets\Tiles\FlipCycleTileSmall.png" archivePath="Assets\Tiles\FlipCycleTileSmall.png" lastWriteTime="25.06.2013 17:46:28" />
+  <file source="C:\dev\P3bble\P3bble\P3bble\Assets\Tiles\IconicTileMediumLarge.png" archivePath="Assets\Tiles\IconicTileMediumLarge.png" lastWriteTime="25.06.2013 17:46:28" />
+  <file source="C:\dev\P3bble\P3bble\P3bble\Assets\Tiles\IconicTileSmall.png" archivePath="Assets\Tiles\IconicTileSmall.png" lastWriteTime="25.06.2013 17:46:28" />
+  <file source="C:\dev\P3bble\P3bble\P3bble\Bin\Debug\AppManifest.xaml" archivePath="AppManifest.xaml" lastWriteTime="25.06.2013 20:03:35" />
+  <file source="C:\dev\P3bble\P3bble\P3bble\Bin\Debug\Assets\ApplicationIcon.png" archivePath="Assets\ApplicationIcon.png" lastWriteTime="25.06.2013 17:46:28" />
+  <file source="C:\dev\P3bble\P3bble\P3bble\Bin\Debug\Assets\Tiles\FlipCycleTileMedium.png" archivePath="Assets\Tiles\FlipCycleTileMedium.png" lastWriteTime="25.06.2013 17:46:28" />
+  <file source="C:\dev\P3bble\P3bble\P3bble.Core\Bin\Debug\P3bble.Core.dll" archivePath="P3bble.Core.dll" lastWriteTime="25.06.2013 20:48:50" />
+  <file source="C:\dev\P3bble\P3bble\P3bble\Bin\Debug\Properties\WMAppManifest.xml" archivePath="WMAppManifest.xml" lastWriteTime="25.06.2013 20:11:36" />
+</xapCache>
