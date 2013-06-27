@@ -87,6 +87,36 @@ namespace P3bble
             }
         }
 
+        private void Button_Click_5(object sender, RoutedEventArgs e)
+        {
+            if (_connected)
+                _peb.SetNowPlaying("artist", "album", "track");
+            else
+            {
+                MessageBox.Show("Pebble not connected");
+            }
+        }
+
+        private void Button_Click_6(object sender, RoutedEventArgs e)
+        {
+            if (_connected)
+                _peb.GetTime();
+            else
+            {
+                MessageBox.Show("Pebble not connected");
+            }
+        }
+
+        private void Button_Click_7(object sender, RoutedEventArgs e)
+        {
+            if (_connected)
+                _peb.GetVersion();
+            else
+            {
+                MessageBox.Show("Pebble not connected");
+            }
+        }
+
         // Sample code for building a localized ApplicationBar
         //private void BuildLocalizedApplicationBar()
         //{

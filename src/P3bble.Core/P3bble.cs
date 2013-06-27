@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -16,6 +17,8 @@ using System.Windows.Shapes;
 using Windows.Networking;
 using Windows.Networking.Proximity;
 using Windows.Networking.Sockets;
+
+using System.Linq;
 
 namespace P3bble.Core
 {
@@ -77,6 +80,10 @@ namespace P3bble.Core
 
         private void AsynMessageRecived(object sender, P3bbleMessageReceivedEventArgs e)
         {
+            if (e.Message.Endpoint == P3bbleEndpoint.PhoneVersion)
+            {
+                _prot.WriteMessage(new PhoneVersionMessage());
+            }
             Debug.WriteLine(e.Message.Endpoint);
         }
 
@@ -93,7 +100,6 @@ namespace P3bble.Core
         public void GetVersion()
         {
             _prot.WriteMessage(new VersionMessage());
-            P3bbleMessage message = _prot.ReadMessage();
         }
 
         public void Reset()
@@ -111,6 +117,15 @@ namespace P3bble.Core
             _prot.WriteMessage(new NotificationMessage(NotificationType.EMAIL, sender, body, subject));
         }
 
+        public void SetNowPlaying(string artist, string album, string track)
+        {
+            _prot.WriteMessage(new SetMusicMessage(artist, album, track));
+        }
+
+        public void GetTime()
+        {
+            _prot.WriteMessage(new TimeMessage());
+        }
 
     }
 }

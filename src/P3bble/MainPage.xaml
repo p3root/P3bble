@@ -52,6 +52,9 @@
                 <Button Click="Button_Click_2" Content="BadPing"/>
                 <Button Click="Button_Click_3" Content="SendSMS"/>
                 <Button Click="Button_Click_4" Content="SendEMAIL"/>
+                <Button Click="Button_Click_5" Content="SendNowPlaying"/>
+                <Button Click="Button_Click_6" Content="GetTime"/>
+                <Button Click="Button_Click_7" Content="GetVersion"/>
             </StackPanel>
         </Grid>
 

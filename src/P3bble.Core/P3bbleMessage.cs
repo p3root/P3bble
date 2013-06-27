@@ -29,6 +29,9 @@ namespace P3bble.Core
                 case P3bbleEndpoint.Version:
                     frame = new VersionMessage();
                     break;
+                case P3bbleEndpoint.Time:
+                    frame = new TimeMessage();
+                    break;
 
                 default:
                     frame =  new P3bbleMessage(endpoint);

@@ -2,3 +2,7 @@ C:\dev\P3bble\P3bble\P3bble.Core\Bin\Debug\P3bble.Core.dll
 C:\dev\P3bble\P3bble\P3bble.Core\Bin\Debug\P3bble.Core.pdb
 C:\dev\P3bble\P3bble\P3bble.Core\obj\Debug\P3bble.Core.dll
 C:\dev\P3bble\P3bble\P3bble.Core\obj\Debug\P3bble.Core.pdb
+E:\dev\P3bble\src\P3bble.Core\Bin\Debug\P3bble.Core.dll
+E:\dev\P3bble\src\P3bble.Core\Bin\Debug\P3bble.Core.pdb
+E:\dev\P3bble\src\P3bble.Core\obj\Debug\P3bble.Core.dll
+E:\dev\P3bble\src\P3bble.Core\obj\Debug\P3bble.Core.pdb

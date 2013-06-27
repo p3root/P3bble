@@ -88,14 +88,19 @@
     <Compile Include="Helper\Util.cs" />
     <Compile Include="Messages\LogsMessage.cs" />
     <Compile Include="Messages\NotificationMessage.cs" />
+    <Compile Include="Messages\PhoneVersionMessage.cs" />
     <Compile Include="Messages\PingMessage.cs" />
     <Compile Include="Messages\ResetMessage.cs" />
+    <Compile Include="Messages\SetMusicMessage.cs" />
+    <Compile Include="Messages\TimeMessage.cs" />
     <Compile Include="Messages\VersionMessage.cs" />
     <Compile Include="P3bbleEndpoint.cs" />
     <Compile Include="P3bbleMessage.cs" />
     <Compile Include="P3bble.cs" />
     <Compile Include="P3bbleState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RemoteCaps.cs" />
+    <Compile Include="SessionCaps.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />

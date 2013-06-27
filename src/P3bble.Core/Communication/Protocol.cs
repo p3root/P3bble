@@ -46,15 +46,15 @@ namespace P3bble.Core.Communication
                 {
                     var buffer = new Windows.Storage.Streams.Buffer(4);
                     _socket.InputStream.ReadAsync(buffer, 4, InputStreamOptions.None).AsTask().Wait(100);
-
+     
                     if (buffer.Length > 0)
                     {
                         uint payloadLength, endpoint;
 
                         GetLengthAndEndpoint(buffer, out payloadLength, out endpoint);
 
-                        if (endpoint == 0)
-                            continue;
+                        Debug.WriteLine("ENDPOINT: " + endpoint);
+                        Debug.WriteLine("PAYLOADS: " + payloadLength);
 
                         P3bbleMessage msg = ReadMessage(payloadLength, endpoint);
 
@@ -63,6 +63,10 @@ namespace P3bble.Core.Communication
                             if(MessageReceived != null)
                                 MessageReceived(this, new P3bbleMessageReceivedEventArgs(msg));
                         }
+                    }
+                    else if (buffer.Length >= 1)
+                    {
+
                     }
                 }
 
@@ -93,34 +97,31 @@ namespace P3bble.Core.Communication
             }
             payloadLength = BitConverter.ToUInt16(payloadSize, 0);
             endpoint = BitConverter.ToUInt16(endpo, 0);
-
-            if (!Enum.IsDefined(typeof(P3bbleEndpoint), Convert.ToInt32(endpoint)))
-            {
-                endpoint = 0;
-                payloadLength = 0;
-            }
         }
 
         private P3bbleMessage ReadMessage(uint payloadSie, uint endpoint)
         {
             var payloadContent = new Windows.Storage.Streams.Buffer(payloadSie);
             List<byte> lstBytes = new List<byte>();
-
-            do
+            if (payloadSie > 0)
             {
-                _socket.InputStream.ReadAsync(payloadContent, payloadSie, InputStreamOptions.None).AsTask().Wait();
+                do
+                {
+                    _socket.InputStream.ReadAsync(payloadContent, payloadSie, InputStreamOptions.None).AsTask().Wait();
 
-            } while (payloadContent.Length > payloadSie);
+                } while (payloadContent.Length > payloadSie);
 
-            byte[] payloadContentByte = new byte[payloadSie];
+                byte[] payloadContentByte = new byte[payloadSie];
 
-            using (var dr = DataReader.FromBuffer(payloadContent))
-            {
-                dr.ReadBytes(payloadContentByte);
+                using (var dr = DataReader.FromBuffer(payloadContent))
+                {
+                    dr.ReadBytes(payloadContentByte);
+                }
+
+                lstBytes = payloadContentByte.ToList();
+                string str = Encoding.UTF8.GetString(lstBytes.ToArray(), 0, lstBytes.Count);
+                Debug.WriteLine("PAYLOAD STR: " + str);
             }
-
-            lstBytes = payloadContentByte.ToList();
-
             return P3bbleMessage.CreateMessage((P3bbleEndpoint)endpoint, lstBytes);
         }
 
@@ -129,7 +130,7 @@ namespace P3bble.Core.Communication
             lock (_lock)
             {
                 var buffer = new Windows.Storage.Streams.Buffer(4);
-                _socket.InputStream.ReadAsync(buffer, 4, InputStreamOptions.None).AsTask().Wait(100);
+                _socket.InputStream.ReadAsync(buffer, 4, InputStreamOptions.None).AsTask().Wait(1000);
                 if (buffer.Length == 4)
                 {
                     uint payloadLength, endpoint;
@@ -152,6 +153,7 @@ namespace P3bble.Core.Communication
             {
                 IBuffer buf = GetBufferFromByteArray(message.ToBuffer());
                 _socket.OutputStream.WriteAsync(buf).AsTask().Wait();
+                _socket.OutputStream.FlushAsync().AsTask().Wait();
             }
         }
 
