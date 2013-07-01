@@ -1,0 +1,20 @@
+﻿<Application
+    x:Class="P3bbleWP8.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:P3bbleWP8">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+
+                <!-- 
+                    Stile, die allgemeine Aspekte von Aussehen und Verhalten der Plattform definieren
+                    Erforderlich für Visual Studio-Projekt- und Elementvorlagen
+                 -->
+                <ResourceDictionary Source="Common/StandardStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

@@ -84,10 +84,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Communication\Protocol.cs" />
+    <Compile Include="FirmwareVersion.cs" />
     <Compile Include="Helper\ByteHelper.cs" />
     <Compile Include="Helper\Util.cs" />
     <Compile Include="Messages\LogsMessage.cs" />
     <Compile Include="Messages\NotificationMessage.cs" />
+    <Compile Include="Messages\PhoneControlMessage.cs" />
     <Compile Include="Messages\PhoneVersionMessage.cs" />
     <Compile Include="Messages\PingMessage.cs" />
     <Compile Include="Messages\ResetMessage.cs" />

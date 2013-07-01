@@ -8,6 +8,7 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using P3bble.Resources;
+using System.Threading;
 
 namespace P3bble
 {
@@ -28,7 +29,7 @@ namespace P3bble
 
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
-            List<P3bble.Core.P3bble> pebbles = P3bble.Core.P3bble.DetectPebbles();
+            List<P3bble.Core.P3bble> pebbles = P3bble.Core.P3bble.DetectPebbles().Result;
 
             if (pebbles.Count >= 1)
             {
@@ -111,6 +112,40 @@ namespace P3bble
         {
             if (_connected)
                 _peb.GetVersion();
+            else
+            {
+                MessageBox.Show("Pebble not connected");
+            }
+        }
+
+        private void Button_Click_8(object sender, RoutedEventArgs e)
+        {
+            if (_connected)
+                _peb.FacebookNotification("test", "testmessage");
+            else
+            {
+                MessageBox.Show("Pebble not connected");
+            }
+        }
+
+        private void Button_Click_9(object sender, RoutedEventArgs e)
+        {
+            if (_connected)
+            {
+                byte[] cookie = new byte[] { 0x00, 0xEB, 0x00, 0x00 };
+                _peb.PhoneCall("P3root", "555 555 555", cookie);
+                Thread.Sleep(2000);
+                _peb.Ring(cookie);
+                Thread.Sleep(2000);
+                _peb.Ring(cookie);
+                Thread.Sleep(2000);
+                _peb.Ring(cookie);
+
+                Thread.Sleep(3000);
+                _peb.StartCall(cookie);
+                Thread.Sleep(5000);
+                _peb.EndCall(cookie);
+            }
             else
             {
                 MessageBox.Show("Pebble not connected");

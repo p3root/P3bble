@@ -42,7 +42,9 @@ namespace P3bble.Core.Messages
 
         protected override void GetContentFromMessage(List<byte> payload)
         {
-            base.GetContentFromMessage(payload);
+            Cookie = BitConverter.ToUInt32(payload.ToArray(), 1);
         }
+
+        public UInt32 Cookie { get; private set; }
     }
 }

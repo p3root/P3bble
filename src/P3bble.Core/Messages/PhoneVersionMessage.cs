@@ -9,7 +9,7 @@ namespace P3bble.Core.Messages
     public class PhoneVersionMessage : P3bbleMessage
     {
         uint sessionCaps = (uint)SessionCaps.GAMMA_RAY;
-        uint remoteCaps = (uint)(RemoteCaps.TELEPHONY | RemoteCaps.SMS | RemoteCaps.ANDROID);
+        uint remoteCaps = (uint)(RemoteCaps.TELEPHONY | RemoteCaps.SMS | RemoteCaps.WINDOWS | RemoteCaps.GPS);
         ushort length;
 
         public PhoneVersionMessage()

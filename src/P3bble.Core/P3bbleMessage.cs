@@ -32,6 +32,9 @@ namespace P3bble.Core
                 case P3bbleEndpoint.Time:
                     frame = new TimeMessage();
                     break;
+                case P3bbleEndpoint.Logs:
+                    frame = new LogsMessage();
+                    break;
 
                 default:
                     frame =  new P3bbleMessage(endpoint);

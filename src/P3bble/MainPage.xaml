@@ -55,6 +55,8 @@
                 <Button Click="Button_Click_5" Content="SendNowPlaying"/>
                 <Button Click="Button_Click_6" Content="GetTime"/>
                 <Button Click="Button_Click_7" Content="GetVersion"/>
+                <Button Click="Button_Click_8" Content="SendFacebookNot"/>
+                <Button Click="Button_Click_9" Content="SimulatePhoneCall"/>
             </StackPanel>
         </Grid>
 

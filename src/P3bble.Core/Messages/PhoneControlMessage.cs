@@ -6,32 +6,44 @@ using System.Threading.Tasks;
 
 namespace P3bble.Core.Messages
 {
-    public enum NotificationType
+    public enum PhoneControlType : byte
     {
-        EMAIL = 0,
-        SMS = 1,
-        Facebook = 2
+        ANSWER = 1,
+        HANGUP = 2,
+        GET_STATE = 3,
+        INCOMING_CALL = 4,
+        OUTGOING_CALL = 5,
+        MISSED_CALL = 6,
+        RING = 7,
+        START = 8,
+        END = 9
     }
 
-    public class NotificationMessage : P3bbleMessage
+    public class PhoneControlMessage : P3bbleMessage
     {
-        private NotificationType _type;
+        private PhoneControlType _type;
         private List<string> _parts;
         private ushort _length;
+        private byte[] _cookie;
 
-        public NotificationMessage(NotificationType type, params String[] parts)
-            : base(P3bbleEndpoint.Notification)
+        public PhoneControlMessage(PhoneControlType type, byte[] cookie, params String[] parts)
+            : base(P3bbleEndpoint.PhoneControl)
         {
             _type = type;
             _parts = parts.ToList();
             _length = 0;
+            _cookie = cookie;
         }
 
         protected override void AddContentToMessage(List<byte> payload)
         {
-            string[] ts = { (new DateTime(1970, 1, 1) - DateTime.Now).TotalSeconds.ToString() };
-            string[] parts = _parts.Take(2).Concat(ts).Concat(_parts.Skip(2)).ToArray();
-            byte[] data = { (byte)_type };
+            //payload.Add(_type);
+            //payload.AddRange(_cookie);
+
+            string[] parts = _parts.ToArray();
+            byte[] data = { (byte)_type, };
+
+            data = data.Concat(_cookie).ToArray();
 
             foreach (String part in parts)
             {
@@ -47,7 +59,6 @@ namespace P3bble.Core.Messages
 
             base.AddContentToMessage(payload);
             payload.AddRange(data);
-
         }
 
         protected override void GetContentFromMessage(List<byte> payload)

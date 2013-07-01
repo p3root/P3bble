@@ -1,4 +1,5 @@
-﻿using System;
+﻿using P3bble.Core.Helper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,7 +40,14 @@ namespace P3bble.Core.Messages
 
         protected override void GetContentFromMessage(List<byte> payload)
         {
-            base.GetContentFromMessage(payload);
+            byte[] payloadArray = payload.ToArray();
+            if (BitConverter.IsLittleEndian)
+            {
+                Array.Reverse(payloadArray, 1, 4);
+            }
+
+            int timestamp = BitConverter.ToInt32(payloadArray, 1);
+            Time = Util.TimestampToDateTime(timestamp);
         }
 
         protected override ushort PayloadLength
@@ -51,5 +59,7 @@ namespace P3bble.Core.Messages
                 return base.PayloadLength;
             }
         }
+
+        public DateTime Time { get; private set; }
     }
 }

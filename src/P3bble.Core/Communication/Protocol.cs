@@ -5,8 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Networking.Proximity;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
+
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace P3bble.Core.Communication
 {
@@ -24,54 +27,77 @@ namespace P3bble.Core.Communication
     public class Protocol
     {
         private StreamSocket _socket;
+        private DataWriter _writer;
+        private DataReader _reader;
         private object _lock;
         private bool _isRunning;
+        private readonly Mutex _mutex = new Mutex();
 
         public EventHandler<P3bbleMessageReceivedEventArgs> MessageReceived;
 
         public Protocol(StreamSocket sock)
         {
             _socket = sock;
-            Thread t = new Thread(new ThreadStart(Run));
-            _isRunning = true;
+            _writer = new DataWriter(sock.OutputStream);
+            _reader = new DataReader(sock.InputStream);
+            _reader.InputStreamOptions = InputStreamOptions.Partial;
+
             _lock = new object();
-            t.Start();
+#if WINDOWS_PHONE
+           // Thread t = new Thread(new ThreadStart(Run));
+            _isRunning = true;
+          //  t.Start();
+
+            System.Threading.ThreadPool.QueueUserWorkItem(Run);
+#endif
         }
 
-        private void Run()
+        private async void Run(object host)
         {
-            while (_isRunning)
+#if NETFX_CORE
+            Task.Factory.StartNew(() =>
             {
-                lock (_lock)
+#endif
+                while (_isRunning)
                 {
-                    var buffer = new Windows.Storage.Streams.Buffer(4);
-                    _socket.InputStream.ReadAsync(buffer, 4, InputStreamOptions.None).AsTask().Wait(100);
-     
-                    if (buffer.Length > 0)
-                    {
-                        uint payloadLength, endpoint;
-
-                        GetLengthAndEndpoint(buffer, out payloadLength, out endpoint);
-
-                        Debug.WriteLine("ENDPOINT: " + endpoint);
-                        Debug.WriteLine("PAYLOADS: " + payloadLength);
-
-                        P3bbleMessage msg = ReadMessage(payloadLength, endpoint);
-
-                        if (msg != null)
+                        try
                         {
-                            if(MessageReceived != null)
-                                MessageReceived(this, new P3bbleMessageReceivedEventArgs(msg));
+                            await _reader.LoadAsync(4);
+                            uint payloadLength;
+                            uint endpoint;
+                
+                            if (_reader.UnconsumedBufferLength > 0)
+                            {
+                                IBuffer buffer = _reader.ReadBuffer(4);
+
+                                GetLengthAndEndpoint(buffer, out payloadLength, out endpoint);
+#if DEBUG
+                                Debug.WriteLine("ENDPOINT: " + endpoint);
+                                Debug.WriteLine("PAYLOADS: " + payloadLength);
+#endif
+                                await _reader.LoadAsync(payloadLength);
+                                IBuffer buf = _reader.ReadBuffer(payloadLength);
+
+                                P3bbleMessage msg = await ReadMessage(buf, endpoint);
+
+                                if (msg != null)
+                                {
+                                    if (MessageReceived != null)
+                                        MessageReceived(this, new P3bbleMessageReceivedEventArgs(msg));
+                                }
+                            }
                         }
-                    }
-                    else if (buffer.Length >= 1)
-                    {
+                        catch
+                        {
 
-                    }
+                        }
+#if NETFX_CORE
+                    Task.Delay(100);
+#endif
                 }
-
-                Thread.Sleep(100);
-            }
+#if NETFX_CORE
+            }, TaskCreationOptions.LongRunning);
+#endif
         }
 
         private void GetLengthAndEndpoint(IBuffer buffer, out uint payloadLength, out uint endpoint)
@@ -99,67 +125,41 @@ namespace P3bble.Core.Communication
             endpoint = BitConverter.ToUInt16(endpo, 0);
         }
 
-        private P3bbleMessage ReadMessage(uint payloadSie, uint endpoint)
+        private Task<P3bbleMessage> ReadMessage(IBuffer buffer, uint endpoint)
         {
-            var payloadContent = new Windows.Storage.Streams.Buffer(payloadSie);
             List<byte> lstBytes = new List<byte>();
-            if (payloadSie > 0)
+
+            byte[] payloadContentByte = new byte[buffer.Length];
+
+            using (var dr = DataReader.FromBuffer(buffer))
             {
-                do
-                {
-                    _socket.InputStream.ReadAsync(payloadContent, payloadSie, InputStreamOptions.None).AsTask().Wait();
-
-                } while (payloadContent.Length > payloadSie);
-
-                byte[] payloadContentByte = new byte[payloadSie];
-
-                using (var dr = DataReader.FromBuffer(payloadContent))
-                {
-                    dr.ReadBytes(payloadContentByte);
-                }
-
-                lstBytes = payloadContentByte.ToList();
-                string str = Encoding.UTF8.GetString(lstBytes.ToArray(), 0, lstBytes.Count);
-                Debug.WriteLine("PAYLOAD STR: " + str);
+                dr.ReadBytes(payloadContentByte);
             }
-            return P3bbleMessage.CreateMessage((P3bbleEndpoint)endpoint, lstBytes);
+
+            lstBytes = payloadContentByte.ToList();
+#if DEBUG
+            byte[] array = lstBytes.ToArray();
+            Debug.WriteLine("PAYLOAD: " + BitConverter.ToString(array));
+#endif
+            return Task.FromResult<P3bbleMessage>(P3bbleMessage.CreateMessage((P3bbleEndpoint)endpoint, lstBytes));
         }
-
-        public P3bbleMessage ReadMessage()
-        {
-            lock (_lock)
-            {
-                var buffer = new Windows.Storage.Streams.Buffer(4);
-                _socket.InputStream.ReadAsync(buffer, 4, InputStreamOptions.None).AsTask().Wait(1000);
-                if (buffer.Length == 4)
-                {
-                    uint payloadLength, endpoint;
-
-                    GetLengthAndEndpoint(buffer, out payloadLength, out endpoint);
-
-                    if (endpoint == 0)
-                        return null;
-
-                    return ReadMessage(payloadLength, endpoint);
-                }
-                return null;
-            }
-        }
-
 
         public void WriteMessage(P3bbleMessage message)
         {
-            lock (_lock)
-            {
-                IBuffer buf = GetBufferFromByteArray(message.ToBuffer());
-                _socket.OutputStream.WriteAsync(buf).AsTask().Wait();
-                _socket.OutputStream.FlushAsync().AsTask().Wait();
-            }
+            _mutex.WaitOne();
+
+            byte[] package = message.ToBuffer();
+            Debug.WriteLine("Write Package: " + BitConverter.ToString(package));
+
+            _writer.WriteBytes(package);
+            _writer.StoreAsync().AsTask().Wait();
+
+            _mutex.ReleaseMutex();
         }
 
         private IBuffer GetBufferFromByteArray(byte[] package)
         {
-            Debug.WriteLine("Write Package: " + BitConverter.ToString(package));
+           
             using (DataWriter dw = new DataWriter())
             {
                 dw.WriteBytes(package);
