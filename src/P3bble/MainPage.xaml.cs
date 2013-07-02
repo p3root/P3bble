@@ -9,6 +9,7 @@ using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using P3bble.Resources;
 using System.Threading;
+using P3bble.Core.Bundle;
 
 namespace P3bble
 {
@@ -152,20 +153,45 @@ namespace P3bble
             }
         }
 
-        // Sample code for building a localized ApplicationBar
-        //private void BuildLocalizedApplicationBar()
-        //{
-        //    // Set the page's ApplicationBar to a new instance of ApplicationBar.
-        //    ApplicationBar = new ApplicationBar();
+        string fileName = "";
+        
+        private void Button_Click_10(object sender, RoutedEventArgs e)
+        {
+            fileName = P3bble.Core.Bundle.P3bbleBundle.DownloadFileAsync("https://pebblefw.s3.amazonaws.com/pebble/ev2_4/release/pbz/normal_ev2_4_v1.7.1.pbz");
+           // fileName = P3bble.Core.Bundle.P3bbleBundle.DownloadFileAsync("http://pebble-static.s3.amazonaws.com/watchfaces/apps/simplicity.pbw");
+            P3bble.Core.Bundle.P3bbleBundle.OpenReadCompleted += P3bbleBundle_OpenReadCompleted;
+         
+        }
 
-        //    // Create a new button and set the text value to the localized string from AppResources.
-        //    ApplicationBarIconButton appBarButton = new ApplicationBarIconButton(new Uri("/Assets/AppBar/appbar.add.rest.png", UriKind.Relative));
-        //    appBarButton.Text = AppResources.AppBarButtonText;
-        //    ApplicationBar.Buttons.Add(appBarButton);
+        private void P3bbleBundle_OpenReadCompleted(object sender, OpenReadCompletedEventArgs e)
+        {
+            P3bbleBundle bundle = new P3bbleBundle(fileName);
+        }
 
-        //    // Create a new menu item with the localized string from AppResources.
-        //    ApplicationBarMenuItem appBarMenuItem = new ApplicationBarMenuItem(AppResources.AppBarMenuItemText);
-        //    ApplicationBar.MenuItems.Add(appBarMenuItem);
-        //}
+        private void Button_Click_11(object sender, RoutedEventArgs e)
+        {
+            if (_connected)
+            {
+                if (_peb.FirmwareVersion != null)
+                {
+                    _peb.CheckForNewFirmwareCompleted += _peb_CheckForNewFirmwareCompleted;
+                    _peb.CheckForNewFirmwareAsync(_peb.FirmwareVersion);
+                }
+                else
+                    MessageBox.Show("does not receive version info from p3bble");
+            }
+            else
+            {
+                MessageBox.Show("Pebble not connected");
+            }
+        }
+
+        private void _peb_CheckForNewFirmwareCompleted(object sender, Core.EventArguments.CheckForNewFirmwareVersionEventArgs e)
+        {
+            if (e.NewVersionAvailable)
+            {
+                MessageBox.Show("new version available");
+            }
+        }
     }
 }

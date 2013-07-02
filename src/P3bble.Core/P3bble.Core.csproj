@@ -83,8 +83,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Bundle\P3bbleBundleManifest.cs" />
+    <Compile Include="Bundle\P3bbleBundle.cs" />
     <Compile Include="Communication\Protocol.cs" />
-    <Compile Include="FirmwareVersion.cs" />
+    <Compile Include="Constants\P3bbleHardwareRevision.cs" />
+    <Compile Include="EventArguments\CheckForNewFirmwareVersionEventArgs.cs" />
+    <Compile Include="Firmware\P3bbleFirmwareLatest.cs" />
+    <Compile Include="Firmware\P3bbleFirmwareVersion.cs" />
     <Compile Include="Helper\ByteHelper.cs" />
     <Compile Include="Helper\Util.cs" />
     <Compile Include="Messages\LogsMessage.cs" />
@@ -92,17 +97,19 @@
     <Compile Include="Messages\PhoneControlMessage.cs" />
     <Compile Include="Messages\PhoneVersionMessage.cs" />
     <Compile Include="Messages\PingMessage.cs" />
+    <Compile Include="Messages\PutBytesMessage.cs" />
     <Compile Include="Messages\ResetMessage.cs" />
     <Compile Include="Messages\SetMusicMessage.cs" />
     <Compile Include="Messages\TimeMessage.cs" />
     <Compile Include="Messages\VersionMessage.cs" />
-    <Compile Include="P3bbleEndpoint.cs" />
+    <Compile Include="Constants\P3bbleEndpoint.cs" />
     <Compile Include="P3bbleMessage.cs" />
     <Compile Include="P3bble.cs" />
     <Compile Include="P3bbleState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RemoteCaps.cs" />
-    <Compile Include="SessionCaps.cs" />
+    <Compile Include="Constants\P3bbleRemoteCaps.cs" />
+    <Compile Include="Constants\P3bbleSessionCaps.cs" />
+    <Compile Include="Zip\SharpGIS.UnZipper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />

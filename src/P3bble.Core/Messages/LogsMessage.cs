@@ -1,4 +1,5 @@
-﻿using P3bble.Core.Helper;
+﻿using P3bble.Core.Constants;
+using P3bble.Core.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace P3bble.Core.Messages
 {
-    public class LogsMessage : P3bbleMessage
+    internal class LogsMessage : P3bbleMessage
     {
         public LogsMessage()
             : base(P3bbleEndpoint.Logs)

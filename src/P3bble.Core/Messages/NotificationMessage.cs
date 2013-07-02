@@ -1,4 +1,5 @@
-﻿using System;
+﻿using P3bble.Core.Constants;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace P3bble.Core.Messages
 {
-    public enum NotificationType
+    internal enum NotificationType
     {
         EMAIL = 0,
         SMS = 1,
         Facebook = 2
     }
 
-    public class NotificationMessage : P3bbleMessage
+    internal class NotificationMessage : P3bbleMessage
     {
         private NotificationType _type;
         private List<string> _parts;

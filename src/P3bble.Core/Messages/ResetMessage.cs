@@ -1,4 +1,5 @@
-﻿using System;
+﻿using P3bble.Core.Constants;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace P3bble.Core.Messages
 {
-    public class ResetMessage : P3bbleMessage
+    internal class ResetMessage : P3bbleMessage
     {
         public ResetMessage()
             : base(P3bbleEndpoint.Reset)

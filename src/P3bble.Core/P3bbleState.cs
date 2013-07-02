@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace P3bble.Core
 {
-    public enum P3bbleState
+    internal enum P3bbleState
     {
         Connected,
         Connecting,

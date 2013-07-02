@@ -47,8 +47,10 @@
 
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-            <StackPanel Orientation="Vertical">
-                <Button Click="Button_Click_1" Content="Ping"/>
+            <ScrollViewer>
+                <StackPanel Orientation="Vertical">
+                
+                    <Button Click="Button_Click_1" Content="Ping"/>
                 <Button Click="Button_Click_2" Content="BadPing"/>
                 <Button Click="Button_Click_3" Content="SendSMS"/>
                 <Button Click="Button_Click_4" Content="SendEMAIL"/>
@@ -57,7 +59,12 @@
                 <Button Click="Button_Click_7" Content="GetVersion"/>
                 <Button Click="Button_Click_8" Content="SendFacebookNot"/>
                 <Button Click="Button_Click_9" Content="SimulatePhoneCall"/>
+
+                <Button Click="Button_Click_10" Content="DownloadWatchAppFile"/>
+                <Button Click="Button_Click_11" Content="CheckForFirmwareUpdate"/>
+
             </StackPanel>
+            </ScrollViewer>
         </Grid>
 
         <!--Uncomment to see an alignment grid to help ensure your controls are

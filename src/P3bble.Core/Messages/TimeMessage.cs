@@ -1,4 +1,5 @@
-﻿using P3bble.Core.Helper;
+﻿using P3bble.Core.Constants;
+using P3bble.Core.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace P3bble.Core.Messages
 {
-    public enum TimeMessageAction
+    internal enum TimeMessageAction
     {
         GetTime,
         SetTime
     }
-    public class TimeMessage : P3bbleMessage
+    internal class TimeMessage : P3bbleMessage
     {
         private TimeMessageAction _action;
         private DateTime _dateTime;

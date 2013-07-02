@@ -10,10 +10,11 @@ using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 
 using System.Runtime.InteropServices.WindowsRuntime;
+using P3bble.Core.Constants;
 
 namespace P3bble.Core.Communication
 {
-    public class P3bbleMessageReceivedEventArgs : EventArgs
+    internal class P3bbleMessageReceivedEventArgs : EventArgs
     {
         public P3bbleMessageReceivedEventArgs(P3bbleMessage message)
             :base()
@@ -24,7 +25,7 @@ namespace P3bble.Core.Communication
         public P3bbleMessage Message { get; set; }
     }
 
-    public class Protocol
+    internal class Protocol
     {
         private StreamSocket _socket;
         private DataWriter _writer;

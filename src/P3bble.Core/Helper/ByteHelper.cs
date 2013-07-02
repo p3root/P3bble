@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace P3bble.Core.Helper
 {
-    public class ByteHelper
+    internal class ByteHelper
     {
         public static byte[] ConvertToByteArray(Int32 I32)
         {

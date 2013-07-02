@@ -1,4 +1,5 @@
-﻿using P3bble.Core.Helper;
+﻿using P3bble.Core.Constants;
+using P3bble.Core.Helper;
 using P3bble.Core.Messages;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using Windows.Storage.Streams;
 
 namespace P3bble.Core
 {
-    public class P3bbleMessage
+    internal class P3bbleMessage
     {
         private P3bbleEndpoint _endpoint;
         public P3bbleMessage(P3bbleEndpoint endpoint)

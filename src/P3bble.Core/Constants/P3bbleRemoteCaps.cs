@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace P3bble.Core
+namespace P3bble.Core.Constants
 {
-    public enum RemoteCaps : uint
+    public enum P3bbleRemoteCaps : uint
     {
         UNKNOWN = 0,
         IOS = 1,
@@ -18,7 +18,6 @@ namespace P3bble.Core
         SMS = 32,
         GPS = 64,
         BTLE = 128,
-        // 240? No, that doesn't make sense.  But it's apparently true.
         CAMERA_FRONT = 240,
         CAMERA_REAR = 256,
         ACCEL = 512,

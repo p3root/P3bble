@@ -23,6 +23,12 @@ using System.Windows.Ink;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using P3bble.Core.Constants;
+using P3bble.Core.Firmware;
+using System.Runtime.Serialization.Json;
+using System.IO;
+using P3bble.Core.Helper;
+using P3bble.Core.EventArguments;
 #endif
 
 namespace P3bble.Core
@@ -39,6 +45,8 @@ namespace P3bble.Core
         public EventHandler ConnectionError;
 
         public PeerInformation PeerInformation { get; private set; }
+        public P3bbleFirmwareVersion FirmwareVersion { get; private set; }
+        public P3bbleFirmwareVersion RecoveryFirmwareVersion { get; private set; }
 
         public static Task<List<P3bble>> DetectPebbles()
         {
@@ -98,6 +106,12 @@ namespace P3bble.Core
             if (e.Message.Endpoint == P3bbleEndpoint.PhoneVersion)
             {
                 _prot.WriteMessage(new PhoneVersionMessage());
+            }
+            else if (e.Message.Endpoint == P3bbleEndpoint.Version)
+            {
+                VersionMessage message = e.Message as VersionMessage;
+                FirmwareVersion = message.Firmware;
+                RecoveryFirmwareVersion = message.RecoveryFirmware;
             }
             Debug.WriteLine(e.Message.Endpoint);
         }
@@ -162,6 +176,35 @@ namespace P3bble.Core
         public void EndCall(byte[] cookie)
         {
             _prot.WriteMessage(new PhoneControlMessage(PhoneControlType.END, cookie));
+        }
+
+        public event EventHandler<CheckForNewFirmwareVersionEventArgs> CheckForNewFirmwareCompleted;
+
+        public void CheckForNewFirmwareAsync(P3bbleFirmwareVersion version, bool useNightlyBuild = false)
+        {
+            string url = version.GetFirmwareServerUrl(useNightlyBuild);
+
+            WebClient wc = new WebClient();
+            wc.DownloadStringAsync(new Uri(url));
+            wc.DownloadStringCompleted += (sender, e) =>
+                {
+                    byte[] byteArray = Encoding.UTF8.GetBytes(e.Result);
+                    MemoryStream stream = new MemoryStream(byteArray);
+                    var serializer = new DataContractJsonSerializer(typeof(P3bbleFirmwareLatest));
+
+
+                    P3bbleFirmwareLatest info = serializer.ReadObject(stream) as P3bbleFirmwareLatest;
+                    stream.Close();
+                    CheckForNewFirmwareVersionEventArgs eventArgs = new CheckForNewFirmwareVersionEventArgs(false, null);
+                    if (Util.IsNewerVersionAvailable(FirmwareVersion.Version, info.Normal.FriendlyVersion))
+                    {
+                        eventArgs = new CheckForNewFirmwareVersionEventArgs(true, info);
+                    }
+
+                    if (CheckForNewFirmwareCompleted != null)
+                        CheckForNewFirmwareCompleted(this, eventArgs);
+                };
+           
         }
 
     }

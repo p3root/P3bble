@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace P3bble.Core
+namespace P3bble.Core.Constants
 {
-    public enum P3bbleEndpoint
+    internal enum P3bbleEndpoint
     {
         Firmware = 1,
         Time = 11,

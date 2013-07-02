@@ -1,4 +1,5 @@
-﻿using System;
+﻿using P3bble.Core.Constants;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace P3bble.Core.Messages
 {
-    public class PhoneVersionMessage : P3bbleMessage
+    internal class PhoneVersionMessage : P3bbleMessage
     {
-        uint sessionCaps = (uint)SessionCaps.GAMMA_RAY;
-        uint remoteCaps = (uint)(RemoteCaps.TELEPHONY | RemoteCaps.SMS | RemoteCaps.WINDOWS | RemoteCaps.GPS);
+        uint sessionCaps = (uint)P3bbleSessionCaps.GAMMA_RAY;
+        uint remoteCaps = (uint)(P3bbleRemoteCaps.TELEPHONY | P3bbleRemoteCaps.SMS | P3bbleRemoteCaps.WINDOWS | P3bbleRemoteCaps.GPS);
         ushort length;
 
         public PhoneVersionMessage()

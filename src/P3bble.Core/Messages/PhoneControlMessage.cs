@@ -1,4 +1,5 @@
-﻿using System;
+﻿using P3bble.Core.Constants;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace P3bble.Core.Messages
 {
-    public enum PhoneControlType : byte
+    internal enum PhoneControlType : byte
     {
         ANSWER = 1,
         HANGUP = 2,
@@ -19,7 +20,7 @@ namespace P3bble.Core.Messages
         END = 9
     }
 
-    public class PhoneControlMessage : P3bbleMessage
+    internal class PhoneControlMessage : P3bbleMessage
     {
         private PhoneControlType _type;
         private List<string> _parts;
