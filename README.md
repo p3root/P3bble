@@ -3,9 +3,10 @@ P3bble
 
 A .NET WP8/WinRT Framework for Pebble SmartWatch
 
-Currently I'm developing the WP8 components, WinRT will follow when I finished WP8.
+TODO:
 
-The current state is not usable, I will change the readme file when I'm done.
+- Updating Pebble via P3bble
+- Installing new watch faces
 
 
 ==============================
