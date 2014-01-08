@@ -14,17 +14,6 @@ using P3bble.Core.Constants;
 
 namespace P3bble.Core.Communication
 {
-    internal class P3bbleMessageReceivedEventArgs : EventArgs
-    {
-        public P3bbleMessageReceivedEventArgs(P3bbleMessage message)
-            :base()
-        {
-            Message = message;
-        }
-
-        public P3bbleMessage Message { get; set; }
-    }
-
     internal class Protocol
     {
         private StreamSocket _socket;
@@ -34,13 +23,31 @@ namespace P3bble.Core.Communication
         private bool _isRunning;
         private readonly Mutex _mutex = new Mutex();
 
-        public EventHandler<P3bbleMessageReceivedEventArgs> MessageReceived;
+        public delegate void MessageReceivedHandler(P3bbleMessage message);
+        public MessageReceivedHandler MessageReceived;
 
-        public Protocol(StreamSocket sock)
+        /// <summary>
+        /// Creates the protocol - encapsulates the socket creation
+        /// </summary>
+        /// <param name="peer">The peer.</param>
+        /// <returns>A protocol object</returns>
+        public static async Task<Protocol> CreateProtocolAsync(PeerInformation peer)
         {
-            _socket = sock;
-            _writer = new DataWriter(sock.OutputStream);
-            _reader = new DataReader(sock.InputStream);
+            StreamSocket socket = new StreamSocket();
+#if WINDOWS_PHONE
+            // {00001101-0000-1000-8000-00805f9b34fb} specifies we want a Serial Port - see http://developer.nokia.com/Community/Wiki/Bluetooth_Services_for_Windows_Phone
+            await socket.ConnectAsync(peer.HostName, new Guid(0x00001101, 0x0000, 0x1000, 0x80, 0x00, 0x00, 0x80, 0x5F, 0x9B, 0x34, 0xFB).ToString("B"));
+#elif NETFX_CORE
+            await socket = Windows.Networking.Proximity.PeerFinder.ConnectAsync(peer);
+#endif
+            return new Protocol(socket);
+        }
+
+        private Protocol(StreamSocket socket)
+        {
+            _socket = socket;
+            _writer = new DataWriter(_socket.OutputStream);
+            _reader = new DataReader(_socket.InputStream);
             _reader.InputStreamOptions = InputStreamOptions.Partial;
 
             _lock = new object();
@@ -48,9 +55,26 @@ namespace P3bble.Core.Communication
            // Thread t = new Thread(new ThreadStart(Run));
             _isRunning = true;
           //  t.Start();
-
             System.Threading.ThreadPool.QueueUserWorkItem(Run);
 #endif
+        }
+
+        /// <summary>
+        /// Sends a message to the Pebble.
+        /// </summary>
+        /// <param name="message">The message to send.</param>
+        public void WriteMessage(P3bbleMessage message)
+        {
+            _mutex.WaitOne();
+
+            byte[] package = message.ToBuffer();
+            Debug.WriteLine("<< SEND MESSAGE FOR ENDPOINT " + ((int)message.Endpoint).ToString());
+            Debug.WriteLine("<< PAYLOAD: " + BitConverter.ToString(package));
+
+            _writer.WriteBytes(package);
+            _writer.StoreAsync().AsTask().Wait();
+
+            _mutex.ReleaseMutex();
         }
 
         private async void Run(object host)
@@ -73,18 +97,16 @@ namespace P3bble.Core.Communication
 
                                 GetLengthAndEndpoint(buffer, out payloadLength, out endpoint);
 #if DEBUG
-                                Debug.WriteLine("ENDPOINT: " + endpoint);
-                                Debug.WriteLine("PAYLOADS: " + payloadLength);
+                                Debug.WriteLine(">> RECEIVED MESSAGE FOR ENDPOINT: " + endpoint + " - " + payloadLength.ToString() + " bytes");
 #endif
                                 await _reader.LoadAsync(payloadLength);
                                 IBuffer buf = _reader.ReadBuffer(payloadLength);
 
                                 P3bbleMessage msg = await ReadMessage(buf, endpoint);
 
-                                if (msg != null)
+                                if (msg != null && this.MessageReceived != null)
                                 {
-                                    if (MessageReceived != null)
-                                        MessageReceived(this, new P3bbleMessageReceivedEventArgs(msg));
+                                    this.MessageReceived(msg);
                                 }
                             }
                         }
@@ -140,27 +162,13 @@ namespace P3bble.Core.Communication
             lstBytes = payloadContentByte.ToList();
 #if DEBUG
             byte[] array = lstBytes.ToArray();
-            Debug.WriteLine("PAYLOAD: " + BitConverter.ToString(array));
+            Debug.WriteLine(">> PAYLOAD: " + BitConverter.ToString(array));
 #endif
             return Task.FromResult<P3bbleMessage>(P3bbleMessage.CreateMessage((P3bbleEndpoint)endpoint, lstBytes));
         }
 
-        public void WriteMessage(P3bbleMessage message)
-        {
-            _mutex.WaitOne();
-
-            byte[] package = message.ToBuffer();
-            Debug.WriteLine("Write Package: " + BitConverter.ToString(package));
-
-            _writer.WriteBytes(package);
-            _writer.StoreAsync().AsTask().Wait();
-
-            _mutex.ReleaseMutex();
-        }
-
         private IBuffer GetBufferFromByteArray(byte[] package)
         {
-           
             using (DataWriter dw = new DataWriter())
             {
                 dw.WriteBytes(package);

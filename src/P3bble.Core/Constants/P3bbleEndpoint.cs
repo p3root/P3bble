@@ -11,6 +11,9 @@ namespace P3bble.Core.Constants
         Firmware = 1,
         Time = 11,
         Version = 16,
+        /// <summary>
+        /// Pebble is requesting details about the phone version
+        /// </summary>
         PhoneVersion = 17,
         SystemMessage = 18,
         MusicControl = 32,

@@ -1,78 +1,71 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Navigation;
-using Microsoft.Phone.Controls;
-using Microsoft.Phone.Shell;
-using P3bble.Resources;
-using System.Threading;
+﻿using Microsoft.Phone.Controls;
 using P3bble.Core.Bundle;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading;
+using System.Windows;
 
 namespace P3bble
 {
     public partial class MainPage : PhoneApplicationPage
     {
-        private P3bble.Core.P3bble _peb;
-        private bool _connected = false;
+        private P3bble.Core.P3bble _pebble;
 
         public MainPage()
         {
             InitializeComponent();
 
-            // Sample code to localize the ApplicationBar
-            //BuildLocalizedApplicationBar();
-
             Loaded += MainPage_Loaded;
         }
 
-        private void MainPage_Loaded(object sender, RoutedEventArgs e)
+        private async void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
-            List<P3bble.Core.P3bble> pebbles = P3bble.Core.P3bble.DetectPebbles().Result;
+            List<P3bble.Core.P3bble> pebbles = await P3bble.Core.P3bble.DetectPebbles();
 
             if (pebbles.Count >= 1)
             {
-                _peb = pebbles[0];
-                _peb.Connected += PebbleConnected;
-                _peb.Connect();
-                
-                
+                _pebble = pebbles[0];
+                await _pebble.ConnectAsync();
+
+                if (_pebble.IsConnected)
+                {
+                    PebbleName.Text = "Connected to Pebble " + _pebble.DisplayName;
+                    PebbleVersion.Text = "Version " + _pebble.FirmwareVersion.Version + " - " + _pebble.FirmwareVersion.Timestamp.ToShortDateString();
+                }
+                else
+                {
+                    PebbleName.Text = "Not connected";
+                    PebbleVersion.Text = string.Empty;
+                }
             }
 
-        }
-
-        private void PebbleConnected(object sender, EventArgs e)
-        {
-            _connected = true;
-            _peb.GetVersion();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            if (_connected)
-                _peb.Ping();
+            if (_pebble.IsConnected)
+                _pebble.Ping();
             else
             {
                 MessageBox.Show("Pebble not connected");
             }
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
-        {
-            if (_connected)
-                _peb.BadPing();
-            else
-            {
-                MessageBox.Show("Pebble not connected");
-            }
-        }
+        //private void Button_Click_2(object sender, RoutedEventArgs e)
+        //{
+        //    if (_pebble.IsConnected)
+        //        _pebble.BadPing();
+        //    else
+        //    {
+        //        MessageBox.Show("Pebble not connected");
+        //    }
+        //}
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
-            if (_connected)
-                _peb.SmsNotification("+436604908028", "wow, what a cool app :)");
+            if (_pebble.IsConnected)
+                _pebble.SmsNotification("+436604908028", "wow, what a cool app :)");
             else
             {
                 MessageBox.Show("Pebble not connected");
@@ -81,8 +74,8 @@ namespace P3bble
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
-            if (_connected)
-                _peb.EmailNotification("root@p3.co.at", "P3bble", "youre sooo cooool :)");
+            if (_pebble.IsConnected)
+                _pebble.EmailNotification("root@p3.co.at", "P3bble", "youre sooo cooool :)");
             else
             {
                 MessageBox.Show("Pebble not connected");
@@ -91,28 +84,21 @@ namespace P3bble
 
         private void Button_Click_5(object sender, RoutedEventArgs e)
         {
-            if (_connected)
-                _peb.SetNowPlaying("artist", "album", "track");
+            if (_pebble.IsConnected)
+                _pebble.SetNowPlaying("artist", "album", "track");
             else
             {
                 MessageBox.Show("Pebble not connected");
             }
         }
 
-        private void Button_Click_6(object sender, RoutedEventArgs e)
+        private async void Button_Click_6(object sender, RoutedEventArgs e)
         {
-            if (_connected)
-                _peb.GetTime();
-            else
+            if (_pebble.IsConnected)
             {
-                MessageBox.Show("Pebble not connected");
+                DateTime time = await _pebble.GetTimeAsync();
+                MessageBox.Show("Time is " + time.ToString());
             }
-        }
-
-        private void Button_Click_7(object sender, RoutedEventArgs e)
-        {
-            if (_connected)
-                _peb.GetVersion();
             else
             {
                 MessageBox.Show("Pebble not connected");
@@ -121,8 +107,8 @@ namespace P3bble
 
         private void Button_Click_8(object sender, RoutedEventArgs e)
         {
-            if (_connected)
-                _peb.FacebookNotification("test", "testmessage");
+            if (_pebble.IsConnected)
+                _pebble.FacebookNotification("test", "testmessage");
             else
             {
                 MessageBox.Show("Pebble not connected");
@@ -131,21 +117,21 @@ namespace P3bble
 
         private void Button_Click_9(object sender, RoutedEventArgs e)
         {
-            if (_connected)
+            if (_pebble.IsConnected)
             {
                 byte[] cookie = new byte[] { 0x00, 0xEB, 0x00, 0x00 };
-                _peb.PhoneCall("P3root", "555 555 555", cookie);
+                _pebble.PhoneCall("P3root", "555 555 555", cookie);
                 Thread.Sleep(2000);
-                _peb.Ring(cookie);
+                _pebble.Ring(cookie);
                 Thread.Sleep(2000);
-                _peb.Ring(cookie);
+                _pebble.Ring(cookie);
                 Thread.Sleep(2000);
-                _peb.Ring(cookie);
+                _pebble.Ring(cookie);
 
                 Thread.Sleep(3000);
-                _peb.StartCall(cookie);
+                _pebble.StartCall(cookie);
                 Thread.Sleep(5000);
-                _peb.EndCall(cookie);
+                _pebble.EndCall(cookie);
             }
             else
             {
@@ -170,12 +156,12 @@ namespace P3bble
 
         private void Button_Click_11(object sender, RoutedEventArgs e)
         {
-            if (_connected)
+            if (_pebble.IsConnected)
             {
-                if (_peb.FirmwareVersion != null)
+                if (_pebble.FirmwareVersion != null)
                 {
-                    _peb.CheckForNewFirmwareCompleted += _peb_CheckForNewFirmwareCompleted;
-                    _peb.CheckForNewFirmwareAsync(_peb.FirmwareVersion);
+                    _pebble.CheckForNewFirmwareCompleted += CheckForNewFirmwareCompleted;
+                    _pebble.CheckForNewFirmwareAsync(_pebble.FirmwareVersion);
                 }
                 else
                     MessageBox.Show("does not receive version info from p3bble");
@@ -186,7 +172,7 @@ namespace P3bble
             }
         }
 
-        private void _peb_CheckForNewFirmwareCompleted(object sender, Core.EventArguments.CheckForNewFirmwareVersionEventArgs e)
+        private void CheckForNewFirmwareCompleted(object sender, Core.EventArguments.CheckForNewFirmwareVersionEventArgs e)
         {
             if (e.NewVersionAvailable)
             {

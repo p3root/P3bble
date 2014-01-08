@@ -1,186 +1,181 @@
 ﻿using P3bble.Core.Communication;
 using P3bble.Core.Messages;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Text;
-using System.Windows.Input;
-using System.Windows;
-using Windows.Networking;
-using Windows.Networking.Proximity;
-using Windows.Networking.Sockets;
-
-using System.Linq;
 using System.Threading.Tasks;
+using Windows.Networking.Proximity;
 
 #if WINDOWS_PHONE
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using P3bble.Core.Constants;
 using P3bble.Core.Firmware;
 using System.Runtime.Serialization.Json;
 using System.IO;
 using P3bble.Core.Helper;
 using P3bble.Core.EventArguments;
+using System.Threading;
 #endif
 
 namespace P3bble.Core
 {
+    /// <summary>
+    /// Defines a connection to a Pebble watch
+    /// </summary>
     public class P3bble
     {
-        private Protocol _prot;
-        public P3bble(PeerInformation peerInformation)
+        // The underlying protocol handler...
+        private Protocol _protocol;
+
+        // Used to synchronise calls to the Pebble to make more natural for the API consumer...
+        private ManualResetEventSlim _pendingMessageSignal;
+        private P3bbleMessage _pendingMessage;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="P3bble"/> class.
+        /// </summary>
+        /// <param name="peerInformation">The peer device to connect to.</param>
+        internal P3bble(PeerInformation peerInformation)
         {
             PeerInformation = peerInformation;
         }
 
-        public EventHandler Connected;
-        public EventHandler ConnectionError;
+        /// <summary>
+        /// Gets a value indicating whether this instance is connected.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if connected; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsConnected { get; private set; }
 
+        /// <summary>
+        /// Gets the display name for the device
+        /// </summary>
+        /// <value>
+        /// The display name.
+        /// </value>
+        public string DisplayName
+        {
+            get
+            {
+                return PeerInformation.DisplayName.Replace("Pebble", string.Empty).Trim();
+            }
+        }
+
+        /// <summary>
+        /// Gets the underlying Bluetooth peer information.
+        /// </summary>
+        /// <value>
+        /// The peer information.
+        /// </value>
         public PeerInformation PeerInformation { get; private set; }
+        
         public P3bbleFirmwareVersion FirmwareVersion { get; private set; }
+        
         public P3bbleFirmwareVersion RecoveryFirmwareVersion { get; private set; }
 
+        /// <summary>
+        /// Detects any paired pebbles.
+        /// </summary>
+        /// <returns>A list of pebbles if some are found</returns>
         public static Task<List<P3bble>> DetectPebbles()
         {
             return Task<List<P3bble>>.Factory.StartNew(() => FindPebbles());
         }
 
-        private static List<P3bble> FindPebbles()
+        /// <summary>
+        /// Connects this instance.
+        /// </summary>
+        /// <returns>A boolean indicating if the connection was successful</returns>
+        public async Task<bool> ConnectAsync()
         {
-            PeerFinder.AlternateIdentities["Bluetooth:Paired"] = "";
-
-#if NETFX_CORE
-            PeerFinder.Start();
-#endif
-
-            IReadOnlyList<PeerInformation> pairedDevices = PeerFinder.FindAllPeersAsync().AsTask().Result;
-            List<P3bble> lst = new List<P3bble>();
-            
-            // Filter to only devices that are named Pebble - right now, that's the only way to
-            // stop us getting headphones, etc. showing up...
-            foreach (PeerInformation pi in pairedDevices)
+            // Check we're not already connected...
+            if (this.IsConnected)
             {
-                if (pi.DisplayName.StartsWith("Pebble", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    lst.Add(new P3bble(pi));
-                }
+                return true;
             }
 
-            if (pairedDevices.Count == 0)
-            {
-                Debug.WriteLine("No paired devices were found.");
-            }
-
-            return lst;
-        }
-
-        public async void Connect()
-        {
-            StreamSocket socket = new StreamSocket();
             try
             {
-#if WINDOWS_PHONE
-                await socket.ConnectAsync(PeerInformation.HostName, new Guid(0x00001101, 0x0000, 0x1000, 0x80, 0x00, 0x00, 0x80, 0x5F, 0x9B, 0x34, 0xFB).ToString("B"));
-#elif NETFX_CORE
-                socket = Windows.Networking.Proximity.PeerFinder.ConnectAsync(PeerInformation).AsTask().Result;
-#endif
+                _protocol = await Protocol.CreateProtocolAsync(PeerInformation);
+                _protocol.MessageReceived += ProtocolMessageReceived;
+                this.IsConnected = true;
 
-                _prot = new Protocol(socket);
-                _prot.MessageReceived += AsynMessageRecived;
+                // Now we're connected, request the Pebble version info...
+                await this.SendMessageAndAwaitResponseAsync<VersionMessage>(new VersionMessage());
+            }
+            catch
+            {
+                this.IsConnected = false;
+            }
 
-                if (Connected != null)
-                    Connected(this, EventArgs.Empty);
-            }
-            catch (Exception e)
-            {
-                if (ConnectionError != null)
-                    ConnectionError(this, EventArgs.Empty);
-            }
-        }
-
-        private void AsynMessageRecived(object sender, P3bbleMessageReceivedEventArgs e)
-        {
-            if (e.Message.Endpoint == P3bbleEndpoint.PhoneVersion)
-            {
-                _prot.WriteMessage(new PhoneVersionMessage());
-            }
-            else if (e.Message.Endpoint == P3bbleEndpoint.Version)
-            {
-                VersionMessage message = e.Message as VersionMessage;
-                FirmwareVersion = message.Firmware;
-                RecoveryFirmwareVersion = message.RecoveryFirmware;
-            }
-            Debug.WriteLine(e.Message.Endpoint);
+            return this.IsConnected;
         }
 
         public void Ping()
         {
-            _prot.WriteMessage(new PingMessage());
+            _protocol.WriteMessage(new PingMessage());
         }
 
-        public void BadPing()
-        {
-            _prot.WriteMessage(new PingMessage(new byte[7] { 1, 2, 3, 4, 5, 6, 7 }));
-        }
-
-        public void GetVersion()
-        {
-            _prot.WriteMessage(new VersionMessage());
-        }
+        //public void BadPing()
+        //{
+        //    _protocol.WriteMessage(new PingMessage(new byte[7] { 1, 2, 3, 4, 5, 6, 7 }));
+        //}
 
         public void Reset()
         {
-            _prot.WriteMessage(new ResetMessage());
+            _protocol.WriteMessage(new ResetMessage());
         }
 
         public void SmsNotification(string sender, string message)
         {
-            _prot.WriteMessage(new NotificationMessage(NotificationType.SMS, sender, message));
+            _protocol.WriteMessage(new NotificationMessage(NotificationType.SMS, sender, message));
         }
 
         public void FacebookNotification(string sender, string message)
         {
-            _prot.WriteMessage(new NotificationMessage(NotificationType.Facebook, sender, message));
+            _protocol.WriteMessage(new NotificationMessage(NotificationType.Facebook, sender, message));
         }
 
         public void EmailNotification(string sender, string subject, string body)
         {
-            _prot.WriteMessage(new NotificationMessage(NotificationType.EMAIL, sender, body, subject));
+            _protocol.WriteMessage(new NotificationMessage(NotificationType.EMAIL, sender, body, subject));
         }
 
         public void SetNowPlaying(string artist, string album, string track)
         {
-            _prot.WriteMessage(new SetMusicMessage(artist, album, track));
+            _protocol.WriteMessage(new SetMusicMessage(artist, album, track));
         }
 
-        public void GetTime()
+        public async Task<DateTime> GetTimeAsync()
         {
-            _prot.WriteMessage(new TimeMessage());
+            TimeMessage result = await this.SendMessageAndAwaitResponseAsync<TimeMessage>(new TimeMessage());
+            if (result != null)
+            {
+                return result.Time;
+            }
+            else
+            {
+                throw new TimedOutException();
+            }
         }
 
         public void PhoneCall(string name, string number, byte[] cookie)
         {
-            _prot.WriteMessage(new PhoneControlMessage(PhoneControlType.INCOMING_CALL, cookie, number, name));
+            _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.INCOMING_CALL, cookie, number, name));
         }
         public void Ring(byte[] cookie)
         {
-            _prot.WriteMessage(new PhoneControlMessage(PhoneControlType.RING, cookie));
+            _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.RING, cookie));
         }
         public void StartCall(byte[] cookie)
         {
-            _prot.WriteMessage(new PhoneControlMessage(PhoneControlType.START, cookie));
+            _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.START, cookie));
         }
         public void EndCall(byte[] cookie)
         {
-            _prot.WriteMessage(new PhoneControlMessage(PhoneControlType.END, cookie));
+            _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.END, cookie));
         }
 
         public event EventHandler<CheckForNewFirmwareVersionEventArgs> CheckForNewFirmwareCompleted;
@@ -212,5 +207,121 @@ namespace P3bble.Core
 
         }
 
+        //////////////////////////////////////////////////////////////////////////////////
+        // Private methods below - e.g. handling discovery or incoming messages
+        //////////////////////////////////////////////////////////////////////////////////
+
+        /// <summary>
+        /// Finds paired pebbles.
+        /// </summary>
+        /// <returns>A list of pebbles</returns>
+        private static List<P3bble> FindPebbles()
+        {
+            PeerFinder.AlternateIdentities["Bluetooth:Paired"] = "";
+
+#if NETFX_CORE
+            PeerFinder.Start();
+#endif
+
+            IReadOnlyList<PeerInformation> pairedDevices = PeerFinder.FindAllPeersAsync().AsTask().Result;
+            List<P3bble> lst = new List<P3bble>();
+
+            // Filter to only devices that are named Pebble - right now, that's the only way to
+            // stop us getting headphones, etc. showing up...
+            foreach (PeerInformation pi in pairedDevices)
+            {
+                if (pi.DisplayName.StartsWith("Pebble", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    lst.Add(new P3bble(pi));
+                }
+            }
+
+            if (pairedDevices.Count == 0)
+            {
+                Debug.WriteLine("No paired devices were found.");
+            }
+
+            return lst;
+        }
+
+        /// <summary>
+        /// Handles protocol messages
+        /// </summary>
+        /// <param name="message">The message.</param>
+        private void ProtocolMessageReceived(P3bbleMessage message)
+        {
+            Debug.WriteLine("ProtocolMessageReceived: " + message.Endpoint.ToString());
+
+            switch (message.Endpoint)
+            {
+                case P3bbleEndpoint.PhoneVersion:
+                    // We need to tell the Pebble what we are...
+                    _protocol.WriteMessage(new PhoneVersionMessage());
+                    break;
+
+                case P3bbleEndpoint.Version:
+                    // Store version info we got from the Pebble...
+                    VersionMessage version = message as VersionMessage;
+                    FirmwareVersion = version.Firmware;
+                    RecoveryFirmwareVersion = version.RecoveryFirmware;
+                    break;
+
+                default:
+                    break;
+            }
+
+            // Check if we're waiting for a message...
+            if (this._pendingMessageSignal != null && this._pendingMessage != null)
+            {
+                if (this._pendingMessage.Endpoint == message.Endpoint)
+                {
+                    Debug.WriteLine("ProtocolMessageReceived: we were waiting for this type of message");
+                    this._pendingMessage = message;
+                    this._pendingMessageSignal.Set();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sends a message to the Pebble and awaits the response.
+        /// </summary>
+        /// <typeparam name="T">The type of message</typeparam>
+        /// <param name="message">The message content.</param>
+        /// <param name="millisecondsTimeout">The milliseconds timeout.</param>
+        /// <returns>A message response</returns>
+        /// <exception cref="System.InvalidOperationException">A message is being waited for already</exception>
+        /// <remarks>Beware when debugging that setting a breakpoint in Protocol.Run or ProtocolMessageReceived will cause the ResetEvent to time out</remarks>
+        private Task<T> SendMessageAndAwaitResponseAsync<T>(P3bbleMessage message, int millisecondsTimeout = 5000)
+            where T : P3bbleMessage
+        {
+            if (this._pendingMessageSignal != null)
+            {
+                throw new InvalidOperationException("A message is being waited for already");
+            }
+
+            return Task.Run<T>(() =>
+                {
+                    int startTicks = Environment.TickCount;
+                    this._pendingMessageSignal = new ManualResetEventSlim(false);
+                    this._pendingMessage = message;
+                    
+                    // Send the message...
+                    _protocol.WriteMessage(message);
+                    
+                    // Wait for the response...
+                    this._pendingMessageSignal.Wait(millisecondsTimeout);
+
+                    // Store any response or (null if timed out)...
+                    T pendingMessage = this._pendingMessage as T;
+
+                    // Clear the pending variables...
+                    this._pendingMessageSignal = null;
+                    this._pendingMessage = null;
+
+                    Debug.WriteLine(pendingMessage.GetType().Name + " message received back in " + (Environment.TickCount - startTicks).ToString() + "ms");
+                    
+                    return pendingMessage;
+                });
+        }
     }
 }

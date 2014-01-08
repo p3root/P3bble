@@ -13,6 +13,7 @@ namespace P3bble.Core
     internal class P3bbleMessage
     {
         private P3bbleEndpoint _endpoint;
+
         public P3bbleMessage(P3bbleEndpoint endpoint)
         {
             _endpoint = endpoint;

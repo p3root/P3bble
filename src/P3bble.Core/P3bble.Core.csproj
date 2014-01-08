@@ -88,12 +88,14 @@
     <Compile Include="Communication\Protocol.cs" />
     <Compile Include="Constants\P3bbleHardwareRevision.cs" />
     <Compile Include="EventArguments\CheckForNewFirmwareVersionEventArgs.cs" />
+    <Compile Include="Exceptions\TimedOutException.cs" />
     <Compile Include="Firmware\P3bbleFirmwareLatest.cs" />
     <Compile Include="Firmware\P3bbleFirmwareVersion.cs" />
     <Compile Include="Helper\ByteHelper.cs" />
     <Compile Include="Helper\Util.cs" />
     <Compile Include="Messages\LogsMessage.cs" />
     <Compile Include="Messages\NotificationMessage.cs" />
+    <Compile Include="Messages\P3bbleMessage.cs" />
     <Compile Include="Messages\PhoneControlMessage.cs" />
     <Compile Include="Messages\PhoneVersionMessage.cs" />
     <Compile Include="Messages\PingMessage.cs" />
@@ -103,7 +105,7 @@
     <Compile Include="Messages\TimeMessage.cs" />
     <Compile Include="Messages\VersionMessage.cs" />
     <Compile Include="Constants\P3bbleEndpoint.cs" />
-    <Compile Include="P3bbleMessage.cs" />
+    <Compile Include="Exceptions\NotConnectedException.cs" />
     <Compile Include="P3bble.cs" />
     <Compile Include="P3bbleState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
