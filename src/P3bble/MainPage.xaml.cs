@@ -42,10 +42,10 @@ namespace P3bble
 
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private async void Button_Click_1(object sender, RoutedEventArgs e)
         {
             if (_pebble.IsConnected)
-                _pebble.Ping();
+                await _pebble.PingAsync();
             else
             {
                 MessageBox.Show("Pebble not connected");
@@ -65,7 +65,7 @@ namespace P3bble
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
             if (_pebble.IsConnected)
-                _pebble.SmsNotification("+436604908028", "wow, what a cool app :)");
+                _pebble.SmsNotificationAsync("+436604908028", "wow, what a cool app :)");
             else
             {
                 MessageBox.Show("Pebble not connected");
@@ -75,7 +75,7 @@ namespace P3bble
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
             if (_pebble.IsConnected)
-                _pebble.EmailNotification("root@p3.co.at", "P3bble", "youre sooo cooool :)");
+                _pebble.EmailNotificationAsync("root@p3.co.at", "P3bble", "youre sooo cooool :)");
             else
             {
                 MessageBox.Show("Pebble not connected");
@@ -85,7 +85,7 @@ namespace P3bble
         private void Button_Click_5(object sender, RoutedEventArgs e)
         {
             if (_pebble.IsConnected)
-                _pebble.SetNowPlaying("artist", "album", "track");
+                _pebble.SetNowPlayingAsync("artist", "album", "track");
             else
             {
                 MessageBox.Show("Pebble not connected");
@@ -108,7 +108,7 @@ namespace P3bble
         private void Button_Click_8(object sender, RoutedEventArgs e)
         {
             if (_pebble.IsConnected)
-                _pebble.FacebookNotification("test", "testmessage");
+                _pebble.FacebookNotificationAsync("test", "testmessage");
             else
             {
                 MessageBox.Show("Pebble not connected");
@@ -120,18 +120,18 @@ namespace P3bble
             if (_pebble.IsConnected)
             {
                 byte[] cookie = new byte[] { 0x00, 0xEB, 0x00, 0x00 };
-                _pebble.PhoneCall("P3root", "555 555 555", cookie);
+                _pebble.PhoneCallAsync("P3root", "555 555 555", cookie);
                 Thread.Sleep(2000);
-                _pebble.Ring(cookie);
+                _pebble.RingAsync(cookie);
                 Thread.Sleep(2000);
-                _pebble.Ring(cookie);
+                _pebble.RingAsync(cookie);
                 Thread.Sleep(2000);
-                _pebble.Ring(cookie);
+                _pebble.RingAsync(cookie);
 
                 Thread.Sleep(3000);
-                _pebble.StartCall(cookie);
+                _pebble.StartCallAsync(cookie);
                 Thread.Sleep(5000);
-                _pebble.EndCall(cookie);
+                _pebble.EndCallAsync(cookie);
             }
             else
             {

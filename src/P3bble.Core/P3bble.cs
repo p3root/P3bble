@@ -113,9 +113,9 @@ namespace P3bble.Core
             return this.IsConnected;
         }
 
-        public void Ping()
+        public Task PingAsync()
         {
-            _protocol.WriteMessage(new PingMessage());
+            return _protocol.WriteMessage(new PingMessage());
         }
 
         //public void BadPing()
@@ -123,29 +123,29 @@ namespace P3bble.Core
         //    _protocol.WriteMessage(new PingMessage(new byte[7] { 1, 2, 3, 4, 5, 6, 7 }));
         //}
 
-        public void Reset()
+        public Task ResetAsync()
         {
-            _protocol.WriteMessage(new ResetMessage());
+            return _protocol.WriteMessage(new ResetMessage());
         }
 
-        public void SmsNotification(string sender, string message)
+        public Task SmsNotificationAsync(string sender, string message)
         {
-            _protocol.WriteMessage(new NotificationMessage(NotificationType.SMS, sender, message));
+            return _protocol.WriteMessage(new NotificationMessage(NotificationType.SMS, sender, message));
         }
 
-        public void FacebookNotification(string sender, string message)
+        public Task FacebookNotificationAsync(string sender, string message)
         {
-            _protocol.WriteMessage(new NotificationMessage(NotificationType.Facebook, sender, message));
+            return _protocol.WriteMessage(new NotificationMessage(NotificationType.Facebook, sender, message));
         }
 
-        public void EmailNotification(string sender, string subject, string body)
+        public Task EmailNotificationAsync(string sender, string subject, string body)
         {
-            _protocol.WriteMessage(new NotificationMessage(NotificationType.EMAIL, sender, body, subject));
+            return _protocol.WriteMessage(new NotificationMessage(NotificationType.EMAIL, sender, body, subject));
         }
 
-        public void SetNowPlaying(string artist, string album, string track)
+        public Task SetNowPlayingAsync(string artist, string album, string track)
         {
-            _protocol.WriteMessage(new SetMusicMessage(artist, album, track));
+            return _protocol.WriteMessage(new SetMusicMessage(artist, album, track));
         }
 
         public async Task<DateTime> GetTimeAsync()
@@ -161,21 +161,21 @@ namespace P3bble.Core
             }
         }
 
-        public void PhoneCall(string name, string number, byte[] cookie)
+        public Task PhoneCallAsync(string name, string number, byte[] cookie)
         {
-            _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.INCOMING_CALL, cookie, number, name));
+            return _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.INCOMING_CALL, cookie, number, name));
         }
-        public void Ring(byte[] cookie)
+        public Task RingAsync(byte[] cookie)
         {
-            _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.RING, cookie));
+            return _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.RING, cookie));
         }
-        public void StartCall(byte[] cookie)
+        public Task StartCallAsync(byte[] cookie)
         {
-            _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.START, cookie));
+            return _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.START, cookie));
         }
-        public void EndCall(byte[] cookie)
+        public Task EndCallAsync(byte[] cookie)
         {
-            _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.END, cookie));
+            return _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.END, cookie));
         }
 
         public event EventHandler<CheckForNewFirmwareVersionEventArgs> CheckForNewFirmwareCompleted;
@@ -299,14 +299,14 @@ namespace P3bble.Core
                 throw new InvalidOperationException("A message is being waited for already");
             }
 
-            return Task.Run<T>(() =>
+            return Task.Run<T>(async () =>
                 {
                     int startTicks = Environment.TickCount;
                     this._pendingMessageSignal = new ManualResetEventSlim(false);
                     this._pendingMessage = message;
                     
                     // Send the message...
-                    _protocol.WriteMessage(message);
+                    await _protocol.WriteMessage(message);
                     
                     // Wait for the response...
                     this._pendingMessageSignal.Wait(millisecondsTimeout);

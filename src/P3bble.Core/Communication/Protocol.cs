@@ -63,18 +63,21 @@ namespace P3bble.Core.Communication
         /// Sends a message to the Pebble.
         /// </summary>
         /// <param name="message">The message to send.</param>
-        public void WriteMessage(P3bbleMessage message)
+        public Task WriteMessage(P3bbleMessage message)
         {
-            _mutex.WaitOne();
+            return Task.Factory.StartNew(() =>
+            {
+                _mutex.WaitOne();
 
-            byte[] package = message.ToBuffer();
-            Debug.WriteLine("<< SEND MESSAGE FOR ENDPOINT " + ((int)message.Endpoint).ToString());
-            Debug.WriteLine("<< PAYLOAD: " + BitConverter.ToString(package));
+                byte[] package = message.ToBuffer();
+                Debug.WriteLine("<< SEND MESSAGE FOR ENDPOINT " + ((int)message.Endpoint).ToString());
+                Debug.WriteLine("<< PAYLOAD: " + BitConverter.ToString(package));
 
-            _writer.WriteBytes(package);
-            _writer.StoreAsync().AsTask().Wait();
+                _writer.WriteBytes(package);
+                _writer.StoreAsync().AsTask().Wait();
 
-            _mutex.ReleaseMutex();
+                _mutex.ReleaseMutex();
+            });
         }
 
         private async void Run(object host)
