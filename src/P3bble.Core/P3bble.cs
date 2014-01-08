@@ -63,17 +63,22 @@ namespace P3bble.Core
 
             IReadOnlyList<PeerInformation> pairedDevices = PeerFinder.FindAllPeersAsync().AsTask().Result;
             List<P3bble> lst = new List<P3bble>();
-            if (pairedDevices.Count == 0)
+            
+            // Filter to only devices that are named Pebble - right now, that's the only way to
+            // stop us getting headphones, etc. showing up...
+            foreach (PeerInformation pi in pairedDevices)
             {
-                Debug.WriteLine("No paired devices were found.");
-            }
-            else
-            {
-                foreach (PeerInformation pi in pairedDevices)
+                if (pi.DisplayName.StartsWith("Pebble", StringComparison.InvariantCultureIgnoreCase))
                 {
                     lst.Add(new P3bble(pi));
                 }
             }
+
+            if (pairedDevices.Count == 0)
+            {
+                Debug.WriteLine("No paired devices were found.");
+            }
+
             return lst;
         }
 
@@ -87,16 +92,16 @@ namespace P3bble.Core
 #elif NETFX_CORE
                 socket = Windows.Networking.Proximity.PeerFinder.ConnectAsync(PeerInformation).AsTask().Result;
 #endif
-               
+
                 _prot = new Protocol(socket);
                 _prot.MessageReceived += AsynMessageRecived;
 
-                if(Connected != null)
+                if (Connected != null)
                     Connected(this, EventArgs.Empty);
             }
             catch (Exception e)
             {
-                if(ConnectionError != null)
+                if (ConnectionError != null)
                     ConnectionError(this, EventArgs.Empty);
             }
         }
@@ -123,7 +128,7 @@ namespace P3bble.Core
 
         public void BadPing()
         {
-            _prot.WriteMessage(new PingMessage(new byte[7]{1, 2, 3, 4, 5, 6, 7 }));
+            _prot.WriteMessage(new PingMessage(new byte[7] { 1, 2, 3, 4, 5, 6, 7 }));
         }
 
         public void GetVersion()
@@ -204,7 +209,7 @@ namespace P3bble.Core
                     if (CheckForNewFirmwareCompleted != null)
                         CheckForNewFirmwareCompleted(this, eventArgs);
                 };
-           
+
         }
 
     }
