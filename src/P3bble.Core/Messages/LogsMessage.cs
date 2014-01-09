@@ -71,7 +71,7 @@ namespace P3bble.Core.Messages
         public DateTime Timestamp { get; private set; }
         public byte Level { get; private set; }
         public Int16 LineNo { get; private set; }
-        public String Filename { get; private set; }
-        public String Message { get; private set; }
+        public string Filename { get; private set; }
+        public string Message { get; private set; }
     }
 }

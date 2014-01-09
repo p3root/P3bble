@@ -1,4 +1,5 @@
-﻿using P3bble.Core.Helper;
+﻿using P3bble.Core.Firmware;
+using P3bble.Core.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,40 +16,40 @@ namespace P3bble.Core.Bundle
         public struct P3bbleApplicationManifest
         {
             [DataMember(Name = "name", IsRequired = true)]
-            public String Filename { get; private set; }
+            public string Filename { get; private set; }
 
-           [DataMember(Name = "reqFwVer", IsRequired = true)]
+            [DataMember(Name = "reqFwVer", IsRequired = true)]
             public int RequiredFirmwareVersion { get; private set; }
 
             [DataMember(Name = "timestamp", IsRequired = true)]
-            public int Timestamp { get; private set; }
-            public DateTime TimestampDT { get { return Timestamp.AsDateTime(); } }
+            internal int TimestampInternal { get; set; }
+            public DateTime Timestamp { get { return TimestampInternal.AsDateTime(); } }
 
-           [DataMember(Name = "crc", IsRequired = true)]
+            [DataMember(Name = "crc", IsRequired = true)]
             public uint CRC { get; private set; }
 
             [DataMember(Name = "size", IsRequired = true)]
             public int Size { get; private set; }
         }
 
-         [DataContract]
+        [DataContract]
         public struct P3bbleFirmwareManifest
         {
-           [DataMember(Name = "name", IsRequired = true)]
-            public String Filename { get; private set; }
+            [DataMember(Name = "name", IsRequired = true)]
+            public string Filename { get; private set; }
 
             [DataMember(Name = "timestamp", IsRequired = true)]
-            public int Timestamp { get; private set; }
-            public DateTime TimestampDT { get { return Timestamp.AsDateTime(); } }
+            internal int TimestampInternal { get; set; }
+            public DateTime Timestamp { get { return TimestampInternal.AsDateTime(); } }
 
             [DataMember(Name = "crc", IsRequired = true)]
             public uint CRC { get; private set; }
 
             [DataMember(Name = "hwrev", IsRequired = true)]
-            public String HardwareRevision { get; private set; }
+            public string HardwareRevision { get; private set; }
 
             [DataMember(Name = "type", IsRequired = true)]
-            public String Type { get; private set; }
+            public string Type { get; private set; }
             public bool IsRecovery { get { return (Type == "recovery"); } }
 
             [DataMember(Name = "size", IsRequired = true)]
@@ -56,22 +57,15 @@ namespace P3bble.Core.Bundle
         }
 
         [DataContract]
-        public struct P3bbleResourcesManifest
+        public class P3bbleResourcesManifest : P3bbbleVersion
         {
-             [DataMember(Name = "name", IsRequired = true)]
-            public String Filename { get; private set; }
-
-            [DataMember(Name = "timestamp", IsRequired = true)]
-            public int Timestamp { get; private set; }
-            public DateTime TimestampDT { get { return Timestamp.AsDateTime(); } }
+            [DataMember(Name = "name", IsRequired = true)]
+            public string Filename { get; private set; }
 
             [DataMember(Name = "crc", IsRequired = true)]
             public uint CRC { get; private set; }
 
-            [DataMember(Name = "friendlyVersion", IsRequired = true)]
-            public String FriendlyVersion { get; private set; }
-
-             [DataMember(Name = "size", IsRequired = true)]
+            [DataMember(Name = "size", IsRequired = true)]
             public int Size { get; private set; }
         }
 
@@ -79,12 +73,11 @@ namespace P3bble.Core.Bundle
         public int ManifestVersion { get; private set; }
 
         [DataMember(Name = "generatedAt", IsRequired = true)]
-        public int GeneratedAt { get; private set; }
-
-        public DateTime GeneratedAtDT { get { return GeneratedAt.AsDateTime(); } }
+        internal int GeneratedAtInternal { get; set; }
+        public DateTime GeneratedAt { get { return GeneratedAtInternal.AsDateTime(); } }
 
         [DataMember(Name = "generatedBy", IsRequired = true)]
-        public String GeneratedBy { get; private set; }
+        public string GeneratedBy { get; private set; }
 
         [DataMember(Name = "application", IsRequired = false)]
         public P3bbleApplicationManifest Application { get; private set; }
@@ -96,6 +89,6 @@ namespace P3bble.Core.Bundle
         public P3bbleResourcesManifest Resources { get; private set; }
 
         [DataMember(Name = "type", IsRequired = true)]
-        public String Type { get; private set; }
+        public string Type { get; private set; }
     }
 }

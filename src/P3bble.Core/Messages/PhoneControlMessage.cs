@@ -27,7 +27,7 @@ namespace P3bble.Core.Messages
         private ushort _length;
         private byte[] _cookie;
 
-        public PhoneControlMessage(PhoneControlType type, byte[] cookie, params String[] parts)
+        public PhoneControlMessage(PhoneControlType type, byte[] cookie, params string[] parts)
             : base(P3bbleEndpoint.PhoneControl)
         {
             _type = type;
@@ -46,7 +46,7 @@ namespace P3bble.Core.Messages
 
             data = data.Concat(_cookie).ToArray();
 
-            foreach (String part in parts)
+            foreach (string part in parts)
             {
                 byte[] _part = Encoding.UTF8.GetBytes(part);
                 if (_part.Length > 255)

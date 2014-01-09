@@ -38,12 +38,12 @@ namespace P3bble.Core.Messages
             {
                 Array.Reverse(_ts);
             }
-            DateTime timestamp = BitConverter.ToInt32(_ts, 0).AsDateTime();
-            String version = Encoding.UTF8.GetString(data.Skip(4).Take(32).ToArray(), 0, 32);
-            String commit = Encoding.UTF8.GetString(data.Skip(36).Take(8).ToArray(), 0, 8);
+            int timestamp = BitConverter.ToInt32(_ts, 0);
+            string version = Encoding.UTF8.GetString(data.Skip(4).Take(32).ToArray(), 0, 32);
+            string commit = Encoding.UTF8.GetString(data.Skip(36).Take(8).ToArray(), 0, 8);
             version = version.Substring(0, version.IndexOf('\0'));
             commit = commit.Substring(0, commit.IndexOf('\0'));
-            Boolean is_recovery = BitConverter.ToBoolean(data, 44);
+            bool is_recovery = BitConverter.ToBoolean(data, 44);
             byte hardware_platform = data[45];
             byte metadata_ver = data[46];
             return new P3bbleFirmwareVersion(timestamp, version, commit, is_recovery, hardware_platform, metadata_ver);

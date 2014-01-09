@@ -154,14 +154,17 @@ namespace P3bble
             P3bbleBundle bundle = new P3bbleBundle(fileName);
         }
 
-        private void Button_Click_11(object sender, RoutedEventArgs e)
+        private async void Button_Click_11(object sender, RoutedEventArgs e)
         {
             if (_pebble.IsConnected)
             {
                 if (_pebble.FirmwareVersion != null)
                 {
-                    _pebble.CheckForNewFirmwareCompleted += CheckForNewFirmwareCompleted;
-                    _pebble.CheckForNewFirmwareAsync();
+                    var latest = await _pebble.GetLatestFirmwareVersionAsync();
+                    if (latest.FirmwareVersion > _pebble.FirmwareVersion)
+                    {
+                        MessageBox.Show("new version available");
+                    }
                 }
                 else
                     MessageBox.Show("does not receive version info from p3bble");
@@ -169,14 +172,6 @@ namespace P3bble
             else
             {
                 MessageBox.Show("Pebble not connected");
-            }
-        }
-
-        private void CheckForNewFirmwareCompleted(object sender, Core.EventArguments.CheckForNewFirmwareVersionEventArgs e)
-        {
-            if (e.NewVersionAvailable)
-            {
-                MessageBox.Show("new version available");
             }
         }
     }

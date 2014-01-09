@@ -1,30 +1,32 @@
 ﻿using P3bble.Core.Helper;
 using SharpGIS;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace P3bble.Core.Bundle
 {
+    public enum BundleType
+    {
+        Application,
+        Firmware
+    }
+
     public class P3bbleBundle
     {
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
         public struct P3bbleApplicationMetadata
         {
-            public string AppVersion { get { return String.Format("{0}.{1}", AppMajorVersion, AppMinorVersion); } }
-            public string SDKVersion { get { return String.Format("{0}.{1}", SDKMajorVersion, SDKMinorVersion); } }
-            public string StructVersion { get { return String.Format("{0}.{1}", StructMajorVersion, StructMinorVersion); } }
+            public Version AppVersion { get { return new Version(string.Format("{0}.{1}", AppMajorVersion, AppMinorVersion)); } }
+            public Version SDKVersion { get { return new Version(string.Format("{0}.{1}", SDKMajorVersion, SDKMinorVersion)); } }
+            public Version StructVersion { get { return new Version(string.Format("{0}.{1}", StructMajorVersion, StructMinorVersion)); } }
 
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 8)]
-            public readonly String header;
+            public readonly string header;
             [MarshalAs(UnmanagedType.U1)]
             public readonly byte StructMajorVersion;
             [MarshalAs(UnmanagedType.U1)]
@@ -44,9 +46,9 @@ namespace P3bble.Core.Bundle
             [MarshalAs(UnmanagedType.U4)]
             public readonly uint CRC;
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-            public readonly String AppName;
+            public readonly string AppName;
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-            public readonly String CompanyName;
+            public readonly string CompanyName;
             [MarshalAs(UnmanagedType.U4)]
             public readonly uint IconResourceID;
             [MarshalAs(UnmanagedType.U4)]
@@ -58,22 +60,16 @@ namespace P3bble.Core.Bundle
             [MarshalAs(UnmanagedType.U4)]
             public readonly uint RelocationListItemCount;
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 16)]
-            public readonly String UUID;
+            public readonly string UUID;
 
             public override string ToString()
             {
-                String format = "{0}, version {1}.{2} by {3}";
-                return String.Format(format, AppName, AppMajorVersion, AppMinorVersion, CompanyName);
+                string format = "{0}, version {1}.{2} by {3}";
+                return string.Format(format, AppName, AppMajorVersion, AppMinorVersion, CompanyName);
             }
         }
 
-        public enum BundleTypes
-        {
-            Application,
-            Firmware
-        }
-
-        public BundleTypes BundleType { get; private set; }
+        public BundleType BundleType { get; private set; }
         public bool HasResources { get; private set; }
 
         public string Filename { get { return Path.GetFileName(FullPath); } }
@@ -89,7 +85,7 @@ namespace P3bble.Core.Bundle
         /// Create a new PebbleBundle from a .pwb file and parse its metadata.
         /// </summary>
         /// <param name="path">The relative or full path to the file.</param>
-        public P3bbleBundle(String path)
+        public P3bbleBundle(string path)
         {
             Stream jsonstream;
             Stream binstream;
@@ -121,19 +117,19 @@ namespace P3bble.Core.Bundle
 
             if (Manifest.Type == "firmware")
             {
-                BundleType = BundleTypes.Firmware;
+                this.BundleType = BundleType.Firmware;
             }
             else
             {
-                BundleType = BundleTypes.Application;
+                this.BundleType = BundleType.Application;
                 if (Bundle.FileNamesInZip.Contains(Manifest.Application.Filename))
                 {
                     binstream = Bundle.GetFileStream(Manifest.Application.Filename);
                 }
                 else
                 {
-                    String format = "App file {0} not found in archive";
-                    throw new ArgumentException(String.Format(format, Manifest.Application.Filename));
+                    string format = "App file {0} not found in archive";
+                    throw new ArgumentException(string.Format(format, Manifest.Application.Filename));
                 }
 
                 Application = binstream.AsStruct<P3bbleApplicationMetadata>();
@@ -190,16 +186,16 @@ namespace P3bble.Core.Bundle
 
         public override string ToString()
         {
-            if (BundleType == BundleTypes.Application)
+            if (BundleType == BundleType.Application)
             {
-                String format = "{0} containing watch app {1}";
-                return String.Format(format, Filename, Application);
+                string format = "{0} containing watch app {1}";
+                return string.Format(format, Filename, Application);
             }
             else
             {
                 // This is pretty ugly, but will do for now.
-                String format = "{0} containing fw version {1} for hw rev {2}";
-                return String.Format(format, Filename, Manifest.Resources.FriendlyVersion, Manifest.Firmware.HardwareRevision);
+                string format = "{0} containing fw version {1} for hw rev {2}";
+                return string.Format(format, Filename, Manifest.Resources.Version, Manifest.Firmware.HardwareRevision);
             }
         }
     }

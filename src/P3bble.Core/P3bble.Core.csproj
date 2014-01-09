@@ -87,9 +87,9 @@
     <Compile Include="Bundle\P3bbleBundle.cs" />
     <Compile Include="Communication\Protocol.cs" />
     <Compile Include="Constants\P3bbleHardwareRevision.cs" />
-    <Compile Include="EventArguments\CheckForNewFirmwareVersionEventArgs.cs" />
     <Compile Include="Exceptions\TimedOutException.cs" />
-    <Compile Include="Firmware\P3bbleFirmwareLatest.cs" />
+    <Compile Include="Firmware\P3bbbleVersion.cs" />
+    <Compile Include="Firmware\P3bbleFirmwareRelease.cs" />
     <Compile Include="Firmware\P3bbleFirmwareVersion.cs" />
     <Compile Include="Helper\ByteHelper.cs" />
     <Compile Include="Helper\Util.cs" />

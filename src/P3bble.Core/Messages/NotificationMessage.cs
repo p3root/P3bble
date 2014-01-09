@@ -20,7 +20,7 @@ namespace P3bble.Core.Messages
         private List<string> _parts;
         private ushort _length;
 
-        public NotificationMessage(NotificationType type, params String[] parts)
+        public NotificationMessage(NotificationType type, params string[] parts)
             : base(P3bbleEndpoint.Notification)
         {
             _type = type;
@@ -34,7 +34,7 @@ namespace P3bble.Core.Messages
             string[] parts = _parts.Take(2).Concat(ts).Concat(_parts.Skip(2)).ToArray();
             byte[] data = { (byte)_type };
 
-            foreach (String part in parts)
+            foreach (string part in parts)
             {
                 byte[] _part = Encoding.UTF8.GetBytes(part);
                 if (_part.Length > 255)

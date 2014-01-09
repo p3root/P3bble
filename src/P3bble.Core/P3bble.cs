@@ -14,7 +14,6 @@ using P3bble.Core.Firmware;
 using System.Runtime.Serialization.Json;
 using System.IO;
 using P3bble.Core.Helper;
-using P3bble.Core.EventArguments;
 using System.Threading;
 #endif
 
@@ -70,9 +69,21 @@ namespace P3bble.Core
         /// The peer information.
         /// </value>
         public PeerInformation PeerInformation { get; private set; }
-        
+
+        /// <summary>
+        /// Gets the firmware version.
+        /// </summary>
+        /// <value>
+        /// The firmware version.
+        /// </value>
         public P3bbleFirmwareVersion FirmwareVersion { get; private set; }
-        
+
+        /// <summary>
+        /// Gets the recovery firmware version.
+        /// </summary>
+        /// <value>
+        /// The recovery firmware version.
+        /// </value>
         public P3bbleFirmwareVersion RecoveryFirmwareVersion { get; private set; }
 
         /// <summary>
@@ -87,7 +98,7 @@ namespace P3bble.Core
         /// <summary>
         /// Connects this instance.
         /// </summary>
-        /// <returns>A boolean indicating if the connection was successful</returns>
+        /// <returns>A bool indicating if the connection was successful</returns>
         public async Task<bool> ConnectAsync()
         {
             // Check we're not already connected...
@@ -113,27 +124,28 @@ namespace P3bble.Core
             return this.IsConnected;
         }
 
+        /// <summary>
+        /// Pings the device.
+        /// </summary>
+        /// <returns>An async task to wait if required</returns>
         public Task PingAsync()
         {
             return _protocol.WriteMessage(new PingMessage());
         }
 
-        // Possibly useful for log message reading??
-        //public void BadPing()
-        //{
-        //    _protocol.WriteMessage(new PingMessage(new byte[7] { 1, 2, 3, 4, 5, 6, 7 }));
-        //}
-
+        /// <summary>
+        /// Resets the watch.
+        /// </summary>
+        /// <returns>An async task to wait if required</returns>
         public Task ResetAsync()
         {
             return _protocol.WriteMessage(new ResetMessage());
         }
 
-        public Task SetNowPlayingAsync(string artist, string album, string track)
-        {
-            return _protocol.WriteMessage(new SetMusicMessage(artist, album, track));
-        }
-
+        /// <summary>
+        /// Gets the time.
+        /// </summary>
+        /// <returns>An async task to wait that will return the current time</returns>
         public async Task<DateTime> GetTimeAsync()
         {
             TimeMessage result = await this.SendMessageAndAwaitResponseAsync<TimeMessage>(new TimeMessage());
@@ -147,39 +159,42 @@ namespace P3bble.Core
             }
         }
 
-        public event EventHandler<CheckForNewFirmwareVersionEventArgs> CheckForNewFirmwareCompleted;
-
-        public void CheckForNewFirmwareAsync(bool useNightlyBuild = false)
+        public Task<P3bbleFirmwareLatest> GetLatestFirmwareVersionAsync(bool useNightlyBuild = false)
         {
             string url = this.FirmwareVersion.GetFirmwareServerUrl(useNightlyBuild);
 
+            //WebClient wc = new WebClient();
+            //wc.DownloadstringAsync(new Uri(url));
+            //wc.DownloadstringCompleted += (sender, e) =>
+            //    {
+            //        byte[] byteArray = Encoding.UTF8.GetBytes(e.Result);
+            //        MemoryStream stream = new MemoryStream(byteArray);
+            //        var serializer = new DataContractJsonSerializer(typeof(P3bbleFirmwareLatest));
 
-            WebClient wc = new WebClient();
-            wc.DownloadStringAsync(new Uri(url));
-            wc.DownloadStringCompleted += (sender, e) =>
-                {
-                    byte[] byteArray = Encoding.UTF8.GetBytes(e.Result);
-                    MemoryStream stream = new MemoryStream(byteArray);
-                    var serializer = new DataContractJsonSerializer(typeof(P3bbleFirmwareLatest));
 
+            //        P3bbleFirmwareLatest info = serializer.ReadObject(stream) as P3bbleFirmwareLatest;
+            //        stream.Close();
 
-                    P3bbleFirmwareLatest info = serializer.ReadObject(stream) as P3bbleFirmwareLatest;
-                    stream.Close();
-                    CheckForNewFirmwareVersionEventArgs eventArgs = new CheckForNewFirmwareVersionEventArgs(false, null);
+            //        return info;
+            //    };
 
-                    if (FirmwareVersion.Version > info.Normal.FriendlyVersion.AsVersion())
-                    {
-                        eventArgs = new CheckForNewFirmwareVersionEventArgs(true, info);
-                    }
+            return null;
+        }
 
-                    if (CheckForNewFirmwareCompleted != null)
-                        CheckForNewFirmwareCompleted(this, eventArgs);
-                };
+        public Task SetNowPlayingAsync(string artist, string album, string track)
+        {
+            return _protocol.WriteMessage(new SetMusicMessage(artist, album, track));
         }
 
         //////////////////////////////////////////////////////////////////////////////////
         // Demo methods that aren't much use without lower level OS support...
         //////////////////////////////////////////////////////////////////////////////////
+
+        // Possibly useful for log message reading??
+        //public void BadPing()
+        //{
+        //    _protocol.WriteMessage(new PingMessage(new byte[7] { 1, 2, 3, 4, 5, 6, 7 }));
+        //}
 
         public Task SmsNotificationAsync(string sender, string message)
         {
