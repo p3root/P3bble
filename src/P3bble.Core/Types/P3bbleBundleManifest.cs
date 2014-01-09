@@ -1,4 +1,4 @@
-﻿using P3bble.Core.Firmware;
+﻿using P3bble.Core.Types;
 using P3bble.Core.Helper;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace P3bble.Core.Bundle
+namespace P3bble.Core.Types
 {
     [DataContract]
     internal class P3bbleBundleManifest
@@ -57,7 +57,7 @@ namespace P3bble.Core.Bundle
         }
 
         [DataContract]
-        public class P3bbleResourcesManifest : P3bbbleVersion
+        public class P3bbleResourcesManifest : P3bbleVersion
         {
             [DataMember(Name = "name", IsRequired = true)]
             public string Filename { get; private set; }

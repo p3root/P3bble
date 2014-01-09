@@ -2,10 +2,10 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace P3bble.Core.Firmware
+namespace P3bble.Core.Types
 {
     [DataContract]
-    public class P3bbleFirmwareRelease : P3bbbleVersion
+    public class P3bbleFirmwareRelease : P3bbleVersion
     {
         [DataMember(Name = "url", IsRequired = true)]
         public string Url { get; private set; }

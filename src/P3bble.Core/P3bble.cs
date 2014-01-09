@@ -10,7 +10,7 @@ using Windows.Networking.Proximity;
 
 #if WINDOWS_PHONE
 using P3bble.Core.Constants;
-using P3bble.Core.Firmware;
+using P3bble.Core.Types;
 using System.Runtime.Serialization.Json;
 using System.IO;
 using P3bble.Core.Helper;

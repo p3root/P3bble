@@ -1,5 +1,5 @@
 ﻿using Microsoft.Phone.Controls;
-using P3bble.Core.Bundle;
+using P3bble.Core.Types;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -143,9 +143,9 @@ namespace P3bble
         
         private void Button_Click_10(object sender, RoutedEventArgs e)
         {
-            fileName = P3bble.Core.Bundle.P3bbleBundle.DownloadFileAsync("https://pebblefw.s3.amazonaws.com/pebble/ev2_4/release/pbz/normal_ev2_4_v1.7.1.pbz");
+            fileName = P3bble.Core.Types.P3bbleBundle.DownloadFileAsync("https://pebblefw.s3.amazonaws.com/pebble/ev2_4/release/pbz/normal_ev2_4_v1.7.1.pbz");
            // fileName = P3bble.Core.Bundle.P3bbleBundle.DownloadFileAsync("http://pebble-static.s3.amazonaws.com/watchfaces/apps/simplicity.pbw");
-            P3bble.Core.Bundle.P3bbleBundle.OpenReadCompleted += P3bbleBundle_OpenReadCompleted;
+            P3bble.Core.Types.P3bbleBundle.OpenReadCompleted += P3bbleBundle_OpenReadCompleted;
          
         }
 

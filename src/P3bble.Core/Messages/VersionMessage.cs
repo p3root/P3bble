@@ -1,5 +1,5 @@
 ﻿using P3bble.Core.Constants;
-using P3bble.Core.Firmware;
+using P3bble.Core.Types;
 using P3bble.Core.Helper;
 using System;
 using System.Collections.Generic;

@@ -2,10 +2,10 @@
 using P3bble.Core.Helper;
 using System.Runtime.Serialization;
 
-namespace P3bble.Core.Firmware
+namespace P3bble.Core.Types
 {
     [DataContract]
-    public abstract class P3bbbleVersion : IComparable<P3bbbleVersion>
+    public abstract class P3bbleVersion : IComparable<P3bbleVersion>
     {
         [DataMember(Name = "timestamp", IsRequired = true)]
         internal int TimestampInternal { get; set; }
@@ -30,27 +30,27 @@ namespace P3bble.Core.Firmware
         /// <returns>
         /// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
         /// </returns>
-        public int CompareTo(P3bbbleVersion other)
+        public int CompareTo(P3bbleVersion other)
         {
             return this.Version.CompareTo(other.Version);
         }
 
-        public static bool operator >(P3bbbleVersion v1, P3bbbleVersion v2)
+        public static bool operator >(P3bbleVersion v1, P3bbleVersion v2)
         {
             return v1.Version > v2.Version;
         }
 
-        public static bool operator <(P3bbbleVersion v1, P3bbbleVersion v2)
+        public static bool operator <(P3bbleVersion v1, P3bbleVersion v2)
         {
             return v1.Version < v2.Version;
         }
 
-        public static bool operator ==(P3bbbleVersion v1, P3bbbleVersion v2)
+        public static bool operator ==(P3bbleVersion v1, P3bbleVersion v2)
         {
             return v1.Version == v2.Version;
         }
 
-        public static bool operator !=(P3bbbleVersion v1, P3bbbleVersion v2)
+        public static bool operator !=(P3bbleVersion v1, P3bbleVersion v2)
         {
             return v1.Version != v2.Version;
         }
@@ -64,7 +64,7 @@ namespace P3bble.Core.Firmware
         /// </returns>
         public override bool Equals(object obj)
         {
-            var ver = obj as P3bbbleVersion;
+            var ver = obj as P3bbleVersion;
             if (obj != null)
             {
                 return this.Version == ver.Version;

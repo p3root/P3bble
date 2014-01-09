@@ -8,7 +8,7 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Json;
 
-namespace P3bble.Core.Bundle
+namespace P3bble.Core.Types
 {
     public enum BundleType
     {

@@ -1,8 +1,8 @@
 ﻿using P3bble.Core.Constants;
 
-namespace P3bble.Core.Firmware
+namespace P3bble.Core.Types
 {
-    public class P3bbleFirmwareVersion : P3bbbleVersion
+    public class P3bbleFirmwareVersion : P3bbleVersion
     {
         private const string URL = "http://pebblefw.s3.amazonaws.com/pebble/{0}/{1}/latest.json";
 
