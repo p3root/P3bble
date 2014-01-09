@@ -16,6 +16,10 @@ namespace P3bble.Core.Types
         Firmware
     }
 
+    /// <summary>
+    /// Represents an app bundle
+    /// <remarks>STRUCT_DEFINITION in pebble.py</remarks>
+    /// </summary>
     public class P3bbleBundle
     {
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]

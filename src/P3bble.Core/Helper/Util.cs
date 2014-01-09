@@ -10,9 +10,16 @@ namespace P3bble.Core.Helper
 {
     internal static class Util
     {
+        private static DateTime Epoch = new DateTime(1970, 1, 1);
+        
         public static DateTime AsDateTime(this Int32 ts)
         {
-            return new DateTime(1970, 1, 1).AddSeconds(ts);
+            return Epoch.AddSeconds(ts);
+        }
+
+        public static int AsEpoch(this DateTime time)
+        {
+            return Convert.ToInt32((time - Epoch).TotalSeconds);
         }
 
         public static T AsStruct<T>(this Stream fs) where T : struct

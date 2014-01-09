@@ -2,9 +2,7 @@
 using P3bble.Core.Helper;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace P3bble.Core.Messages
 {
@@ -16,7 +14,7 @@ namespace P3bble.Core.Messages
     internal class TimeMessage : P3bbleMessage
     {
         private TimeMessageAction _action;
-        private DateTime _dateTime;
+        private ushort _length;
 
         public TimeMessage()
             : base(P3bbleEndpoint.Time)
@@ -24,19 +22,42 @@ namespace P3bble.Core.Messages
             _action = TimeMessageAction.GetTime;
 
         }
-        public TimeMessage(TimeMessageAction action, DateTime dt)
+
+        public TimeMessage(DateTime time)
             : base(P3bbleEndpoint.Time)
         {
-            _dateTime = dt;
-            _action = action;
+            _action = TimeMessageAction.SetTime;
+            Time = time;
         }
+
+        public DateTime Time { get; private set; }
 
         protected override void AddContentToMessage(List<byte> payload)
         {
-            base.AddContentToMessage(payload);
-
             if (_action == TimeMessageAction.GetTime)
+            {
+                base.AddContentToMessage(payload);
                 payload.Add(0x00);
+            }
+            else
+            {
+                Debug.WriteLine("Set Time to " + Time.ToString());
+
+                byte[] rawTime = BitConverter.GetBytes(Time.AsEpoch());
+                if (BitConverter.IsLittleEndian)
+                {
+                    Array.Reverse(rawTime);
+                }
+
+                _length = (ushort)(rawTime.Length + 1);
+
+                base.AddContentToMessage(payload);
+
+                // Magic number required for the time to be set!
+                payload.Add(2);
+
+                payload.AddRange(rawTime);
+            }
         }
 
         protected override void GetContentFromMessage(List<byte> payload)
@@ -56,11 +77,14 @@ namespace P3bble.Core.Messages
             get
             {
                 if (_action == TimeMessageAction.GetTime)
+                {
                     return 1;
-                return base.PayloadLength;
+                }
+                else
+                {
+                    return _length;
+                }
             }
         }
-
-        public DateTime Time { get; private set; }
     }
 }

@@ -155,8 +155,13 @@ namespace P3bble.Core
             }
             else
             {
-                throw new TimedOutException();
+                throw new TimeoutException();
             }
+        }
+
+        public Task SetTimeAsync(DateTime newTime)
+        {
+            return this._protocol.WriteMessage(new TimeMessage(newTime));
         }
 
         public Task<P3bbleFirmwareLatest> GetLatestFirmwareVersionAsync(bool useNightlyBuild = false)
@@ -290,6 +295,13 @@ namespace P3bble.Core
                     RecoveryFirmwareVersion = version.RecoveryFirmware;
                     break;
 
+                case P3bbleEndpoint.Logs:
+                    if (message as LogsMessage != null)
+                    {
+                        Debug.WriteLine(">> LOG: " + (message as LogsMessage).Message);
+                    }
+                    break;
+
                 default:
                     break;
             }
@@ -315,7 +327,7 @@ namespace P3bble.Core
         /// <returns>A message response</returns>
         /// <exception cref="System.InvalidOperationException">A message is being waited for already</exception>
         /// <remarks>Beware when debugging that setting a breakpoint in Protocol.Run or ProtocolMessageReceived will cause the ResetEvent to time out</remarks>
-        private Task<T> SendMessageAndAwaitResponseAsync<T>(P3bbleMessage message, int millisecondsTimeout = 5000)
+        private Task<T> SendMessageAndAwaitResponseAsync<T>(P3bbleMessage message, int millisecondsTimeout = 10000)
             where T : P3bbleMessage
         {
             if (this._pendingMessageSignal != null)
@@ -328,22 +340,36 @@ namespace P3bble.Core
                     int startTicks = Environment.TickCount;
                     this._pendingMessageSignal = new ManualResetEventSlim(false);
                     this._pendingMessage = message;
-                    
+
                     // Send the message...
                     await _protocol.WriteMessage(message);
-                    
+
                     // Wait for the response...
                     this._pendingMessageSignal.Wait(millisecondsTimeout);
 
-                    // Store any response or (null if timed out)...
-                    T pendingMessage = this._pendingMessage as T;
+                    T pendingMessage = null;
+
+                    if (this._pendingMessageSignal.IsSet)
+                    {
+                        // Store any response will benull if timed out...
+                        pendingMessage = this._pendingMessage as T;
+                    }
 
                     // Clear the pending variables...
                     this._pendingMessageSignal = null;
                     this._pendingMessage = null;
 
-                    Debug.WriteLine(pendingMessage.GetType().Name + " message received back in " + (Environment.TickCount - startTicks).ToString() + "ms");
-                    
+                    int timeTaken = (Environment.TickCount - startTicks);
+
+                    if (pendingMessage != null)
+                    {
+                        Debug.WriteLine(pendingMessage.GetType().Name + " message received back in " + timeTaken.ToString() + "ms");
+                    }
+                    else
+                    {
+                        Debug.WriteLine(message.GetType().Name + " message timed out in " + timeTaken.ToString() + "ms");
+                    }
+
                     return pendingMessage;
                 });
         }

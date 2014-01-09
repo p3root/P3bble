@@ -3,20 +3,16 @@ using P3bble.Core.Helper;
 using P3bble.Core.Messages;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Storage.Streams;
 
 namespace P3bble.Core
 {
     internal class P3bbleMessage
     {
-        private P3bbleEndpoint _endpoint;
+        public P3bbleEndpoint Endpoint { get; private set; }
 
         public P3bbleMessage(P3bbleEndpoint endpoint)
         {
-            _endpoint = endpoint;
+            this.Endpoint = endpoint;
         }
 
         public static P3bbleMessage CreateMessage(P3bbleEndpoint endpoint, List<byte> payload)
@@ -60,7 +56,7 @@ namespace P3bble.Core
         protected virtual void AddContentToMessage(List<byte> payload) 
         {
             byte[] lengthBytes = ByteHelper.ConvertToByteArray(PayloadLength);
-            byte[] endpointBytes = ByteHelper.ConvertToByteArray(Convert.ToUInt16(_endpoint));
+            byte[] endpointBytes = ByteHelper.ConvertToByteArray(Convert.ToUInt16(this.Endpoint));
 
             if (BitConverter.IsLittleEndian)
             {
@@ -74,17 +70,9 @@ namespace P3bble.Core
             payload.Insert(2, endpointBytes[0]);
             payload.Insert(3, endpointBytes[1]);
         }
-        protected virtual void GetContentFromMessage(List<byte> payload) 
-        {
-                
-        }
 
-        public P3bbleEndpoint Endpoint
+        protected virtual void GetContentFromMessage(List<byte> payload)
         {
-            get
-            {
-                return _endpoint;
-            }
         }
     }
 }

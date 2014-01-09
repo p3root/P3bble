@@ -28,7 +28,7 @@ namespace P3bble
                 _pebble = pebbles[0];
                 await _pebble.ConnectAsync();
 
-                if (_pebble.IsConnected)
+                if (_pebble != null && _pebble.IsConnected)
                 {
                     PebbleName.Text = "Connected to Pebble " + _pebble.DisplayName;
                     PebbleVersion.Text = "Version " + _pebble.FirmwareVersion.Version + " - " + _pebble.FirmwareVersion.Timestamp.ToShortDateString();
@@ -44,7 +44,7 @@ namespace P3bble
 
         private async void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            if (_pebble.IsConnected)
+            if (_pebble != null && _pebble.IsConnected)
                 await _pebble.PingAsync();
             else
             {
@@ -54,7 +54,7 @@ namespace P3bble
 
         //private void Button_Click_2(object sender, RoutedEventArgs e)
         //{
-        //    if (_pebble.IsConnected)
+        //    if (_pebble != null && _pebble.IsConnected)
         //        _pebble.BadPing();
         //    else
         //    {
@@ -64,7 +64,7 @@ namespace P3bble
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
-            if (_pebble.IsConnected)
+            if (_pebble != null && _pebble.IsConnected)
                 _pebble.SmsNotificationAsync("+436604908028", "wow, what a cool app :)");
             else
             {
@@ -74,7 +74,7 @@ namespace P3bble
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
-            if (_pebble.IsConnected)
+            if (_pebble != null && _pebble.IsConnected)
                 _pebble.EmailNotificationAsync("root@p3.co.at", "P3bble", "youre sooo cooool :)");
             else
             {
@@ -84,7 +84,7 @@ namespace P3bble
 
         private void Button_Click_5(object sender, RoutedEventArgs e)
         {
-            if (_pebble.IsConnected)
+            if (_pebble != null && _pebble.IsConnected)
                 _pebble.SetNowPlayingAsync("artist", "album", "track");
             else
             {
@@ -94,10 +94,22 @@ namespace P3bble
 
         private async void Button_Click_6(object sender, RoutedEventArgs e)
         {
-            if (_pebble.IsConnected)
+            if (_pebble != null && _pebble.IsConnected)
             {
                 DateTime time = await _pebble.GetTimeAsync();
-                MessageBox.Show("Time is " + time.ToString());
+                MessageBox.Show("Time is " + time.ToString() + " - " + Convert.ToInt32((DateTime.Now - time).TotalMinutes).ToString() + " minute(s) different from phone");
+            }
+            else
+            {
+                MessageBox.Show("Pebble not connected");
+            }
+        }
+
+        private async void Button_Click_7(object sender, RoutedEventArgs e)
+        {
+            if (_pebble != null && _pebble.IsConnected)
+            {
+                await _pebble.SetTimeAsync(DateTime.Now);
             }
             else
             {
@@ -107,7 +119,7 @@ namespace P3bble
 
         private void Button_Click_8(object sender, RoutedEventArgs e)
         {
-            if (_pebble.IsConnected)
+            if (_pebble != null && _pebble.IsConnected)
                 _pebble.FacebookNotificationAsync("test", "testmessage");
             else
             {
@@ -117,7 +129,7 @@ namespace P3bble
 
         private void Button_Click_9(object sender, RoutedEventArgs e)
         {
-            if (_pebble.IsConnected)
+            if (_pebble != null && _pebble.IsConnected)
             {
                 byte[] cookie = new byte[] { 0x00, 0xEB, 0x00, 0x00 };
                 _pebble.PhoneCallAsync("P3root", "555 555 555", cookie);
@@ -156,7 +168,7 @@ namespace P3bble
 
         private async void Button_Click_11(object sender, RoutedEventArgs e)
         {
-            if (_pebble.IsConnected)
+            if (_pebble != null && _pebble.IsConnected)
             {
                 if (_pebble.FirmwareVersion != null)
                 {

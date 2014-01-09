@@ -70,7 +70,7 @@ namespace P3bble.Core.Communication
                 _mutex.WaitOne();
 
                 byte[] package = message.ToBuffer();
-                Debug.WriteLine("<< SEND MESSAGE FOR ENDPOINT " + ((int)message.Endpoint).ToString());
+                Debug.WriteLine("<< SEND MESSAGE FOR ENDPOINT " + ((P3bbleEndpoint)message.Endpoint).ToString() + " (" + ((int)message.Endpoint).ToString () + ")");
                 Debug.WriteLine("<< PAYLOAD: " + BitConverter.ToString(package));
 
                 _writer.WriteBytes(package);
@@ -100,7 +100,7 @@ namespace P3bble.Core.Communication
 
                                 GetLengthAndEndpoint(buffer, out payloadLength, out endpoint);
 #if DEBUG
-                                Debug.WriteLine(">> RECEIVED MESSAGE FOR ENDPOINT: " + endpoint + " - " + payloadLength.ToString() + " bytes");
+                                Debug.WriteLine(">> RECEIVED MESSAGE FOR ENDPOINT: " + ((P3bbleEndpoint)endpoint).ToString() + " (" + endpoint.ToString () + ") - " + payloadLength.ToString() + " bytes");
 #endif
                                 await _reader.LoadAsync(payloadLength);
                                 IBuffer buf = _reader.ReadBuffer(payloadLength);
