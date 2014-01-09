@@ -48,7 +48,7 @@ namespace P3bble.Core.Messages
             }
 
             int timestamp = BitConverter.ToInt32(payloadArray, 1);
-            Time = Util.TimestampToDateTime(timestamp);
+            Time = timestamp.AsDateTime();
         }
 
         protected override ushort PayloadLength

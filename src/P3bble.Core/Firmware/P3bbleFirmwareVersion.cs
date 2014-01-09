@@ -1,4 +1,5 @@
 ﻿using P3bble.Core.Constants;
+using P3bble.Core.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace P3bble.Core.Firmware
         private const string URL = "http://pebblefw.s3.amazonaws.com/pebble/{0}/{1}/latest.json";
 
         public DateTime Timestamp { get; private set; }
-        public String Version { get; private set; }
+        public Version Version { get; private set; }
         public String Commit { get; private set; }
         public Boolean IsRecovery { get; private set; }
         public byte HardwarePlatform { get; private set; }
@@ -23,7 +24,7 @@ namespace P3bble.Core.Firmware
             bool isrecovery, byte hardwareplatform, byte metadataversion)
         {
             Timestamp = timestamp;
-            Version = version;
+            Version = version.AsVersion();
             Commit = commit;
             IsRecovery = isrecovery;
             HardwarePlatform = hardwareplatform;

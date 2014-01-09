@@ -8,22 +8,22 @@ using System.Threading.Tasks;
 
 namespace P3bble.Core.Helper
 {
-    internal class Util
+    internal static class Util
     {
-        public static DateTime TimestampToDateTime(Int32 ts)
+        public static DateTime AsDateTime(this Int32 ts)
         {
             return new DateTime(1970, 1, 1).AddSeconds(ts);
         }
 
-        public static T ReadStruct<T>(Stream fs) where T : struct
+        public static T AsStruct<T>(this Stream fs) where T : struct
         {
             // Borrowed from http://stackoverflow.com/a/1936208 because BitConverter-ing all of this would be a pain
             byte[] buffer = new byte[Marshal.SizeOf(typeof(T))];
             fs.Read(buffer, 0, buffer.Length);
-            return ReadStruct<T>(buffer);
+            return AsStruct<T>(buffer);
         }
 
-        public static T ReadStruct<T>(byte[] bytes) where T : struct
+        public static T AsStruct<T>(this byte[] bytes) where T : struct
         {
             if (bytes.Count() != Marshal.SizeOf(typeof(T)))
             {
@@ -42,65 +42,9 @@ namespace P3bble.Core.Helper
             return ret;
         }
 
-        private class Version
+        public static Version AsVersion(this string version)
         {
-            private int _first;
-            private int _second;
-            private int _last;
-
-            public static Version ParseFromString(string version)
-            {
-                version = version.Remove(0, 1);
-
-                string[] split = version.Split('.');
-
-                if (split.Length == 3)
-                {
-                    Version vesr = new Version();
-                    vesr._first = Convert.ToInt32(split[0]);
-                    vesr._second = Convert.ToInt32(split[1]);
-                    vesr._last = Convert.ToInt32(split[2]);
-                    return vesr;
-                }
-
-                return null;
-            }
-
-            public static bool operator >(Version v1, Version v2)
-            {
-                if (v1._first > v2._first)
-                    return true;
-                if (v1._second > v2._second)
-                    return true;
-                if (v1._last > v2._last)
-                    return true;
-
-                return false;
-            }
-
-            public static bool operator <(Version v1, Version v2)
-            {
-                if (v1._first < v2._first)
-                    return true;
-                if (v1._second < v2._second)
-                    return true;
-                if (v1._last < v2._last)
-                    return true;
-
-                return false;
-            }
-        }
-
-        public static bool IsNewerVersionAvailable(string currentVersion, string serverVersion)
-        {
-            Version current = Version.ParseFromString(currentVersion);
-            Version server = Version.ParseFromString(serverVersion);
-
-            if (server > current)
-                return true;
-
-
-            return false;
+            return new Version(version.Remove(0, 1));
         }
     }
 }

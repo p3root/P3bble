@@ -37,14 +37,14 @@ namespace P3bble.Core.Messages
             if (BitConverter.IsLittleEndian)
             {
                 Array.Reverse(metadata);
-                Timestamp = Util.TimestampToDateTime(BitConverter.ToInt32(metadata, 4));
+                Timestamp = BitConverter.ToInt32(metadata, 4).AsDateTime();
                 Level = metadata[3];
                 msgsize = metadata[2];
                 LineNo = BitConverter.ToInt16(metadata, 0);
             }
             else
             {
-                Timestamp = Util.TimestampToDateTime(BitConverter.ToInt32(metadata, 0));
+                Timestamp = BitConverter.ToInt32(metadata, 0).AsDateTime();
                 Level = metadata[4];
                 msgsize = metadata[5];
                 LineNo = BitConverter.ToInt16(metadata, 6);

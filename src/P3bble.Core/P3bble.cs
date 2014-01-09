@@ -118,6 +118,7 @@ namespace P3bble.Core
             return _protocol.WriteMessage(new PingMessage());
         }
 
+        // Possibly useful for log message reading??
         //public void BadPing()
         //{
         //    _protocol.WriteMessage(new PingMessage(new byte[7] { 1, 2, 3, 4, 5, 6, 7 }));
@@ -126,21 +127,6 @@ namespace P3bble.Core
         public Task ResetAsync()
         {
             return _protocol.WriteMessage(new ResetMessage());
-        }
-
-        public Task SmsNotificationAsync(string sender, string message)
-        {
-            return _protocol.WriteMessage(new NotificationMessage(NotificationType.SMS, sender, message));
-        }
-
-        public Task FacebookNotificationAsync(string sender, string message)
-        {
-            return _protocol.WriteMessage(new NotificationMessage(NotificationType.Facebook, sender, message));
-        }
-
-        public Task EmailNotificationAsync(string sender, string subject, string body)
-        {
-            return _protocol.WriteMessage(new NotificationMessage(NotificationType.EMAIL, sender, body, subject));
         }
 
         public Task SetNowPlayingAsync(string artist, string album, string track)
@@ -161,28 +147,12 @@ namespace P3bble.Core
             }
         }
 
-        public Task PhoneCallAsync(string name, string number, byte[] cookie)
-        {
-            return _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.INCOMING_CALL, cookie, number, name));
-        }
-        public Task RingAsync(byte[] cookie)
-        {
-            return _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.RING, cookie));
-        }
-        public Task StartCallAsync(byte[] cookie)
-        {
-            return _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.START, cookie));
-        }
-        public Task EndCallAsync(byte[] cookie)
-        {
-            return _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.END, cookie));
-        }
-
         public event EventHandler<CheckForNewFirmwareVersionEventArgs> CheckForNewFirmwareCompleted;
 
-        public void CheckForNewFirmwareAsync(P3bbleFirmwareVersion version, bool useNightlyBuild = false)
+        public void CheckForNewFirmwareAsync(bool useNightlyBuild = false)
         {
-            string url = version.GetFirmwareServerUrl(useNightlyBuild);
+            string url = this.FirmwareVersion.GetFirmwareServerUrl(useNightlyBuild);
+
 
             WebClient wc = new WebClient();
             wc.DownloadStringAsync(new Uri(url));
@@ -196,7 +166,8 @@ namespace P3bble.Core
                     P3bbleFirmwareLatest info = serializer.ReadObject(stream) as P3bbleFirmwareLatest;
                     stream.Close();
                     CheckForNewFirmwareVersionEventArgs eventArgs = new CheckForNewFirmwareVersionEventArgs(false, null);
-                    if (Util.IsNewerVersionAvailable(FirmwareVersion.Version, info.Normal.FriendlyVersion))
+
+                    if (FirmwareVersion.Version > info.Normal.FriendlyVersion.AsVersion())
                     {
                         eventArgs = new CheckForNewFirmwareVersionEventArgs(true, info);
                     }
@@ -204,7 +175,45 @@ namespace P3bble.Core
                     if (CheckForNewFirmwareCompleted != null)
                         CheckForNewFirmwareCompleted(this, eventArgs);
                 };
+        }
 
+        //////////////////////////////////////////////////////////////////////////////////
+        // Demo methods that aren't much use without lower level OS support...
+        //////////////////////////////////////////////////////////////////////////////////
+
+        public Task SmsNotificationAsync(string sender, string message)
+        {
+            return _protocol.WriteMessage(new NotificationMessage(NotificationType.SMS, sender, message));
+        }
+
+        public Task FacebookNotificationAsync(string sender, string message)
+        {
+            return _protocol.WriteMessage(new NotificationMessage(NotificationType.Facebook, sender, message));
+        }
+
+        public Task EmailNotificationAsync(string sender, string subject, string body)
+        {
+            return _protocol.WriteMessage(new NotificationMessage(NotificationType.EMAIL, sender, body, subject));
+        }
+
+        public Task PhoneCallAsync(string name, string number, byte[] cookie)
+        {
+            return _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.INCOMING_CALL, cookie, number, name));
+        }
+
+        public Task RingAsync(byte[] cookie)
+        {
+            return _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.RING, cookie));
+        }
+
+        public Task StartCallAsync(byte[] cookie)
+        {
+            return _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.START, cookie));
+        }
+
+        public Task EndCallAsync(byte[] cookie)
+        {
+            return _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.END, cookie));
         }
 
         //////////////////////////////////////////////////////////////////////////////////

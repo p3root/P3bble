@@ -136,7 +136,7 @@ namespace P3bble.Core.Bundle
                     throw new ArgumentException(String.Format(format, Manifest.Application.Filename));
                 }
 
-                Application = Util.ReadStruct<P3bbleApplicationMetadata>(binstream);
+                Application = binstream.AsStruct<P3bbleApplicationMetadata>();
                 binstream.Close();
             }
         }

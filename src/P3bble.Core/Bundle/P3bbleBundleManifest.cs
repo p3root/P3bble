@@ -22,7 +22,7 @@ namespace P3bble.Core.Bundle
 
             [DataMember(Name = "timestamp", IsRequired = true)]
             public int Timestamp { get; private set; }
-            public DateTime TimestampDT { get { return Util.TimestampToDateTime(Timestamp); } }
+            public DateTime TimestampDT { get { return Timestamp.AsDateTime(); } }
 
            [DataMember(Name = "crc", IsRequired = true)]
             public uint CRC { get; private set; }
@@ -39,7 +39,7 @@ namespace P3bble.Core.Bundle
 
             [DataMember(Name = "timestamp", IsRequired = true)]
             public int Timestamp { get; private set; }
-            public DateTime TimestampDT { get { return Util.TimestampToDateTime(Timestamp); } }
+            public DateTime TimestampDT { get { return Timestamp.AsDateTime(); } }
 
             [DataMember(Name = "crc", IsRequired = true)]
             public uint CRC { get; private set; }
@@ -63,7 +63,7 @@ namespace P3bble.Core.Bundle
 
             [DataMember(Name = "timestamp", IsRequired = true)]
             public int Timestamp { get; private set; }
-            public DateTime TimestampDT { get { return Util.TimestampToDateTime(Timestamp); } }
+            public DateTime TimestampDT { get { return Timestamp.AsDateTime(); } }
 
             [DataMember(Name = "crc", IsRequired = true)]
             public uint CRC { get; private set; }
@@ -81,7 +81,7 @@ namespace P3bble.Core.Bundle
         [DataMember(Name = "generatedAt", IsRequired = true)]
         public int GeneratedAt { get; private set; }
 
-        public DateTime GeneratedAtDT { get { return Util.TimestampToDateTime(GeneratedAt); } }
+        public DateTime GeneratedAtDT { get { return GeneratedAt.AsDateTime(); } }
 
         [DataMember(Name = "generatedBy", IsRequired = true)]
         public String GeneratedBy { get; private set; }

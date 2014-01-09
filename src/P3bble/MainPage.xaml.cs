@@ -161,7 +161,7 @@ namespace P3bble
                 if (_pebble.FirmwareVersion != null)
                 {
                     _pebble.CheckForNewFirmwareCompleted += CheckForNewFirmwareCompleted;
-                    _pebble.CheckForNewFirmwareAsync(_pebble.FirmwareVersion);
+                    _pebble.CheckForNewFirmwareAsync();
                 }
                 else
                     MessageBox.Show("does not receive version info from p3bble");

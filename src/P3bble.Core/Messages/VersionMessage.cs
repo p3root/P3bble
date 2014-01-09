@@ -38,7 +38,7 @@ namespace P3bble.Core.Messages
             {
                 Array.Reverse(_ts);
             }
-            DateTime timestamp = Util.TimestampToDateTime(BitConverter.ToInt32(_ts, 0));
+            DateTime timestamp = BitConverter.ToInt32(_ts, 0).AsDateTime();
             String version = Encoding.UTF8.GetString(data.Skip(4).Take(32).ToArray(), 0, 32);
             String commit = Encoding.UTF8.GetString(data.Skip(36).Take(8).ToArray(), 0, 8);
             version = version.Substring(0, version.IndexOf('\0'));
