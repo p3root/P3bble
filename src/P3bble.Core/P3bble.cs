@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Networking.Proximity;
@@ -164,26 +165,24 @@ namespace P3bble.Core
             return this._protocol.WriteMessage(new TimeMessage(newTime));
         }
 
-        public Task<P3bbleFirmwareLatest> GetLatestFirmwareVersionAsync(bool useNightlyBuild = false)
+        public async Task<P3bbleFirmwareLatest> GetLatestFirmwareVersionAsync()
         {
-            string url = this.FirmwareVersion.GetFirmwareServerUrl(useNightlyBuild);
+            string url = this.FirmwareVersion.GetFirmwareServerUrl(false);
 
-            //WebClient wc = new WebClient();
-            //wc.DownloadstringAsync(new Uri(url));
-            //wc.DownloadstringCompleted += (sender, e) =>
-            //    {
-            //        byte[] byteArray = Encoding.UTF8.GetBytes(e.Result);
-            //        MemoryStream stream = new MemoryStream(byteArray);
-            //        var serializer = new DataContractJsonSerializer(typeof(P3bbleFirmwareLatest));
-
-
-            //        P3bbleFirmwareLatest info = serializer.ReadObject(stream) as P3bbleFirmwareLatest;
-            //        stream.Close();
-
-            //        return info;
-            //    };
-
-            return null;
+            HttpClient client = new HttpClient();
+            var response = await client.GetAsync(url);
+            if (response.IsSuccessStatusCode)
+            {
+                var stream = await response.Content.ReadAsStreamAsync();
+                var serializer = new DataContractJsonSerializer(typeof(P3bbleFirmwareLatest));
+                P3bbleFirmwareLatest info = serializer.ReadObject(stream) as P3bbleFirmwareLatest;
+                stream.Close();
+                return info;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public Task SetNowPlayingAsync(string artist, string album, string track)

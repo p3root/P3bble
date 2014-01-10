@@ -5,8 +5,10 @@ using System.IO;
 using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Json;
+using System.Threading.Tasks;
 
 namespace P3bble.Core.Types
 {
@@ -79,12 +81,12 @@ namespace P3bble.Core.Types
         public string Filename { get { return Path.GetFileName(FullPath); } }
         public string FullPath { get; private set; }
         public P3bbleApplicationMetadata Application { get; private set; }
-
+        private P3bbleBundleManifest Manifest;
+        
         private string _privateName;
 
         private UnZipper Bundle;
-        private P3bbleBundleManifest Manifest;
-
+        
         /// <summary>
         /// Create a new PebbleBundle from a .pwb file and parse its metadata.
         /// </summary>
@@ -148,31 +150,32 @@ namespace P3bble.Core.Types
                 file.DeleteFile(bundle._privateName);
         }
 
-        public static event OpenReadCompletedEventHandler OpenReadCompleted;
-
-        public static string DownloadFileAsync(string url)
+        public async static Task<string> DownloadFileAsync(string url)
         {
-            WebClient webClient = new WebClient();
-            Guid fileGuid = Guid.NewGuid();
-            webClient.OpenReadAsync(new Uri(url));
-            webClient.OpenReadCompleted += (sender, e) =>
+            HttpClient client = new HttpClient();
+            var response = await client.GetAsync(url);
+            if (response.IsSuccessStatusCode)
+            {
+                var downloadStream = await response.Content.ReadAsStreamAsync();
+
+                Guid fileGuid = Guid.NewGuid();
+                IsolatedStorageFile file = IsolatedStorageFile.GetUserStoreForApplication();
+
+                using (IsolatedStorageFileStream stream = new IsolatedStorageFileStream(fileGuid.ToString(), FileMode.CreateNew, file))
                 {
-                    IsolatedStorageFile file = IsolatedStorageFile.GetUserStoreForApplication();
-
-                    using (IsolatedStorageFileStream stream = new IsolatedStorageFileStream(fileGuid.ToString(), FileMode.CreateNew, file))
+                    byte[] buffer = new byte[1024];
+                    while (downloadStream.Read(buffer, 0, buffer.Length) > 0)
                     {
-                        byte[] buffer = new byte[1024];
-                        while (e.Result.Read(buffer, 0, buffer.Length) > 0)
-                        {
-                            stream.Write(buffer, 0, buffer.Length);
-                        }
+                        stream.Write(buffer, 0, buffer.Length);
                     }
+                }
 
-                    if (OpenReadCompleted != null)
-                        OpenReadCompleted(sender, e);
-                };
-
-            return fileGuid.ToString();
+                return fileGuid.ToString();
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private static bool IsSpaceIsAvailable(long spaceReq)

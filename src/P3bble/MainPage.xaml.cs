@@ -151,19 +151,17 @@ namespace P3bble
             }
         }
 
-        string fileName = "";
-        
-        private void Button_Click_10(object sender, RoutedEventArgs e)
+        private async void Button_Click_10(object sender, RoutedEventArgs e)
         {
-            fileName = P3bble.Core.Types.P3bbleBundle.DownloadFileAsync("https://pebblefw.s3.amazonaws.com/pebble/ev2_4/release/pbz/normal_ev2_4_v1.7.1.pbz");
+            string fileName = await P3bbleBundle.DownloadFileAsync("https://pebblefw.s3.amazonaws.com/pebble/ev2_4/release/pbz/normal_ev2_4_v1.7.1.pbz");
            // fileName = P3bble.Core.Bundle.P3bbleBundle.DownloadFileAsync("http://pebble-static.s3.amazonaws.com/watchfaces/apps/simplicity.pbw");
-            P3bble.Core.Types.P3bbleBundle.OpenReadCompleted += P3bbleBundle_OpenReadCompleted;
-         
-        }
+            if (fileName != null)
+            {
+                P3bbleBundle bundle = new P3bbleBundle(fileName);
 
-        private void P3bbleBundle_OpenReadCompleted(object sender, OpenReadCompletedEventArgs e)
-        {
-            P3bbleBundle bundle = new P3bbleBundle(fileName);
+                MessageBox.Show("bundle is " + bundle.BundleType.ToString() + " - "); 
+                    //bundle.BundleType == BundleType.Application ? bundle.Manifest);
+            }
         }
 
         private async void Button_Click_11(object sender, RoutedEventArgs e)
@@ -175,7 +173,7 @@ namespace P3bble
                     var latest = await _pebble.GetLatestFirmwareVersionAsync();
                     if (latest.FirmwareVersion > _pebble.FirmwareVersion)
                     {
-                        MessageBox.Show("new version available");
+                        MessageBox.Show("new version available (" + latest.FirmwareVersion.Version.ToString() + " available, you have " + _pebble.FirmwareVersion.Version.ToString() + ")");
                     }
                 }
                 else

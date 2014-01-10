@@ -11,6 +11,7 @@ namespace P3bble.Core.Messages
         GetTime,
         SetTime
     }
+
     internal class TimeMessage : P3bbleMessage
     {
         private TimeMessageAction _action;

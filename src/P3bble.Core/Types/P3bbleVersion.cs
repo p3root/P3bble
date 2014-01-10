@@ -37,22 +37,22 @@ namespace P3bble.Core.Types
 
         public static bool operator >(P3bbleVersion v1, P3bbleVersion v2)
         {
-            return v1.Version > v2.Version;
+            return v1 != null && v2 != null && v1.Version > v2.Version;
         }
 
         public static bool operator <(P3bbleVersion v1, P3bbleVersion v2)
         {
-            return v1.Version < v2.Version;
+            return v1 != null && v2 != null && v1.Version < v2.Version;
         }
 
         public static bool operator ==(P3bbleVersion v1, P3bbleVersion v2)
         {
-            return v1.Version == v2.Version;
+            return v1.Equals(v2);
         }
 
         public static bool operator !=(P3bbleVersion v1, P3bbleVersion v2)
         {
-            return v1.Version != v2.Version;
+            return !v1.Equals(v2);
         }
 
         /// <summary>
