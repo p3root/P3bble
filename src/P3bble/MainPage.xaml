@@ -36,6 +36,7 @@
                     <Button Click="Button_Click_7" Content="SetTime"/>
 
                     <Button Click="Button_Click_12" Content="ListApps"/>
+                    <Button Click="Button_Click_13" Content="RemoveApp"/>
 
                     <Button Click="Button_Click_11" Content="CheckForFirmwareUpdate"/>
                     <Button Click="Button_Click_10" Content="DownloadWatchAppFile"/>

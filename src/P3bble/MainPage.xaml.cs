@@ -210,5 +210,28 @@ namespace P3bble
                 MessageBox.Show("Pebble not connected");
             }
         }
+
+        private async void Button_Click_13(object sender, RoutedEventArgs e)
+        {
+            if (_pebble != null && _pebble.IsConnected)
+            {
+                var apps = await _pebble.GetInstalledAppsAsync();
+                if (apps != null && apps.ApplicationsInstalled.Count > 0)
+                {
+                    if (MessageBox.Show("This example will remove the first app found: " + apps.ApplicationsInstalled[0].Name + " - are you sure you want to continue?", "DANGER!", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                    {
+                        await _pebble.RemoveAppAsync(apps.ApplicationsInstalled[0]); 
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("No apps installed");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Pebble not connected");
+            }
+        }
     }
 }

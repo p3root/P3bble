@@ -54,6 +54,15 @@ namespace P3bble.Core
         Task<P3bbleInstalledApplications> GetInstalledAppsAsync();
 
         /// <summary>
+        /// Remove an installed application from the specified app-bank.
+        /// </summary>
+        /// <param name="app">The application.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        Task RemoveAppAsync(P3bbleInstalledApplication app);
+
+        /// <summary>
         /// Sets the now playing track.
         /// </summary>
         /// <param name="artist">The artist.</param>

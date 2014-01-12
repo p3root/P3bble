@@ -210,6 +210,18 @@ namespace P3bble.Core
             }
         }
 
+        /// <summary>
+        /// Remove an installed application from the specified app-bank.
+        /// </summary>
+        /// <param name="app">The application.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        public Task RemoveAppAsync(P3bbleInstalledApplication app)
+        {
+            return this._protocol.WriteMessage(new AppMessage(AppMessageAction.RemoveApp, app.Id, app.Index));
+        }
+
         public Task SetNowPlayingAsync(string artist, string album, string track)
         {
             return this._protocol.WriteMessage(new SetMusicMessage(artist, album, track));
