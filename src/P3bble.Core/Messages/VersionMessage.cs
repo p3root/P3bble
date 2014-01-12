@@ -1,11 +1,9 @@
-﻿using P3bble.Core.Constants;
-using P3bble.Core.Types;
-using P3bble.Core.Helper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using P3bble.Core.Constants;
+using P3bble.Core.Types;
 
 namespace P3bble.Core.Messages
 {
@@ -14,7 +12,18 @@ namespace P3bble.Core.Messages
         public VersionMessage()
             : base(P3bbleEndpoint.Version)
         {
+        }
 
+        public P3bbleFirmwareVersion Firmware { get; private set; }
+
+        public P3bbleFirmwareVersion RecoveryFirmware { get; private set; }
+
+        protected override ushort PayloadLength
+        {
+            get
+            {
+                return 1;
+            }
         }
 
         protected override void AddContentToMessage(List<byte> payload)
@@ -48,17 +57,6 @@ namespace P3bble.Core.Messages
             byte hardware_platform = data[45];
             byte metadata_ver = data[46];
             return new P3bbleFirmwareVersion(timestamp, version, commit, is_recovery, hardware_platform, metadata_ver);
-        }
-
-        public P3bbleFirmwareVersion Firmware { get; private set; }
-        public P3bbleFirmwareVersion RecoveryFirmware { get; private set; }
-
-        protected override ushort PayloadLength
-        {
-            get
-            {
-                return 1;
-            }
         }
     }
 }

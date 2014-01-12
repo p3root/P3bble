@@ -20,25 +20,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- LOCALIZATION NOTE:
-            To localize the displayed strings copy their values to appropriately named
-            keys in the app's neutral language resource file (AppResources.resx) then
-            replace the hard-coded text value between the attributes' quotation marks
-            with the binding clause whose path points to that string name.
-
-            For example:
-
-                Text="{Binding Path=LocalizedResources.ApplicationTitle, Source={StaticResource LocalizedStrings}}"
-
-            This binding points to the template's string resource named "ApplicationTitle".
-
-            Adding supported languages in the Project Properties tab will create a
-            new resx file per language that can carry the translated values of your
-            UI strings. The binding in these examples will cause the value of the
-            attributes to be drawn from the .resx file that matches the
-            CurrentUICulture of the app at run time.
-         -->
-
         <!--TitlePanel contains the name of the application and page title-->
         <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
             <TextBlock Text="{Binding Path=LocalizedResources.ApplicationTitle, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,0"/>
@@ -53,6 +34,12 @@
 
                     <Button Click="Button_Click_6" Content="GetTime"/>
                     <Button Click="Button_Click_7" Content="SetTime"/>
+
+                    <Button Click="Button_Click_12" Content="ListApps"/>
+
+                    <Button Click="Button_Click_11" Content="CheckForFirmwareUpdate"/>
+                    <Button Click="Button_Click_10" Content="DownloadWatchAppFile"/>
+
                     <Button Click="Button_Click_1" Content="Ping"/>
                     <!--<Button Click="Button_Click_2" Content="BadPing"/>-->
                     <Button Click="Button_Click_3" Content="SendSMS"/>
@@ -60,9 +47,6 @@
                     <Button Click="Button_Click_5" Content="SendNowPlaying"/>
                     <Button Click="Button_Click_8" Content="SendFacebookNot"/>
                     <Button Click="Button_Click_9" Content="SimulatePhoneCall"/>
-
-                    <Button Click="Button_Click_10" Content="DownloadWatchAppFile"/>
-                    <Button Click="Button_Click_11" Content="CheckForFirmwareUpdate"/>
 
                 </StackPanel>
             </ScrollViewer>

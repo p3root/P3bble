@@ -3,6 +3,7 @@ using P3bble.Core.Types;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Windows;
 
@@ -178,6 +179,31 @@ namespace P3bble
                 }
                 else
                     MessageBox.Show("does not receive version info from p3bble");
+            }
+            else
+            {
+                MessageBox.Show("Pebble not connected");
+            }
+        }
+
+        private async void Button_Click_12(object sender, RoutedEventArgs e)
+        {
+            if (_pebble != null && _pebble.IsConnected)
+            {
+                var apps = await _pebble.GetInstalledAppsAsync();
+                if(apps != null)
+                {
+                    StringBuilder msg = new StringBuilder();
+                    msg.AppendLine(apps.ApplicationBanks.ToString() + " app banks available");
+                    msg.AppendLine(apps.ApplicationsInstalled.Count.ToString() + " apps installed");
+
+                    foreach (var app in apps.ApplicationsInstalled)
+                    {
+                        msg.AppendLine(app.Name + " by " + app.Company);
+                    }
+
+                    MessageBox.Show(msg.ToString());
+                }
             }
             else
             {

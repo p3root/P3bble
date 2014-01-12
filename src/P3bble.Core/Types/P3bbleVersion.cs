@@ -1,19 +1,19 @@
 ﻿using System;
-using P3bble.Core.Helper;
 using System.Runtime.Serialization;
+using P3bble.Core.Helper;
 
 namespace P3bble.Core.Types
 {
     [DataContract]
     public abstract class P3bbleVersion : IComparable<P3bbleVersion>
     {
-        [DataMember(Name = "timestamp", IsRequired = true)]
-        internal int TimestampInternal { get; set; }
-
-        public DateTime Timestamp { get { return TimestampInternal.AsDateTime(); } }
-
-        [DataMember(Name = "friendlyVersion", IsRequired = true)]
-        internal string VersionInternal { get; set; }
+        public DateTime Timestamp
+        {
+            get
+            {
+                return this.TimestampInternal.AsDateTime();
+            }
+        }
 
         public Version Version
         {
@@ -23,17 +23,11 @@ namespace P3bble.Core.Types
             }
         }
 
-        /// <summary>
-        /// Compares the current object with another object of the same type.
-        /// </summary>
-        /// <param name="other">An object to compare with this object.</param>
-        /// <returns>
-        /// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
-        /// </returns>
-        public int CompareTo(P3bbleVersion other)
-        {
-            return this.Version.CompareTo(other.Version);
-        }
+        [DataMember(Name = "timestamp", IsRequired = true)]
+        internal int TimestampInternal { get; set; }
+
+        [DataMember(Name = "friendlyVersion", IsRequired = true)]
+        internal string VersionInternal { get; set; }
 
         public static bool operator >(P3bbleVersion v1, P3bbleVersion v2)
         {
@@ -56,7 +50,19 @@ namespace P3bble.Core.Types
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="System.Object" }, is equal to this instance.
+        /// Compares the current object with another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
+        /// </returns>
+        public int CompareTo(P3bbleVersion other)
+        {
+            return this.Version.CompareTo(other.Version);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
         /// </summary>
         /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
         /// <returns>

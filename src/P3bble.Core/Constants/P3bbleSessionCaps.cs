@@ -6,8 +6,14 @@ using System.Threading.Tasks;
 
 namespace P3bble.Core.Constants
 {
+    /// <summary>
+    /// Session capabilities
+    /// </summary>
     public enum P3bbleSessionCaps : uint
     {
-        GAMMA_RAY = 0x80000000
+        /// <summary>
+        /// Gamma ray
+        /// </summary>
+        GammaRay = 0x80000000
     }
 }

@@ -1,9 +1,5 @@
-﻿using P3bble.Core.Constants;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using P3bble.Core.Constants;
 
 namespace P3bble.Core.Messages
 {
@@ -12,7 +8,6 @@ namespace P3bble.Core.Messages
         public ResetMessage()
             : base(P3bbleEndpoint.Reset)
         {
-
         }
 
         protected override ushort PayloadLength

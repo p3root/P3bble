@@ -2,29 +2,46 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using P3bble.Core.Constants;
 using Windows.Networking.Proximity;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 
-using System.Runtime.InteropServices.WindowsRuntime;
-using P3bble.Core.Constants;
-
 namespace P3bble.Core.Communication
 {
+    /// <summary>
+    /// Encapsulates comms with the Pebble
+    /// </summary>
     internal class Protocol
     {
+        private readonly Mutex _mutex = new Mutex();
         private StreamSocket _socket;
         private DataWriter _writer;
         private DataReader _reader;
         private object _lock;
         private bool _isRunning;
-        private readonly Mutex _mutex = new Mutex();
+
+        private Protocol(StreamSocket socket)
+        {
+            this._socket = socket;
+            this._writer = new DataWriter(this._socket.OutputStream);
+            this._reader = new DataReader(this._socket.InputStream);
+            this._reader.InputStreamOptions = InputStreamOptions.Partial;
+
+            this._lock = new object();
+#if WINDOWS_PHONE
+            //// Thread t = new Thread(new ThreadStart(this.Run));
+            this._isRunning = true;
+            ////  t.Start();
+            System.Threading.ThreadPool.QueueUserWorkItem(this.Run);
+#endif
+        }
 
         public delegate void MessageReceivedHandler(P3bbleMessage message);
-        public MessageReceivedHandler MessageReceived;
+
+        public MessageReceivedHandler MessageReceived { get; set; }
 
         /// <summary>
         /// Creates the protocol - encapsulates the socket creation
@@ -43,40 +60,25 @@ namespace P3bble.Core.Communication
             return new Protocol(socket);
         }
 
-        private Protocol(StreamSocket socket)
-        {
-            _socket = socket;
-            _writer = new DataWriter(_socket.OutputStream);
-            _reader = new DataReader(_socket.InputStream);
-            _reader.InputStreamOptions = InputStreamOptions.Partial;
-
-            _lock = new object();
-#if WINDOWS_PHONE
-           // Thread t = new Thread(new ThreadStart(Run));
-            _isRunning = true;
-          //  t.Start();
-            System.Threading.ThreadPool.QueueUserWorkItem(Run);
-#endif
-        }
-
         /// <summary>
         /// Sends a message to the Pebble.
         /// </summary>
         /// <param name="message">The message to send.</param>
+        /// <returns>An async task to wait</returns>
         public Task WriteMessage(P3bbleMessage message)
         {
             return Task.Factory.StartNew(() =>
             {
-                _mutex.WaitOne();
+                this._mutex.WaitOne();
 
                 byte[] package = message.ToBuffer();
-                Debug.WriteLine("<< SEND MESSAGE FOR ENDPOINT " + ((P3bbleEndpoint)message.Endpoint).ToString() + " (" + ((int)message.Endpoint).ToString () + ")");
+                Debug.WriteLine("<< SEND MESSAGE FOR ENDPOINT " + ((P3bbleEndpoint)message.Endpoint).ToString() + " (" + ((int)message.Endpoint).ToString() + ")");
                 Debug.WriteLine("<< PAYLOAD: " + BitConverter.ToString(package));
 
-                _writer.WriteBytes(package);
-                _writer.StoreAsync().AsTask().Wait();
+                this._writer.WriteBytes(package);
+                this._writer.StoreAsync().AsTask().Wait();
 
-                _mutex.ReleaseMutex();
+                this._mutex.ReleaseMutex();
             });
         }
 
@@ -86,41 +88,40 @@ namespace P3bble.Core.Communication
             Task.Factory.StartNew(() =>
             {
 #endif
-                while (_isRunning)
+            while (this._isRunning)
+            {
+                try
                 {
-                        try
-                        {
-                            await _reader.LoadAsync(4);
-                            uint payloadLength;
-                            uint endpoint;
-                
-                            if (_reader.UnconsumedBufferLength > 0)
-                            {
-                                IBuffer buffer = _reader.ReadBuffer(4);
+                    await this._reader.LoadAsync(4);
+                    uint payloadLength;
+                    uint endpoint;
 
-                                GetLengthAndEndpoint(buffer, out payloadLength, out endpoint);
+                    if (this._reader.UnconsumedBufferLength > 0)
+                    {
+                        IBuffer buffer = this._reader.ReadBuffer(4);
+
+                        this.GetLengthAndEndpoint(buffer, out payloadLength, out endpoint);
 #if DEBUG
-                                Debug.WriteLine(">> RECEIVED MESSAGE FOR ENDPOINT: " + ((P3bbleEndpoint)endpoint).ToString() + " (" + endpoint.ToString () + ") - " + payloadLength.ToString() + " bytes");
+                        Debug.WriteLine(">> RECEIVED MESSAGE FOR ENDPOINT: " + ((P3bbleEndpoint)endpoint).ToString() + " (" + endpoint.ToString() + ") - " + payloadLength.ToString() + " bytes");
 #endif
-                                await _reader.LoadAsync(payloadLength);
-                                IBuffer buf = _reader.ReadBuffer(payloadLength);
+                        await this._reader.LoadAsync(payloadLength);
+                        IBuffer buf = this._reader.ReadBuffer(payloadLength);
 
-                                P3bbleMessage msg = await ReadMessage(buf, endpoint);
+                        P3bbleMessage msg = await this.ReadMessage(buf, endpoint);
 
-                                if (msg != null && this.MessageReceived != null)
-                                {
-                                    this.MessageReceived(msg);
-                                }
-                            }
-                        }
-                        catch
+                        if (msg != null && this.MessageReceived != null)
                         {
-
+                            this.MessageReceived(msg);
                         }
+                    }
+                }
+                catch
+                {
+                }
 #if NETFX_CORE
                     Task.Delay(100);
 #endif
-                }
+            }
 #if NETFX_CORE
             }, TaskCreationOptions.LongRunning);
 #endif
@@ -134,6 +135,7 @@ namespace P3bble.Core.Communication
                 endpoint = 0;
                 return;
             }
+
             byte[] payloadSize = new byte[2];
             byte[] endpo = new byte[2];
 
@@ -142,11 +144,13 @@ namespace P3bble.Core.Communication
                 dr.ReadBytes(payloadSize);
                 dr.ReadBytes(endpo);
             }
+
             if (BitConverter.IsLittleEndian)
             {
                 Array.Reverse(payloadSize);
                 Array.Reverse(endpo);
             }
+
             payloadLength = BitConverter.ToUInt16(payloadSize, 0);
             endpoint = BitConverter.ToUInt16(endpo, 0);
         }

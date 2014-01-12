@@ -1,19 +1,80 @@
-﻿using P3bble.Core.Constants;
-using P3bble.Core.Helper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using P3bble.Core.Constants;
+using P3bble.Core.Helper;
 
 namespace P3bble.Core.Messages
 {
+    /// <summary>
+    /// The log level
+    /// </summary>
+    public enum LogLevel
+    {
+        /// <summary>
+        /// All levels
+        /// </summary>
+        All = 0,
+
+        /// <summary>
+        /// The error level
+        /// </summary>
+        Error = 1,
+
+        /// <summary>
+        /// The warning level
+        /// </summary>
+        Warning = 50,
+
+        /// <summary>
+        /// The information level
+        /// </summary>
+        Information = 100,
+
+        /// <summary>
+        /// The debug level
+        /// </summary>
+        Debug = 200,
+
+        /// <summary>
+        /// The verbose level
+        /// </summary>
+        Verbose = 250
+    }
+
     internal class LogsMessage : P3bbleMessage
     {
         public LogsMessage()
             : base(P3bbleEndpoint.Logs)
         {
+        }
 
+        public DateTime Timestamp { get; private set; }
+        
+        public short LineNo { get; private set; }
+        
+        public string Filename { get; private set; }
+
+        public string Message { get; private set; }
+
+        public LogLevel LogLevel
+        {
+            get
+            {
+                return (LogLevel)this.LevelInternal;
+            }
+        }
+
+        internal byte LevelInternal { get; set; }
+
+        protected override ushort PayloadLength
+        {
+            get
+            {
+                return base.PayloadLength;
+            }
         }
 
         protected override void AddContentToMessage(List<byte> payload)
@@ -37,41 +98,27 @@ namespace P3bble.Core.Messages
             if (BitConverter.IsLittleEndian)
             {
                 Array.Reverse(metadata);
-                Timestamp = BitConverter.ToInt32(metadata, 4).AsDateTime();
-                Level = metadata[3];
+                this.Timestamp = BitConverter.ToInt32(metadata, 4).AsDateTime();
+                this.LevelInternal = metadata[3];
                 msgsize = metadata[2];
-                LineNo = BitConverter.ToInt16(metadata, 0);
+                this.LineNo = BitConverter.ToInt16(metadata, 0);
             }
             else
             {
-                Timestamp = BitConverter.ToInt32(metadata, 0).AsDateTime();
-                Level = metadata[4];
+                this.Timestamp = BitConverter.ToInt32(metadata, 0).AsDateTime();
+                this.LevelInternal = metadata[4];
                 msgsize = metadata[5];
-                LineNo = BitConverter.ToInt16(metadata, 6);
+                this.LineNo = BitConverter.ToInt16(metadata, 6);
             }
+
             // Now to extract the actual data
             byte[] _filename = new byte[16];
             byte[] _data = new byte[msgsize];
             Array.Copy(payloadArray, 8, _filename, 0, 16);
             Array.Copy(payloadArray, 24, _data, 0, msgsize);
 
-            Filename = Encoding.UTF8.GetString(_filename, 0, 16);
-            Message = Encoding.UTF8.GetString(_data, 0, msgsize);
-        
+            this.Filename = Encoding.UTF8.GetString(_filename, 0, 16);
+            this.Message = Encoding.UTF8.GetString(_data, 0, msgsize);
         }
-
-        protected override ushort PayloadLength
-        {
-            get
-            {
-                return base.PayloadLength;
-            }
-        }
-
-        public DateTime Timestamp { get; private set; }
-        public byte Level { get; private set; }
-        public Int16 LineNo { get; private set; }
-        public string Filename { get; private set; }
-        public string Message { get; private set; }
     }
 }

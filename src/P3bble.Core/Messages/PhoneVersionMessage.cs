@@ -1,22 +1,27 @@
-﻿using P3bble.Core.Constants;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using P3bble.Core.Constants;
 
 namespace P3bble.Core.Messages
 {
     internal class PhoneVersionMessage : P3bbleMessage
     {
-        uint sessionCaps = (uint)P3bbleSessionCaps.GAMMA_RAY;
-        uint remoteCaps = (uint)(P3bbleRemoteCaps.TELEPHONY | P3bbleRemoteCaps.SMS | P3bbleRemoteCaps.WINDOWS | P3bbleRemoteCaps.GPS);
-        ushort length;
+        private uint _sessionCaps = (uint)P3bbleSessionCaps.GammaRay;
+        private uint _remoteCaps = (uint)(P3bbleRemoteCaps.Telephony | P3bbleRemoteCaps.Sms | P3bbleRemoteCaps.Windows | P3bbleRemoteCaps.Gps);
+        private ushort _length;
 
         public PhoneVersionMessage()
             : base(P3bbleEndpoint.PhoneVersion)
         {
+        }
 
+        protected override ushort PayloadLength
+        {
+            get
+            {
+                return this._length;
+            }
         }
 
         protected override void GetContentFromMessage(List<byte> payload)
@@ -27,8 +32,8 @@ namespace P3bble.Core.Messages
         protected override void AddContentToMessage(List<byte> payload)
         {
             byte[] prefix = { 0x01, 0xFF, 0xFF, 0xFF, 0xFF };
-            byte[] session = BitConverter.GetBytes(sessionCaps);
-            byte[] remote = BitConverter.GetBytes(remoteCaps);
+            byte[] session = BitConverter.GetBytes(this._sessionCaps);
+            byte[] remote = BitConverter.GetBytes(this._remoteCaps);
             if (BitConverter.IsLittleEndian)
             {
                 Array.Reverse(session);
@@ -37,19 +42,11 @@ namespace P3bble.Core.Messages
 
             byte[] msg = new byte[0];
             msg = msg.Concat(prefix).Concat(session).Concat(remote).ToArray();
-            length = (ushort)msg.Length;
+            this._length = (ushort)msg.Length;
 
             base.AddContentToMessage(payload);
 
             payload.AddRange(msg);
-        }
-
-        protected override ushort PayloadLength
-        {
-            get
-            {
-                return length;
-            }
         }
     }
 }

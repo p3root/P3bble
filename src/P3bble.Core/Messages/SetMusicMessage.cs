@@ -1,9 +1,7 @@
-﻿using P3bble.Core.Constants;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using P3bble.Core.Constants;
 
 namespace P3bble.Core.Messages
 {
@@ -14,13 +12,20 @@ namespace P3bble.Core.Messages
         private string _track;
         private ushort _length;
        
-
         public SetMusicMessage(string artist, string album, string track)
             : base(P3bbleEndpoint.MusicControl)
         {
-            _artist = artist;
-            _album = album;
-            _track = track;
+            this._artist = artist;
+            this._album = album;
+            this._track = track;
+        }
+
+        protected override ushort PayloadLength
+        {
+            get
+            {
+                return this._length;
+            }
         }
 
         protected override void AddContentToMessage(List<byte> payload)
@@ -28,9 +33,9 @@ namespace P3bble.Core.Messages
             // No idea what this does.  Do it anyway.
             byte[] data = { 16 };
 
-            byte[] artist = Encoding.UTF8.GetBytes(_artist);
-            byte[] album = Encoding.UTF8.GetBytes(_album);
-            byte[] track = Encoding.UTF8.GetBytes(_track);
+            byte[] artist = Encoding.UTF8.GetBytes(this._artist);
+            byte[] album = Encoding.UTF8.GetBytes(this._album);
+            byte[] track = Encoding.UTF8.GetBytes(this._track);
             byte[] artistlen = { (byte)artist.Length };
             byte[] albumlen = { (byte)album.Length };
             byte[] tracklen = { (byte)track.Length };
@@ -39,7 +44,7 @@ namespace P3bble.Core.Messages
             data = data.Concat(albumlen).Concat(album).ToArray();
             data = data.Concat(tracklen).Concat(track).ToArray();
 
-            _length = (ushort)data.Length;
+            this._length = (ushort)data.Length;
 
             base.AddContentToMessage(payload);
 
@@ -49,14 +54,6 @@ namespace P3bble.Core.Messages
         protected override void GetContentFromMessage(List<byte> payload)
         {
             base.GetContentFromMessage(payload);
-        }
-
-        protected override ushort PayloadLength
-        {
-            get
-            {
-                return _length;
-            }
         }
     }
 }

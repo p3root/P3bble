@@ -1,25 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace P3bble.Core.Helper
 {
     internal static class Util
     {
-        private static DateTime Epoch = new DateTime(1970, 1, 1);
+        private static DateTime _epoch = new DateTime(1970, 1, 1);
         
-        public static DateTime AsDateTime(this Int32 ts)
+        public static DateTime AsDateTime(this int ts)
         {
-            return Epoch.AddSeconds(ts);
+            return _epoch.AddSeconds(ts);
         }
 
         public static int AsEpoch(this DateTime time)
         {
-            return Convert.ToInt32((time - Epoch).TotalSeconds);
+            return Convert.ToInt32((time - _epoch).TotalSeconds);
         }
 
         public static T AsStruct<T>(this Stream fs) where T : struct
@@ -36,6 +33,7 @@ namespace P3bble.Core.Helper
             {
                 throw new ArgumentException("Byte array does not match size of target type.");
             }
+
             T ret;
             GCHandle hdl = GCHandle.Alloc(bytes, GCHandleType.Pinned);
             try
@@ -46,6 +44,7 @@ namespace P3bble.Core.Helper
             {
                 hdl.Free();
             }
+
             return ret;
         }
 

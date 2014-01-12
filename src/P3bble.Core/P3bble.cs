@@ -1,29 +1,26 @@
-﻿using P3bble.Core.Communication;
-using P3bble.Core.Messages;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Networking.Proximity;
-
-#if WINDOWS_PHONE
-using P3bble.Core.Constants;
-using P3bble.Core.Types;
 using System.Runtime.Serialization.Json;
-using System.IO;
-using P3bble.Core.Helper;
+using System.Text;
 using System.Threading;
-#endif
+using System.Threading.Tasks;
+using P3bble.Core.Communication;
+using P3bble.Core.Constants;
+using P3bble.Core.Helper;
+using P3bble.Core.Messages;
+using P3bble.Core.Types;
+using Windows.Networking.Proximity;
 
 namespace P3bble.Core
 {
     /// <summary>
     /// Defines a connection to a Pebble watch
     /// </summary>
-    public class P3bble
+    public class P3bble : IP3bble
     {
         // The underlying protocol handler...
         private Protocol _protocol;
@@ -64,14 +61,6 @@ namespace P3bble.Core
         }
 
         /// <summary>
-        /// Gets the underlying Bluetooth peer information.
-        /// </summary>
-        /// <value>
-        /// The peer information.
-        /// </value>
-        public PeerInformation PeerInformation { get; private set; }
-
-        /// <summary>
         /// Gets the firmware version.
         /// </summary>
         /// <value>
@@ -86,6 +75,14 @@ namespace P3bble.Core
         /// The recovery firmware version.
         /// </value>
         public P3bbleFirmwareVersion RecoveryFirmwareVersion { get; private set; }
+
+        /// <summary>
+        /// Gets the underlying Bluetooth peer information.
+        /// </summary>
+        /// <value>
+        /// The peer information.
+        /// </value>
+        internal PeerInformation PeerInformation { get; private set; }
 
         /// <summary>
         /// Detects any paired pebbles.
@@ -110,8 +107,8 @@ namespace P3bble.Core
 
             try
             {
-                _protocol = await Protocol.CreateProtocolAsync(PeerInformation);
-                _protocol.MessageReceived += ProtocolMessageReceived;
+                this._protocol = await Protocol.CreateProtocolAsync(PeerInformation);
+                this._protocol.MessageReceived += this.ProtocolMessageReceived;
                 this.IsConnected = true;
 
                 // Now we're connected, request the Pebble version info...
@@ -131,7 +128,7 @@ namespace P3bble.Core
         /// <returns>An async task to wait if required</returns>
         public Task PingAsync()
         {
-            return _protocol.WriteMessage(new PingMessage());
+            return this._protocol.WriteMessage(new PingMessage());
         }
 
         /// <summary>
@@ -140,7 +137,7 @@ namespace P3bble.Core
         /// <returns>An async task to wait if required</returns>
         public Task ResetAsync()
         {
-            return _protocol.WriteMessage(new ResetMessage());
+            return this._protocol.WriteMessage(new ResetMessage());
         }
 
         /// <summary>
@@ -149,7 +146,7 @@ namespace P3bble.Core
         /// <returns>An async task to wait that will return the current time</returns>
         public async Task<DateTime> GetTimeAsync()
         {
-            TimeMessage result = await this.SendMessageAndAwaitResponseAsync<TimeMessage>(new TimeMessage());
+            var result = await this.SendMessageAndAwaitResponseAsync<TimeMessage>(new TimeMessage());
             if (result != null)
             {
                 return result.Time;
@@ -160,12 +157,21 @@ namespace P3bble.Core
             }
         }
 
+        /// <summary>
+        /// Sets the time on the Pebble.
+        /// </summary>
+        /// <param name="newTime">The new time.</param>
+        /// <returns>An async task to wait</returns>
         public Task SetTimeAsync(DateTime newTime)
         {
             return this._protocol.WriteMessage(new TimeMessage(newTime));
         }
 
-        public async Task<P3bbleFirmwareLatest> GetLatestFirmwareVersionAsync()
+        /// <summary>
+        /// Gets the latest firmware version.
+        /// </summary>
+        /// <returns>An async task to wait that will result in firmware info</returns>
+        public async Task<P3bbleFirmwareResponse> GetLatestFirmwareVersionAsync()
         {
             string url = this.FirmwareVersion.GetFirmwareServerUrl(false);
 
@@ -174,8 +180,8 @@ namespace P3bble.Core
             if (response.IsSuccessStatusCode)
             {
                 var stream = await response.Content.ReadAsStreamAsync();
-                var serializer = new DataContractJsonSerializer(typeof(P3bbleFirmwareLatest));
-                P3bbleFirmwareLatest info = serializer.ReadObject(stream) as P3bbleFirmwareLatest;
+                var serializer = new DataContractJsonSerializer(typeof(P3bbleFirmwareResponse));
+                P3bbleFirmwareResponse info = serializer.ReadObject(stream) as P3bbleFirmwareResponse;
                 stream.Close();
                 return info;
             }
@@ -185,9 +191,28 @@ namespace P3bble.Core
             }
         }
 
+        /// <summary>
+        /// Gets a list of the installed apps.
+        /// </summary>
+        /// <returns>
+        /// An async task to wait that will result in a list of apps
+        /// </returns>
+        public async Task<P3bbleInstalledApplications> GetInstalledAppsAsync()
+        {
+            var result = await this.SendMessageAndAwaitResponseAsync<AppMessage>(new AppMessage(AppMessageAction.ListApps));
+            if (result != null)
+            {
+                return result.InstalledApplications;
+            }
+            else
+            {
+                throw new TimeoutException();
+            }
+        }
+
         public Task SetNowPlayingAsync(string artist, string album, string track)
         {
-            return _protocol.WriteMessage(new SetMusicMessage(artist, album, track));
+            return this._protocol.WriteMessage(new SetMusicMessage(artist, album, track));
         }
 
         //////////////////////////////////////////////////////////////////////////////////
@@ -195,44 +220,44 @@ namespace P3bble.Core
         //////////////////////////////////////////////////////////////////////////////////
 
         // Possibly useful for log message reading??
-        //public void BadPing()
-        //{
-        //    _protocol.WriteMessage(new PingMessage(new byte[7] { 1, 2, 3, 4, 5, 6, 7 }));
-        //}
+        ////public void BadPing()
+        ////{
+        ////    _protocol.WriteMessage(new PingMessage(new byte[7] { 1, 2, 3, 4, 5, 6, 7 }));
+        ////}
 
         public Task SmsNotificationAsync(string sender, string message)
         {
-            return _protocol.WriteMessage(new NotificationMessage(NotificationType.SMS, sender, message));
+            return this._protocol.WriteMessage(new NotificationMessage(NotificationType.SMS, sender, message));
         }
 
         public Task FacebookNotificationAsync(string sender, string message)
         {
-            return _protocol.WriteMessage(new NotificationMessage(NotificationType.Facebook, sender, message));
+            return this._protocol.WriteMessage(new NotificationMessage(NotificationType.Facebook, sender, message));
         }
 
         public Task EmailNotificationAsync(string sender, string subject, string body)
         {
-            return _protocol.WriteMessage(new NotificationMessage(NotificationType.EMAIL, sender, body, subject));
+            return this._protocol.WriteMessage(new NotificationMessage(NotificationType.Email, sender, body, subject));
         }
 
         public Task PhoneCallAsync(string name, string number, byte[] cookie)
         {
-            return _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.INCOMING_CALL, cookie, number, name));
+            return this._protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.IncomingCall, cookie, number, name));
         }
 
         public Task RingAsync(byte[] cookie)
         {
-            return _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.RING, cookie));
+            return this._protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.Ring, cookie));
         }
 
         public Task StartCallAsync(byte[] cookie)
         {
-            return _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.START, cookie));
+            return this._protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.Start, cookie));
         }
 
         public Task EndCallAsync(byte[] cookie)
         {
-            return _protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.END, cookie));
+            return this._protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.End, cookie));
         }
 
         //////////////////////////////////////////////////////////////////////////////////
@@ -245,7 +270,7 @@ namespace P3bble.Core
         /// <returns>A list of pebbles</returns>
         private static List<P3bble> FindPebbles()
         {
-            PeerFinder.AlternateIdentities["Bluetooth:Paired"] = "";
+            PeerFinder.AlternateIdentities["Bluetooth:Paired"] = string.Empty;
 
 #if NETFX_CORE
             PeerFinder.Start();
@@ -284,14 +309,14 @@ namespace P3bble.Core
             {
                 case P3bbleEndpoint.PhoneVersion:
                     // We need to tell the Pebble what we are...
-                    _protocol.WriteMessage(new PhoneVersionMessage());
+                    this._protocol.WriteMessage(new PhoneVersionMessage());
                     break;
 
                 case P3bbleEndpoint.Version:
                     // Store version info we got from the Pebble...
                     VersionMessage version = message as VersionMessage;
-                    FirmwareVersion = version.Firmware;
-                    RecoveryFirmwareVersion = version.RecoveryFirmware;
+                    this.FirmwareVersion = version.Firmware;
+                    this.RecoveryFirmwareVersion = version.RecoveryFirmware;
                     break;
 
                 case P3bbleEndpoint.Logs:
@@ -299,6 +324,7 @@ namespace P3bble.Core
                     {
                         Debug.WriteLine(">> LOG: " + (message as LogsMessage).Message);
                     }
+
                     break;
 
                 default:
@@ -358,7 +384,7 @@ namespace P3bble.Core
                     this._pendingMessageSignal = null;
                     this._pendingMessage = null;
 
-                    int timeTaken = (Environment.TickCount - startTicks);
+                    int timeTaken = Environment.TickCount - startTicks;
 
                     if (pendingMessage != null)
                     {
