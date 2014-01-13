@@ -86,7 +86,7 @@ namespace P3bble
         private void Button_Click_5(object sender, RoutedEventArgs e)
         {
             if (_pebble != null && _pebble.IsConnected)
-                _pebble.SetNowPlayingAsync("artist", "album", "track");
+                _pebble.SetNowPlayingAsync("artist " + DateTime.Now.ToLongTimeString(), "album", "track");
             else
             {
                 MessageBox.Show("Pebble not connected");
