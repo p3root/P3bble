@@ -2,23 +2,42 @@
 using System.Linq;
 using System.Text;
 using P3bble.Core.Constants;
+using P3bble.Core.Types;
 
 namespace P3bble.Core.Messages
 {
-    internal class SetMusicMessage : P3bbleMessage
+    internal class MusicMessage : P3bbleMessage
     {
         private string _artist;
         private string _album;
         private string _track;
         private ushort _length;
-       
-        public SetMusicMessage(string artist, string album, string track)
+
+        public MusicMessage()
+            : base(P3bbleEndpoint.MusicControl)
+        {
+        }
+
+        public MusicMessage(string artist, string album, string track)
             : base(P3bbleEndpoint.MusicControl)
         {
             this._artist = artist;
             this._album = album;
             this._track = track;
+
+            // Check lengths...
+            this.TrimValue(ref this._artist);
+            this.TrimValue(ref this._album);
+            this.TrimValue(ref this._track);
         }
+
+        /// <summary>
+        /// Gets or sets the control action.
+        /// </summary>
+        /// <value>
+        /// The control action.
+        /// </value>
+        public MusicControlAction ControlAction { get; set; }
 
         protected override ushort PayloadLength
         {
@@ -53,7 +72,19 @@ namespace P3bble.Core.Messages
 
         protected override void GetContentFromMessage(List<byte> payload)
         {
-            base.GetContentFromMessage(payload);
+            this.ControlAction = (MusicControlAction)payload[0];
+        }
+
+        /// <summary>
+        /// Trims a value to the max length we can send.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        private void TrimValue(ref string value)
+        {
+            if (value != null && value.Length > 30)
+            {
+                value = value.Substring(0, 27) + "...";
+            }
         }
     }
 }

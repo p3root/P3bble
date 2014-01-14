@@ -18,6 +18,12 @@ using Windows.Networking.Proximity;
 namespace P3bble.Core
 {
     /// <summary>
+    /// Delegate to handle music control events
+    /// </summary>
+    /// <param name="action">The control action.</param>
+    public delegate void MusicControlReceivedHandler(MusicControlAction action);
+
+    /// <summary>
     /// Defines a connection to a Pebble watch
     /// </summary>
     public class P3bble : IP3bble
@@ -37,6 +43,14 @@ namespace P3bble.Core
         {
             PeerInformation = peerInformation;
         }
+
+        /// <summary>
+        /// Gets or sets the music control received handler.
+        /// </summary>
+        /// <value>
+        /// The music control received handler.
+        /// </value>
+        public MusicControlReceivedHandler MusicControlReceived { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether this instance is connected.
@@ -224,7 +238,7 @@ namespace P3bble.Core
 
         public Task SetNowPlayingAsync(string artist, string album, string track)
         {
-            return this._protocol.WriteMessage(new SetMusicMessage(artist, album, track));
+            return this._protocol.WriteMessage(new MusicMessage(artist, album, track));
         }
 
         //////////////////////////////////////////////////////////////////////////////////
@@ -335,6 +349,15 @@ namespace P3bble.Core
                     if (message as LogsMessage != null)
                     {
                         Debug.WriteLine(">> LOG: " + (message as LogsMessage).Message);
+                    }
+
+                    break;
+
+                case P3bbleEndpoint.MusicControl:
+                    var musicMessage = message as MusicMessage;
+                    if (this.MusicControlReceived != null && musicMessage != null && musicMessage.ControlAction != MusicControlAction.Unknown)
+                    {
+                        this.MusicControlReceived(musicMessage.ControlAction);
                     }
 
                     break;

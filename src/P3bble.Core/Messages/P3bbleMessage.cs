@@ -49,6 +49,10 @@ namespace P3bble.Core
                     frame = new AppMessage();
                     break;
 
+                case P3bbleEndpoint.MusicControl:
+                    frame = new MusicMessage();
+                    break;
+
                 default:
                     frame = new P3bbleMessage(endpoint);
                     break;

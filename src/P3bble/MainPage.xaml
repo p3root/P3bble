@@ -41,11 +41,12 @@
                     <Button Click="Button_Click_11" Content="CheckForFirmwareUpdate"/>
                     <Button Click="Button_Click_10" Content="DownloadWatchAppFile"/>
 
+                    <Button Click="Button_Click_5" Content="Music Control"/>
+
                     <Button Click="Button_Click_1" Content="Ping"/>
                     <!--<Button Click="Button_Click_2" Content="BadPing"/>-->
                     <Button Click="Button_Click_3" Content="SendSMS"/>
                     <Button Click="Button_Click_4" Content="SendEMAIL"/>
-                    <Button Click="Button_Click_5" Content="SendNowPlaying"/>
                     <Button Click="Button_Click_8" Content="SendFacebookNot"/>
                     <Button Click="Button_Click_9" Content="SimulatePhoneCall"/>
 

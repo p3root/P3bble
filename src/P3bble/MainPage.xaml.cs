@@ -1,4 +1,6 @@
 ﻿using Microsoft.Phone.Controls;
+using Microsoft.Xna.Framework.Media;
+using P3bble.Core;
 using P3bble.Core.Types;
 using System;
 using System.Collections.Generic;
@@ -12,12 +14,14 @@ namespace P3bble
     public partial class MainPage : PhoneApplicationPage
     {
         private P3bble.Core.P3bble _pebble;
-
+        
         public MainPage()
         {
             InitializeComponent();
 
             Loaded += MainPage_Loaded;
+
+            MediaPlayer.ActiveSongChanged += MediaPlayer_ActiveSongChanged;
         }
 
         private async void MainPage_Loaded(object sender, RoutedEventArgs e)
@@ -33,6 +37,7 @@ namespace P3bble
                 {
                     PebbleName.Text = "Connected to Pebble " + _pebble.DisplayName;
                     PebbleVersion.Text = "Version " + _pebble.FirmwareVersion.Version + " - " + _pebble.FirmwareVersion.Timestamp.ToShortDateString();
+                    _pebble.MusicControlReceived += new MusicControlReceivedHandler(this.MusicControlReceived);
                 }
                 else
                 {
@@ -83,10 +88,52 @@ namespace P3bble
             }
         }
 
+        private void MediaPlayer_ActiveSongChanged(object sender, EventArgs e)
+        {
+            if (MediaPlayer.Queue.ActiveSong != null)
+            {
+                _pebble.SetNowPlayingAsync(MediaPlayer.Queue.ActiveSong.Artist.Name, MediaPlayer.Queue.ActiveSong.Album.Name, MediaPlayer.Queue.ActiveSong.Name);
+            }
+            else
+            {
+                _pebble.SetNowPlayingAsync(string.Empty, string.Empty, string.Empty);
+            }
+        }
+
+        private void MusicControlReceived(MusicControlAction action)
+        {
+            switch (action)
+            {
+                case MusicControlAction.PlayPause:
+                    if (MediaPlayer.State == MediaState.Playing)
+                    {
+                        MediaPlayer.Pause();
+                    }
+                    else
+                    {
+                        MediaPlayer.Resume();
+                    }
+
+                    break;
+
+                case MusicControlAction.Next:
+                    MediaPlayer.MoveNext();
+                    break;
+
+                case MusicControlAction.Previous:
+                    MediaPlayer.MovePrevious();
+                    break;
+            }
+        }
+
         private void Button_Click_5(object sender, RoutedEventArgs e)
         {
             if (_pebble != null && _pebble.IsConnected)
-                _pebble.SetNowPlayingAsync("artist " + DateTime.Now.ToLongTimeString(), "album", "track");
+            {
+                MediaLibrary lib = new MediaLibrary();
+                MediaPlayer.Play(lib.Songs, new Random().Next(lib.Songs.Count));
+                MediaPlayer.IsShuffled = true;
+            }
             else
             {
                 MessageBox.Show("Pebble not connected");
