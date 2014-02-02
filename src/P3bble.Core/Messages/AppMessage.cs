@@ -90,8 +90,7 @@ namespace P3bble.Core.Messages
         internal const byte RunState = 1;
 
         private List<byte[]> _tuples = new List<byte[]>();
-        private ushort _length;
-
+        
         public AppMessage()
             : this(P3bbleEndpoint.ApplicationMessage)
         {
@@ -105,14 +104,6 @@ namespace P3bble.Core.Messages
         public Guid AppUuid { get; set; }
 
         public AppCommand AppCommand { get; set; }
-
-        protected override ushort PayloadLength
-        {
-            get
-            {
-                return this._length;
-            }
-        }
 
         /// <summary>
         /// Gets or sets the remaining response.
@@ -172,8 +163,6 @@ namespace P3bble.Core.Messages
                 data.AddRange(tuple);
             }
 
-            this._length = (ushort)data.Count;
-            base.AddContentToMessage(payload);
             payload.AddRange(data);
         }
 

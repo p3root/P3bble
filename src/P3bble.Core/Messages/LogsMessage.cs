@@ -69,17 +69,8 @@ namespace P3bble.Core.Messages
 
         internal byte LevelInternal { get; set; }
 
-        protected override ushort PayloadLength
-        {
-            get
-            {
-                return base.PayloadLength;
-            }
-        }
-
         protected override void AddContentToMessage(List<byte> payload)
         {
-            base.AddContentToMessage(payload);
         }
 
         protected override void GetContentFromMessage(List<byte> payload)

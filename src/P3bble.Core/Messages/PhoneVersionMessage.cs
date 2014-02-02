@@ -9,24 +9,14 @@ namespace P3bble.Core.Messages
     {
         private uint _sessionCaps = (uint)P3bbleSessionCaps.GammaRay;
         private uint _remoteCaps = (uint)(P3bbleRemoteCaps.Telephony | P3bbleRemoteCaps.Sms | P3bbleRemoteCaps.Android | P3bbleRemoteCaps.Gps);
-        private ushort _length;
 
         public PhoneVersionMessage()
             : base(P3bbleEndpoint.PhoneVersion)
         {
         }
 
-        protected override ushort PayloadLength
-        {
-            get
-            {
-                return this._length;
-            }
-        }
-
         protected override void GetContentFromMessage(List<byte> payload)
         {
-            base.GetContentFromMessage(payload);
         }
 
         protected override void AddContentToMessage(List<byte> payload)
@@ -42,9 +32,6 @@ namespace P3bble.Core.Messages
 
             byte[] msg = new byte[0];
             msg = msg.Concat(prefix).Concat(session).Concat(remote).ToArray();
-            this._length = (ushort)msg.Length;
-
-            base.AddContentToMessage(payload);
 
             payload.AddRange(msg);
         }

@@ -83,7 +83,6 @@ namespace P3bble.Core.Messages
         private bool _done;
         private bool _error;
         private PutBytesState _state;
-        private ushort _length;
 
         public PutBytesMessage()
             : base(P3bbleEndpoint.PutBytes)
@@ -99,12 +98,9 @@ namespace P3bble.Core.Messages
             this._state = PutBytesState.NotStarted;
         }
 
-        protected override ushort PayloadLength
+        internal bool HandleStateMessage(PutBytesMessage message)
         {
-            get
-            {
-                return this._length;
-            }
+            return false;
         }
 
         protected override void AddContentToMessage(List<byte> payload)
@@ -114,18 +110,10 @@ namespace P3bble.Core.Messages
                 case PutBytesState.NotStarted:
                     break;
             }
-
-            base.AddContentToMessage(payload);
         }
 
         protected override void GetContentFromMessage(List<byte> payload)
         {
-            base.GetContentFromMessage(payload);
-        }
-
-        internal bool HandleStateMessage(PutBytesMessage message)
-        {
-            return false;
         }
     }
 }

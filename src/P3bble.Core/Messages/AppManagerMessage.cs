@@ -90,26 +90,8 @@ namespace P3bble.Core.Messages
         /// </value>
         internal AppManagerResult Result { get; private set; }
 
-        protected override ushort PayloadLength
-        {
-            get
-            {
-                switch (this._action)
-                {
-                    case AppManagerAction.ListApps:
-                        return 1;
-
-                    case AppManagerAction.RemoveApp:
-                        return 1 + 8;
-                }
-
-                return 0;
-            }
-        }
-
         protected override void AddContentToMessage(List<byte> payload)
         {
-            base.AddContentToMessage(payload);
             payload.Add((byte)this._action);
 
             switch (this._action)

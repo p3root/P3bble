@@ -11,7 +11,6 @@ namespace P3bble.Core.Messages
         private string _artist;
         private string _album;
         private string _track;
-        private ushort _length;
 
         public MusicMessage()
             : base(P3bbleEndpoint.MusicControl)
@@ -39,14 +38,6 @@ namespace P3bble.Core.Messages
         /// </value>
         public MusicControlAction ControlAction { get; set; }
 
-        protected override ushort PayloadLength
-        {
-            get
-            {
-                return this._length;
-            }
-        }
-
         protected override void AddContentToMessage(List<byte> payload)
         {
             // No idea what this does.  Do it anyway.
@@ -62,10 +53,6 @@ namespace P3bble.Core.Messages
             data = data.Concat(artistlen).Concat(artist).ToArray();
             data = data.Concat(albumlen).Concat(album).ToArray();
             data = data.Concat(tracklen).Concat(track).ToArray();
-
-            this._length = (ushort)data.Length;
-
-            base.AddContentToMessage(payload);
 
             payload.AddRange(data);
         }

@@ -25,8 +25,7 @@ namespace P3bble.Core.Messages
     internal class TimeMessage : P3bbleMessage
     {
         private TimeMessageAction _action;
-        private ushort _length;
-
+        
         public TimeMessage()
             : base(P3bbleEndpoint.Time)
         {
@@ -42,26 +41,10 @@ namespace P3bble.Core.Messages
 
         public DateTime Time { get; private set; }
 
-        protected override ushort PayloadLength
-        {
-            get
-            {
-                if (this._action == TimeMessageAction.GetTime)
-                {
-                    return 1;
-                }
-                else
-                {
-                    return this._length;
-                }
-            }
-        }
-
         protected override void AddContentToMessage(List<byte> payload)
         {
             if (this._action == TimeMessageAction.GetTime)
             {
-                base.AddContentToMessage(payload);
                 payload.Add((byte)this._action);
             }
             else
@@ -73,10 +56,6 @@ namespace P3bble.Core.Messages
                 {
                     Array.Reverse(rawTime);
                 }
-
-                this._length = (ushort)(rawTime.Length + 1);
-
-                base.AddContentToMessage(payload);
 
                 // Magic number required for the time to be set!
                 payload.Add((byte)this._action);

@@ -32,22 +32,12 @@ namespace P3bble.Core.Messages
     {
         private NotificationType _type;
         private List<string> _parts;
-        private ushort _length;
 
         public NotificationMessage(NotificationType type, params string[] parts)
             : base(P3bbleEndpoint.Notification)
         {
             this._type = type;
             this._parts = parts.ToList();
-            this._length = 0;
-        }
-
-        protected override ushort PayloadLength
-        {
-            get
-            {
-                return this._length;
-            }
         }
 
         protected override void AddContentToMessage(List<byte> payload)
@@ -68,15 +58,11 @@ namespace P3bble.Core.Messages
                 data = data.Concat(len).Concat(_part).ToArray();
             }
 
-            this._length = (ushort)data.Length;
-
-            base.AddContentToMessage(payload);
             payload.AddRange(data);
         }
 
         protected override void GetContentFromMessage(List<byte> payload)
         {
-            base.GetContentFromMessage(payload);
         }
     }
 }

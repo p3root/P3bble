@@ -110,6 +110,7 @@ namespace P3bble.Core.Types
         public string FullPath { get; private set; }
 
         internal P3bbleApplicationMetadata Application { get; private set; }
+
         internal byte[] ApplicationRaw { get; private set; }
 
         internal P3bbleBundleManifest Manifest { get; private set; }

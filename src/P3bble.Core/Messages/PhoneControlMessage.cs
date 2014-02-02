@@ -61,7 +61,6 @@ namespace P3bble.Core.Messages
     {
         private PhoneControlType _type;
         private List<string> _parts;
-        private ushort _length;
         private byte[] _cookie;
 
         public PhoneControlMessage(PhoneControlType type, byte[] cookie, params string[] parts)
@@ -69,16 +68,7 @@ namespace P3bble.Core.Messages
         {
             this._type = type;
             this._parts = parts.ToList();
-            this._length = 0;
             this._cookie = cookie;
-        }
-
-        protected override ushort PayloadLength
-        {
-            get
-            {
-                return this._length;
-            }
         }
 
         protected override void AddContentToMessage(List<byte> payload)
@@ -100,15 +90,11 @@ namespace P3bble.Core.Messages
                 data = data.Concat(len).Concat(bytePart).ToArray();
             }
 
-            this._length = (ushort)data.Length;
-
-            base.AddContentToMessage(payload);
             payload.AddRange(data);
         }
 
         protected override void GetContentFromMessage(List<byte> payload)
         {
-            base.GetContentFromMessage(payload);
         }
     }
 }

@@ -23,23 +23,8 @@ namespace P3bble.Core.Messages
 
         public uint Cookie { get; private set; }
 
-        protected override ushort PayloadLength
-        {
-            get
-            {
-                if (this._cookie != null)
-                {
-                    return (ushort)this._cookie.Length;
-                }
-
-                return 0;
-            }
-        }
-
         protected override void AddContentToMessage(List<byte> payload)
         {
-            base.AddContentToMessage(payload);
-
             payload.AddRange(this._cookie);
         }
 

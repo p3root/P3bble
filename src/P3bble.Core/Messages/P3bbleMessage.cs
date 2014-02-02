@@ -6,7 +6,7 @@ using P3bble.Core.Messages;
 
 namespace P3bble.Core
 {
-    internal class P3bbleMessage
+    internal abstract class P3bbleMessage
     {
         public P3bbleMessage(P3bbleEndpoint endpoint)
         {
@@ -14,14 +14,6 @@ namespace P3bble.Core
         }
 
         public P3bbleEndpoint Endpoint { get; private set; }
-
-        protected virtual ushort PayloadLength
-        {
-            get
-            {
-                return 0;
-            }
-        }
 
         public static P3bbleMessage CreateMessage(P3bbleEndpoint endpoint, List<byte> payload)
         {
@@ -61,13 +53,13 @@ namespace P3bble.Core
                 case P3bbleEndpoint.PutBytes:
                     frame = new PutBytesMessage();
                     break;
-
-                default:
-                    frame = new P3bbleMessage(endpoint);
-                    break;
             }
 
-            frame.GetContentFromMessage(payload);
+            if (frame != null)
+            {
+                frame.GetContentFromMessage(payload);
+            }
+
             return frame;
         }
 
@@ -76,12 +68,8 @@ namespace P3bble.Core
             List<byte> buf = new List<byte>();
 
             this.AddContentToMessage(buf);
-            return buf.ToArray();
-        }
 
-        protected virtual void AddContentToMessage(List<byte> payload)
-        {
-            byte[] lengthBytes = ByteHelper.ConvertToByteArray(this.PayloadLength);
+            byte[] lengthBytes = ByteHelper.ConvertToByteArray(Convert.ToUInt16(buf.Count));
             byte[] endpointBytes = ByteHelper.ConvertToByteArray(Convert.ToUInt16(this.Endpoint));
 
             if (BitConverter.IsLittleEndian)
@@ -91,14 +79,16 @@ namespace P3bble.Core
                 Array.Reverse(endpointBytes);
             }
 
-            payload.Insert(0, lengthBytes[0]);
-            payload.Insert(1, lengthBytes[1]);
-            payload.Insert(2, endpointBytes[0]);
-            payload.Insert(3, endpointBytes[1]);
+            buf.Insert(0, lengthBytes[0]);
+            buf.Insert(1, lengthBytes[1]);
+            buf.Insert(2, endpointBytes[0]);
+            buf.Insert(3, endpointBytes[1]);
+
+            return buf.ToArray();
         }
 
-        protected virtual void GetContentFromMessage(List<byte> payload)
-        {
-        }
+        protected abstract void AddContentToMessage(List<byte> payload);
+
+        protected abstract void GetContentFromMessage(List<byte> payload);
     }
 }
