@@ -22,7 +22,7 @@ namespace P3bble.Core.Types
         public string GeneratedBy { get; private set; }
 
         [DataMember(Name = "application", IsRequired = false)]
-        public P3bbleApplicationManifest Application { get; private set; }
+        public P3bbleApplicationManifest ApplicationManifest { get; private set; }
 
         [DataMember(Name = "firmware", IsRequired = false)]
         public P3bbleFirmwareManifest Firmware { get; private set; }

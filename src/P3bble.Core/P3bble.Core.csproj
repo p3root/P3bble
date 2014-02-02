@@ -88,9 +88,11 @@
   <ItemGroup>
     <Compile Include="Communication\Protocol.cs" />
     <Compile Include="Constants\P3bbleHardwareRevision.cs" />
+    <Compile Include="Exceptions\CannotInstallException.cs" />
     <Compile Include="Helper\ByteHelper.cs" />
     <Compile Include="Helper\Util.cs" />
     <Compile Include="IP3bble.cs" />
+    <Compile Include="Messages\AppManagerMessage.cs" />
     <Compile Include="Messages\AppMessage.cs" />
     <Compile Include="Messages\LogsMessage.cs" />
     <Compile Include="Messages\MusicMessage.cs" />

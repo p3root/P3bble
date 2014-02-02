@@ -1,220 +1,205 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 using P3bble.Core.Constants;
-using P3bble.Core.Helper;
-using P3bble.Core.Types;
 
 namespace P3bble.Core.Messages
 {
     /// <summary>
-    /// Represents the result of an application operation
+    /// Application command
     /// </summary>
-    public enum AppManagerResult
+    internal enum AppCommand : byte
     {
         /// <summary>
-        /// The application is available
+        /// The push response
         /// </summary>
-        AppAvailable = 0,
+        Push = 1,
 
         /// <summary>
-        /// The application was removed
+        /// The request response
         /// </summary>
-        AppRemoved = 1,
+        Request = 2,
 
         /// <summary>
-        /// The application was updated
+        /// The ack response
         /// </summary>
-        AppUpdated = 2
+        Ack = 0xff,
+
+        /// <summary>
+        /// The nack response
+        /// </summary>
+        Nack = 0x7f
     }
 
     /// <summary>
-    /// Represents an app action type
+    /// Application Message Data Types
     /// </summary>
-    internal enum AppMessageAction : byte
+    internal enum AppMessageTupleDataType : byte
     {
         /// <summary>
-        /// The list apps action
+        /// A byte array
         /// </summary>
-        ListApps = 1,
+        ByteArray = 0,
 
         /// <summary>
-        /// The remove application action
+        /// A string
         /// </summary>
-        RemoveApp = 2, // by index ("!bII", 2, appid, index)
-        // by uuid  ("b", 0x02) + str(uuid_to_remove)
+        String = 1,
 
         /// <summary>
-        /// The add application action
+        /// An unsigned integer
         /// </summary>
-        AddApp = 3,    // ("!bI", 3, index)
+        UInt = 2,
+
+        /// <summary>
+        /// An integer
+        /// </summary>
+        Int = 3
+    }
+
+    /// <summary>
+    /// Launcher keys
+    /// </summary>
+    internal enum LauncherKeys : byte
+    {
+        /// <summary>
+        /// The run state key
+        /// </summary>
+        RunState = 1
+    }
+
+    /// <summary>
+    /// Application launch param
+    /// </summary>
+    internal enum LauncherParams : byte
+    {
+        /// <summary>
+        /// The not running state
+        /// </summary>
+        NotRunning = 0,
+
+        /// <summary>
+        /// The running state
+        /// </summary>
+        Running = 1
     }
 
     internal class AppMessage : P3bbleMessage
     {
-        private AppMessageAction _action;
-        private uint _appId;
-        private uint _appIndex;
+        internal const byte RunState = 1;
+
+        private List<byte[]> _tuples = new List<byte[]>();
+        private ushort _length;
 
         public AppMessage()
-            : this(AppMessageAction.ListApps)
+            : this(P3bbleEndpoint.ApplicationMessage)
         {
         }
 
-        public AppMessage(AppMessageAction action)
-            : base(P3bbleEndpoint.AppManager)
+        public AppMessage(P3bbleEndpoint messageType)
+            : base(messageType)
         {
-            this._action = action;
         }
 
-        public AppMessage(AppMessageAction action, uint appId, uint appIndex)
-            : this(action)
-        {
-            this._appId = appId;
-            this._appIndex = appIndex;
-        }
+        public Guid AppUuid { get; set; }
 
-        /// <summary>
-        /// Gets the installed applications.
-        /// </summary>
-        /// <value>
-        /// The installed applications.
-        /// </value>
-        public P3bbleInstalledApplications InstalledApplications { get; private set; }
-
-        /// <summary>
-        /// Gets the result.
-        /// </summary>
-        /// <value>
-        /// The result.
-        /// </value>
-        public AppManagerResult Result { get; private set; }
+        public AppCommand AppCommand { get; set; }
 
         protected override ushort PayloadLength
         {
             get
             {
-                switch (this._action)
-                {
-                    case AppMessageAction.ListApps:
-                        return 1;
-
-                    case AppMessageAction.RemoveApp:
-                        return 1 + 8;
-                }
-
-                return 0;
+                return this._length;
             }
+        }
+
+        /// <summary>
+        /// Gets or sets the remaining response.
+        /// </summary>
+        /// <value>
+        /// The remaining response.
+        /// </value>
+        /// <remarks>Not expecting this to get used</remarks>
+        private byte[] RemainingResponse { get; set; }
+
+        public void AddTuple(uint key, AppMessageTupleDataType dataType, byte data)
+        {
+            this.AddTuple(key, dataType, new byte[] { data });
+        }
+        
+        public void AddTuple(uint key, AppMessageTupleDataType dataType, byte[] data)
+        {
+            List<byte> result = new List<byte>();
+
+            byte[] keyBytes = BitConverter.GetBytes(key);
+            byte[] lengthBytes = BitConverter.GetBytes((short)data.Length);
+
+            if (BitConverter.IsLittleEndian)
+            {
+                // Data is transmitted big-endian, so flip.
+                Array.Reverse(keyBytes);
+                Array.Reverse(lengthBytes);
+            }
+            
+            result.AddRange(keyBytes);
+            result.Add((byte)dataType);
+            result.AddRange(lengthBytes);
+            result.AddRange(data);
+
+            this._tuples.Add(result.ToArray());
         }
 
         protected override void AddContentToMessage(List<byte> payload)
         {
-            base.AddContentToMessage(payload);
-            payload.Add((byte)this._action);
+            List<byte> data = new List<byte>();
 
-            switch (this._action)
+            // Add the command
+            data.Add((byte)this.AppCommand);
+
+            // Add a transaction id:
+            data.Add(0);
+
+            // Add the app id:
+            data.AddRange(this.AppUuid.ToByteArray());
+
+            // Add the actual data to send - first the count...
+            data.Add((byte)this._tuples.Count);
+
+            // Now the tuples...
+            foreach (var tuple in this._tuples)
             {
-                case AppMessageAction.ListApps:
-                    // Just the action required
-                    break;
-
-                case AppMessageAction.RemoveApp:
-                    byte[] appId = BitConverter.GetBytes(this._appId);
-                    byte[] appIndex = BitConverter.GetBytes(this._appIndex);
-                    if (BitConverter.IsLittleEndian)
-                    {
-                        Array.Reverse(appId);
-                        Array.Reverse(appIndex);
-                    }
-
-                    payload.AddRange(appId);
-                    payload.AddRange(appIndex);
-                    break;
+                data.AddRange(tuple);
             }
+
+            this._length = (ushort)data.Count;
+            base.AddContentToMessage(payload);
+            payload.AddRange(data);
         }
 
-        protected override void GetContentFromMessage(List<byte> payload)
+        protected override void GetContentFromMessage(System.Collections.Generic.List<byte> payload)
         {
-            const int AppInfoSize = 78;
-
-            AppMessageAction messageType = (AppMessageAction)payload[0];
-            byte[] data = payload.ToArray();
-
-            switch (messageType)
+            if (payload.Count > 0)
             {
-                case AppMessageAction.ListApps:
-                    byte[] numBanks = new byte[4];
-                    byte[] numApps = new byte[4];
+                switch (payload[0])
+                {
+                    case (byte)AppCommand.Push:
+                    case (byte)AppCommand.Request:
+                    case (byte)AppCommand.Ack:
+                    case (byte)AppCommand.Nack:
 
-                    Array.Copy(data, 1, numBanks, 0, 4);
-                    Array.Copy(data, 5, numApps, 0, 4);
+                        this.AppCommand = (AppCommand)payload[0];
+                        break;
+                    
+                    default:
+                        break;
+                }
 
-                    if (BitConverter.IsLittleEndian)
-                    {
-                        Array.Reverse(numBanks);
-                        Array.Reverse(numApps);
-                    }
-
-                    uint appBanksAvailable = BitConverter.ToUInt32(numBanks, 0);
-                    uint appsInstalled = BitConverter.ToUInt32(numApps, 0);
-
-                    this.InstalledApplications = new P3bbleInstalledApplications(appBanksAvailable);
-
-                    for (int i = 0; i < appsInstalled; i++)
-                    {
-                        byte[] id = new byte[4];
-                        byte[] index = new byte[4];
-                        byte[] name = new byte[32];
-                        byte[] company = new byte[32];
-                        byte[] flags = new byte[4];
-                        byte[] version = new byte[2];
-
-                        int offset = 1 + 8 + (i * AppInfoSize);
-
-                        Array.Copy(data, offset, id, 0, 4);
-                        Array.Copy(data, offset + 4, index, 0, 4);
-                        Array.Copy(data, offset + 8, name, 0, 32);
-                        Array.Copy(data, offset + 40, company, 0, 32);
-                        Array.Copy(data, offset + 72, flags, 0, 4);
-                        Array.Copy(data, offset + 76, version, 0, 2);
-
-                        if (BitConverter.IsLittleEndian)
-                        {
-                            Array.Reverse(id);
-                            Array.Reverse(index);
-                            Array.Reverse(flags);
-                            Array.Reverse(version);
-                        }
-
-                        int nameLength = Array.IndexOf(name, (byte)0);
-                        int companyLength = Array.IndexOf(company, (byte)0); 
-
-                        this.InstalledApplications.ApplicationsInstalled.Add(
-                            new P3bbleInstalledApplication()
-                            {
-                                Id = BitConverter.ToUInt32(id, 0),
-                                Index = BitConverter.ToUInt32(index, 0),
-                                Name = Encoding.UTF8.GetString(name, 0, nameLength),
-                                Company = Encoding.UTF8.GetString(company, 0, companyLength),
-                                Flags = BitConverter.ToUInt32(flags, 0),
-                                Version = BitConverter.ToUInt16(version, 0)
-                            });
-                    }
-
-                    break;
-
-                case AppMessageAction.RemoveApp:
-                    byte[] rawResult = new byte[4];
-                    Array.Copy(data, 1, rawResult, 0, 4);
-
-                    if (BitConverter.IsLittleEndian)
-                    {
-                        Array.Reverse(rawResult);
-                    }
-
-                    this.Result = (AppManagerResult)BitConverter.ToInt32(rawResult, 0);
-                    break;
+                if (payload.Count > 1)
+                {
+                    this.RemainingResponse = new byte[payload.Count - 1];
+                    payload.CopyTo(1, this.RemainingResponse, 0, payload.Count - 1);
+                }
             }
         }
     }

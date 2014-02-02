@@ -19,10 +19,10 @@ namespace P3bble.Core.Helper
             return Convert.ToInt32((time - _epoch).TotalSeconds);
         }
 
-        public static T AsStruct<T>(this Stream fs) where T : struct
+        public static T AsStruct<T>(this Stream fs, out byte[] buffer) where T : struct
         {
             // Borrowed from http://stackoverflow.com/a/1936208 because BitConverter-ing all of this would be a pain
-            byte[] buffer = new byte[Marshal.SizeOf(typeof(T))];
+            buffer = new byte[Marshal.SizeOf(typeof(T))];
             fs.Read(buffer, 0, buffer.Length);
             return AsStruct<T>(buffer);
         }

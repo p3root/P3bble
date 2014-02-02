@@ -46,11 +46,20 @@ namespace P3bble.Core
                     break;
 
                 case P3bbleEndpoint.AppManager:
-                    frame = new AppMessage();
+                    frame = new AppManagerMessage();
                     break;
 
                 case P3bbleEndpoint.MusicControl:
                     frame = new MusicMessage();
+                    break;
+
+                case P3bbleEndpoint.ApplicationMessage:
+                case P3bbleEndpoint.Launcher:
+                    frame = new AppMessage(endpoint);
+                    break;
+
+                case P3bbleEndpoint.PutBytes:
+                    frame = new PutBytesMessage();
                     break;
 
                 default:

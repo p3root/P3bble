@@ -32,23 +32,24 @@
             <ScrollViewer>
                 <StackPanel Orientation="Vertical">
 
-                    <Button Click="Button_Click_6" Content="GetTime"/>
-                    <Button Click="Button_Click_7" Content="SetTime"/>
+                    <Button Click="GetTime_Click" Content="Get Time"/>
+                    <Button Click="SetTime_Click" Content="Set Time"/>
 
-                    <Button Click="Button_Click_12" Content="ListApps"/>
-                    <Button Click="Button_Click_13" Content="RemoveApp"/>
+                    <Button Click="GetInstalledApps_Click" Content="List Apps"/>
+                    <Button Click="RemoveApp_Click" Content="Remove App"/>
 
-                    <Button Click="Button_Click_11" Content="CheckForFirmwareUpdate"/>
-                    <Button Click="Button_Click_10" Content="DownloadWatchAppFile"/>
+                    <Button Click="CheckFirmware_Click" Content="Check Firmware Version"/>
+                    <Button Click="DownloadApp_Click" Content="Download &amp; Install Pixel Watchface"/>
+                    <!--<Button Click="LaunchApp_Click" Content="Launch Pixel Watchface"/>-->
 
-                    <Button Click="Button_Click_5" Content="Music Control"/>
+                    <Button Click="PlayMusic_Click" Content="Music Control"/>
 
-                    <Button Click="Button_Click_1" Content="Ping"/>
+                    <Button Click="Ping_Click" Content="Ping"/>
                     <!--<Button Click="Button_Click_2" Content="BadPing"/>-->
-                    <Button Click="Button_Click_3" Content="SendSMS"/>
-                    <Button Click="Button_Click_4" Content="SendEMAIL"/>
-                    <Button Click="Button_Click_8" Content="SendFacebookNot"/>
-                    <Button Click="Button_Click_9" Content="SimulatePhoneCall"/>
+                    <Button Click="SmsNotification_Click" Content="SendSMS"/>
+                    <Button Click="EmailNotification_Click" Content="SendEMAIL"/>
+                    <Button Click="FacebookNotification_Click" Content="SendFacebookNot"/>
+                    <Button Click="PhoneCall_Click" Content="SimulatePhoneCall"/>
 
                 </StackPanel>
             </ScrollViewer>

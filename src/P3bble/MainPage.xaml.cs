@@ -48,7 +48,7 @@ namespace P3bble
 
         }
 
-        private async void Button_Click_1(object sender, RoutedEventArgs e)
+        private async void Ping_Click(object sender, RoutedEventArgs e)
         {
             if (_pebble != null && _pebble.IsConnected)
                 await _pebble.PingAsync();
@@ -68,7 +68,7 @@ namespace P3bble
         //    }
         //}
 
-        private void Button_Click_3(object sender, RoutedEventArgs e)
+        private void SmsNotification_Click(object sender, RoutedEventArgs e)
         {
             if (_pebble != null && _pebble.IsConnected)
                 _pebble.SmsNotificationAsync("+436604908028", "wow, what a cool app :)");
@@ -78,7 +78,7 @@ namespace P3bble
             }
         }
 
-        private void Button_Click_4(object sender, RoutedEventArgs e)
+        private void EmailNotification_Click(object sender, RoutedEventArgs e)
         {
             if (_pebble != null && _pebble.IsConnected)
                 _pebble.EmailNotificationAsync("root@p3.co.at", "P3bble", "youre sooo cooool :)");
@@ -126,7 +126,7 @@ namespace P3bble
             }
         }
 
-        private void Button_Click_5(object sender, RoutedEventArgs e)
+        private void PlayMusic_Click(object sender, RoutedEventArgs e)
         {
             if (_pebble != null && _pebble.IsConnected)
             {
@@ -140,12 +140,12 @@ namespace P3bble
             }
         }
 
-        private async void Button_Click_6(object sender, RoutedEventArgs e)
+        private async void GetTime_Click(object sender, RoutedEventArgs e)
         {
             if (_pebble != null && _pebble.IsConnected)
             {
                 DateTime time = await _pebble.GetTimeAsync();
-                MessageBox.Show("Time is " + time.ToString() + " - " + Convert.ToInt32((DateTime.Now - time).TotalMinutes).ToString() + " minute(s) different from phone");
+                MessageBox.Show("Time is " + time.ToString() + " - " + Math.Abs(Convert.ToInt32((DateTime.Now - time).TotalMinutes)).ToString() + " minute(s) different from phone");
             }
             else
             {
@@ -153,7 +153,7 @@ namespace P3bble
             }
         }
 
-        private async void Button_Click_7(object sender, RoutedEventArgs e)
+        private async void SetTime_Click(object sender, RoutedEventArgs e)
         {
             if (_pebble != null && _pebble.IsConnected)
             {
@@ -165,7 +165,7 @@ namespace P3bble
             }
         }
 
-        private void Button_Click_8(object sender, RoutedEventArgs e)
+        private void FacebookNotification_Click(object sender, RoutedEventArgs e)
         {
             if (_pebble != null && _pebble.IsConnected)
                 _pebble.FacebookNotificationAsync("test", "testmessage");
@@ -175,7 +175,7 @@ namespace P3bble
             }
         }
 
-        private void Button_Click_9(object sender, RoutedEventArgs e)
+        private void PhoneCall_Click(object sender, RoutedEventArgs e)
         {
             if (_pebble != null && _pebble.IsConnected)
             {
@@ -199,20 +199,27 @@ namespace P3bble
             }
         }
 
-        private async void Button_Click_10(object sender, RoutedEventArgs e)
+        private async void DownloadApp_Click(object sender, RoutedEventArgs e)
         {
-            string fileName = await P3bbleBundle.DownloadFileAsync("https://pebblefw.s3.amazonaws.com/pebble/ev2_4/release/pbz/normal_ev2_4_v1.7.1.pbz");
-           // fileName = P3bble.Core.Bundle.P3bbleBundle.DownloadFileAsync("http://pebble-static.s3.amazonaws.com/watchfaces/apps/simplicity.pbw");
-            if (fileName != null)
+            //P3bbleBundle bundle = await P3bbleBundle.DownloadFileAsync("https://pebblefw.s3.amazonaws.com/pebble/ev2_4/release/pbz/normal_ev2_4_v1.7.1.pbz");
+            //P3bbleBundle bundle = P3bble.Core.Bundle.P3bbleBundle.DownloadFileAsync("http://pebble-static.s3.amazonaws.com/watchfaces/apps/simplicity.pbw");
+            P3bbleBundle bundle = await this._pebble.DownloadBundleAsync("http://u.jdiez.me/pixel.pbw");
+            if (bundle != null)
             {
-                P3bbleBundle bundle = new P3bbleBundle(fileName);
-
                 MessageBox.Show("bundle is " + bundle.BundleType.ToString() + " - "); 
                     //bundle.BundleType == BundleType.Application ? bundle.Manifest);
             }
         }
 
-        private async void Button_Click_11(object sender, RoutedEventArgs e)
+        //private void LaunchApp_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (_pebble != null && _pebble.IsConnected)
+        //    {
+        //        _pebble.LaunchApp(new Guid("deadefde-acfe-efbe-99ef-beefbeefbeef"));
+        //    }
+        //}
+
+        private async void CheckFirmware_Click(object sender, RoutedEventArgs e)
         {
             if (_pebble != null && _pebble.IsConnected)
             {
@@ -233,7 +240,7 @@ namespace P3bble
             }
         }
 
-        private async void Button_Click_12(object sender, RoutedEventArgs e)
+        private async void GetInstalledApps_Click(object sender, RoutedEventArgs e)
         {
             if (_pebble != null && _pebble.IsConnected)
             {
@@ -258,7 +265,7 @@ namespace P3bble
             }
         }
 
-        private async void Button_Click_13(object sender, RoutedEventArgs e)
+        private async void RemoveApp_Click(object sender, RoutedEventArgs e)
         {
             if (_pebble != null && _pebble.IsConnected)
             {

@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using P3bble.Core.Constants;
+using P3bble.Core.Types;
 
 namespace P3bble.Core.Messages
 {
     /// <summary>
     /// Represents the type we're putting on the Pebble
     /// </summary>
-    public enum PutBytesType : byte
+    internal enum PutBytesTransferType : byte
     {
         /// <summary>
         /// Firmware content
@@ -40,62 +42,90 @@ namespace P3bble.Core.Messages
     /// <summary>
     /// Represents the state
     /// </summary>
-    public enum PutBytesState
+    internal enum PutBytesState : byte
     {
         /// <summary>
         /// The not started state
         /// </summary>
-        NotStarted,
+        NotStarted = 0,
 
         /// <summary>
         /// The wait for token state
         /// </summary>
-        WaitForToken,
+        WaitForToken = 1,
 
         /// <summary>
         /// The in progress state
         /// </summary>
-        InProgress,
+        InProgress = 2,
 
         /// <summary>
         /// The commit state
         /// </summary>
-        Commit,
+        Commit = 3,
 
         /// <summary>
         /// The complete state
         /// </summary>
-        Complete,
+        Complete = 4,
 
         /// <summary>
         /// The failed state
         /// </summary>
-        Failed
+        Failed = 5
     }
 
     internal class PutBytesMessage : P3bbleMessage
     {
-        public PutBytesMessage(PutBytesType type)
-            : base(Constants.P3bbleEndpoint.PutBytes)
+        private PutBytesTransferType _transferType;
+        private byte[] _buffer;
+        private uint _index;
+        private bool _done;
+        private bool _error;
+        private PutBytesState _state;
+        private ushort _length;
+
+        public PutBytesMessage()
+            : base(P3bbleEndpoint.PutBytes)
         {
+        }
+
+        public PutBytesMessage(PutBytesTransferType transferType, byte[] buffer, uint index = 0)
+            : base(P3bbleEndpoint.PutBytes)
+        {
+            this._transferType = transferType;
+            this._buffer = buffer;
+            this._index = index;
+            this._state = PutBytesState.NotStarted;
         }
 
         protected override ushort PayloadLength
         {
             get
             {
-                return base.PayloadLength;
+                return this._length;
             }
         }
 
         protected override void AddContentToMessage(List<byte> payload)
         {
+            switch (this._state)
+            {
+                case PutBytesState.NotStarted:
+                    break;
+            }
+
             base.AddContentToMessage(payload);
         }
 
         protected override void GetContentFromMessage(List<byte> payload)
         {
             base.GetContentFromMessage(payload);
+        }
+
+        internal bool HandleStateMessage(PutBytesMessage message)
+        {
+            return false;
         }
     }
 }

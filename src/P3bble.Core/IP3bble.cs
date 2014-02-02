@@ -71,6 +71,23 @@ namespace P3bble.Core
         /// <returns>An async task to wait</returns>
         Task SetNowPlayingAsync(string artist, string album, string track);
 
+        /// <summary>
+        /// Downloads an application or firmware bundle
+        /// </summary>
+        /// <param name="uri">The URI.</param>
+        /// <returns>An async task to wait</returns>
+        Task<P3bbleBundle> DownloadBundleAsync(string uri);
+
+        /// <summary>
+        /// Installs an application.
+        /// </summary>
+        /// <param name="app">The application.</param>
+        /// <param name="launchAfterInstall">Whether to launch after install.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        Task InstallApp(P3bbleBundle app, bool launchAfterInstall);
+
         Task SmsNotificationAsync(string sender, string message);
         
         Task FacebookNotificationAsync(string sender, string message);

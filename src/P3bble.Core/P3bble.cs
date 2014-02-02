@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
+using System.IO.IsolatedStorage;
 using System.Net.Http;
 using System.Runtime.Serialization.Json;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using P3bble.Core.Communication;
 using P3bble.Core.Constants;
-using P3bble.Core.Helper;
 using P3bble.Core.Messages;
 using P3bble.Core.Types;
 using Windows.Networking.Proximity;
@@ -213,7 +211,7 @@ namespace P3bble.Core
         /// </returns>
         public async Task<P3bbleInstalledApplications> GetInstalledAppsAsync()
         {
-            var result = await this.SendMessageAndAwaitResponseAsync<AppMessage>(new AppMessage(AppMessageAction.ListApps));
+            var result = await this.SendMessageAndAwaitResponseAsync<AppManagerMessage>(new AppManagerMessage(AppManagerAction.ListApps));
             if (result != null)
             {
                 return result.InstalledApplications;
@@ -233,12 +231,131 @@ namespace P3bble.Core
         /// </returns>
         public Task RemoveAppAsync(P3bbleInstalledApplication app)
         {
-            return this._protocol.WriteMessage(new AppMessage(AppMessageAction.RemoveApp, app.Id, app.Index));
+            return this._protocol.WriteMessage(new AppManagerMessage(AppManagerAction.RemoveApp, app.Id, app.Index));
         }
 
+        /// <summary>
+        /// Sets the now playing track.
+        /// </summary>
+        /// <param name="artist">The artist.</param>
+        /// <param name="album">The album.</param>
+        /// <param name="track">The track.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
         public Task SetNowPlayingAsync(string artist, string album, string track)
         {
             return this._protocol.WriteMessage(new MusicMessage(artist, album, track));
+        }
+
+        /// <summary>
+        /// Downloads an application or firmware bundle
+        /// </summary>
+        /// <param name="uri">The URI.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        public async Task<P3bbleBundle> DownloadBundleAsync(string uri)
+        {
+            HttpClient client = new HttpClient();
+            var response = await client.GetAsync(uri);
+            if (response.IsSuccessStatusCode)
+            {
+                var downloadStream = await response.Content.ReadAsStreamAsync();
+
+                Guid fileGuid = Guid.NewGuid();
+                IsolatedStorageFile file = IsolatedStorageFile.GetUserStoreForApplication();
+
+                using (IsolatedStorageFileStream stream = new IsolatedStorageFileStream(fileGuid.ToString(), FileMode.CreateNew, file))
+                {
+                    byte[] buffer = new byte[1024];
+                    while (downloadStream.Read(buffer, 0, buffer.Length) > 0)
+                    {
+                        stream.Write(buffer, 0, buffer.Length);
+                    }
+                }
+
+                return new P3bbleBundle(fileGuid.ToString());
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Installs an application.
+        /// </summary>
+        /// <param name="app">The application.</param>
+        /// <param name="launchAfterInstall">Whether to launch after install.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        public async Task InstallApp(P3bbleBundle app, bool launchAfterInstall)
+        {
+            if (app.BundleType != BundleType.Application)
+            {
+                throw new ArgumentException("Only app bundles can be installed");
+            }
+
+            // Get list of installed apps...
+            var installedApps = await this.GetInstalledAppsAsync();
+            
+            // Find the first free slot...
+            uint firstFreeBank = 1;
+            foreach (var installedApp in installedApps.ApplicationsInstalled)
+            {
+                if (installedApp.Index == firstFreeBank)
+                {
+                    firstFreeBank++;
+                }
+
+                if (firstFreeBank == installedApps.ApplicationBanks)
+                {
+                    throw new CannotInstallException();
+                }
+            }
+
+            Debug.WriteLine(string.Format("Attempting to add app to bank {0} of {1}", firstFreeBank, installedApps.ApplicationBanks));
+
+            string resourcesFile = null;
+            if (app.HasResources)
+            {
+                resourcesFile = app.Manifest.Resources.Filename;
+            }
+            
+            PutBytesMessage msg = new PutBytesMessage(PutBytesTransferType.Binary, app.ApplicationRaw, firstFreeBank);
+            var result = await this.SendMessageAndAwaitResponseAsync<PutBytesMessage>(msg, 30000);
+
+/*
+client = PutBytesClient(self, first_free, "BINARY", binary)
+self.register_endpoint("PUTBYTES", client.handle_message)
+client.init()
+while not client._done and not client._error:
+    pass
+if client._error:
+    raise PebbleError(self.id, "Failed to send application binary %s/pebble-app.bin" % pbz_path)
+
+if resources:
+    client = PutBytesClient(self, first_free, "RESOURCES", resources)
+    self.register_endpoint("PUTBYTES", client.handle_message)
+    client.init()
+    while not client._done and not client._error:
+        pass
+    if client._error:
+        raise PebbleError(self.id, "Failed to send application resources %s/app_resources.pbpack" % pbz_path)
+
+time.sleep(2)
+data = pack("!bI", 3, index)
+self._send_message("APP_MANAGER", data)
+time.sleep(2)
+
+if launch_on_install:
+{
+    app_metadata = app.get_app_metadata()
+    self.launcher_message(app_metadata['uuid'].bytes, "RUNNING", uuid_is_string=False)
+}
+*/
         }
 
         //////////////////////////////////////////////////////////////////////////////////
@@ -372,8 +489,21 @@ namespace P3bble.Core
                 if (this._pendingMessage.Endpoint == message.Endpoint)
                 {
                     Debug.WriteLine("ProtocolMessageReceived: we were waiting for this type of message");
-                    this._pendingMessage = message;
-                    this._pendingMessageSignal.Set();
+
+                    // PutBytes messages are state machines, so need special treatment...
+                    if (message.Endpoint == P3bbleEndpoint.PutBytes)
+                    {
+                        var putMessage = this._pendingMessage as PutBytesMessage;
+                        if (putMessage.HandleStateMessage(putMessage))
+                        {
+                            this._pendingMessageSignal.Set();
+                        }
+                    }
+                    else
+                    {
+                        this._pendingMessage = message;
+                        this._pendingMessageSignal.Set();
+                    }
                 }
             }
         }
@@ -432,6 +562,28 @@ namespace P3bble.Core
 
                     return pendingMessage;
                 });
+        }
+
+        private async Task<bool> LaunchApp(Guid appUuid)
+        {
+            var msg = new AppMessage(P3bbleEndpoint.Launcher)
+            {
+                AppUuid = appUuid,
+                AppCommand = AppCommand.Push
+            };
+
+            msg.AddTuple((uint)LauncherKeys.RunState, AppMessageTupleDataType.UInt, (byte)LauncherParams.Running);
+
+            var result = await this.SendMessageAndAwaitResponseAsync<AppMessage>(msg);
+
+            if (result != null)
+            {
+                return result.AppCommand == AppCommand.Ack;
+            }
+            else
+            {
+                throw new TimeoutException();
+            }
         }
     }
 }

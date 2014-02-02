@@ -1,47 +1,49 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace P3bble.Core.Types
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    [SuppressMessage("Microsoft.StyleCop.CSharp.OrderingRules", "SA1202:ElementsMustBeOrderedByAccess", Justification = "It's a structure deserialized from a stream")]
     public struct P3bbleApplicationMetadata
     {
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 8)]
-        public readonly string Header;
+        internal readonly string Header;
         [MarshalAs(UnmanagedType.U1)]
-        public readonly byte StructMajorVersion;
+        internal readonly byte StructMajorVersion;
         [MarshalAs(UnmanagedType.U1)]
-        public readonly byte StructMinorVersion;
+        internal readonly byte StructMinorVersion;
         [MarshalAs(UnmanagedType.U1)]
-        public readonly byte SDKMajorVersion;
+        internal readonly byte SdkMajorVersion;
         [MarshalAs(UnmanagedType.U1)]
-        public readonly byte SDKMinorVersion;
+        internal readonly byte SdkMinorVersion;
         [MarshalAs(UnmanagedType.U1)]
-        public readonly byte AppMajorVersion;
+        internal readonly byte AppMajorVersion;
         [MarshalAs(UnmanagedType.U1)]
-        public readonly byte AppMinorVersion;
+        internal readonly byte AppMinorVersion;
         [MarshalAs(UnmanagedType.U2)]
-        public readonly ushort Size;
+        internal readonly ushort Size;
         [MarshalAs(UnmanagedType.U4)]
-        public readonly uint Offset;
+        internal readonly uint Offset;
         [MarshalAs(UnmanagedType.U4)]
-        public readonly uint CRC;
+        internal readonly uint CRC;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
         public readonly string AppName;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
         public readonly string CompanyName;
         [MarshalAs(UnmanagedType.U4)]
-        public readonly uint IconResourceID;
+        internal readonly uint IconResourceID;
         [MarshalAs(UnmanagedType.U4)]
-        public readonly uint SymbolTableAddress;
+        internal readonly uint SymbolTableAddress;
         [MarshalAs(UnmanagedType.U4)]
-        public readonly uint Flags;
+        internal readonly uint Flags;
         [MarshalAs(UnmanagedType.U4)]
-        public readonly uint RelocationListStart;
+        internal readonly uint RelocationListStart;
         [MarshalAs(UnmanagedType.U4)]
-        public readonly uint RelocationListItemCount;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 16)]
-        public readonly string UUID;
+        internal readonly uint RelocationListItemCount;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        internal readonly byte[] UuidInternal;
 
         public Version AppVersion
         {
@@ -51,11 +53,11 @@ namespace P3bble.Core.Types
             }
         }
 
-        public Version SDKVersion
+        public Version SdkVersion
         {
             get
             {
-                return new Version(string.Format("{0}.{1}", this.SDKMajorVersion, this.SDKMinorVersion));
+                return new Version(string.Format("{0}.{1}", this.SdkMajorVersion, this.SdkMinorVersion));
             }
         }
 
@@ -64,6 +66,14 @@ namespace P3bble.Core.Types
             get
             {
                 return new Version(string.Format("{0}.{1}", this.StructMajorVersion, this.StructMinorVersion));
+            }
+        }
+
+        public Guid Uuid
+        {
+            get
+            {
+                return new Guid(this.UuidInternal);
             }
         }
 

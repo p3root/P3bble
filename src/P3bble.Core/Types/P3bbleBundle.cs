@@ -33,8 +33,7 @@ namespace P3bble.Core.Types
     /// </summary>
     public class P3bbleBundle
     {
-        private P3bbleBundleManifest _manifest;
-        private string _privateName;
+        private string _path;
         private UnZipper _bundle;
 
         /// <summary>
@@ -45,7 +44,7 @@ namespace P3bble.Core.Types
         {
             Stream jsonstream;
             Stream binstream;
-            this._privateName = path;
+            this._path = path;
 
             IsolatedStorageFile file = IsolatedStorageFile.GetUserStoreForApplication();
             if (!file.FileExists(path))
@@ -67,29 +66,31 @@ namespace P3bble.Core.Types
 
             var serializer = new DataContractJsonSerializer(typeof(P3bbleBundleManifest));
 
-            this._manifest = serializer.ReadObject(jsonstream) as P3bbleBundleManifest;
+            this.Manifest = serializer.ReadObject(jsonstream) as P3bbleBundleManifest;
             jsonstream.Close();
 
-            this.HasResources = this._manifest.Resources.Size != 0;
+            this.HasResources = this.Manifest.Resources.Size != 0;
 
-            if (this._manifest.Type == "firmware")
+            if (this.Manifest.Type == "firmware")
             {
                 this.BundleType = BundleType.Firmware;
             }
             else
             {
                 this.BundleType = BundleType.Application;
-                if (this._bundle.FileNamesInZip.Contains(this._manifest.Application.Filename))
+                if (this._bundle.FileNamesInZip.Contains(this.Manifest.ApplicationManifest.Filename))
                 {
-                    binstream = this._bundle.GetFileStream(this._manifest.Application.Filename);
+                    binstream = this._bundle.GetFileStream(this.Manifest.ApplicationManifest.Filename);
                 }
                 else
                 {
                     string format = "App file {0} not found in archive";
-                    throw new ArgumentException(string.Format(format, this._manifest.Application.Filename));
+                    throw new ArgumentException(string.Format(format, this.Manifest.ApplicationManifest.Filename));
                 }
 
-                this.Application = binstream.AsStruct<P3bbleApplicationMetadata>();
+                byte[] buffer;
+                this.Application = binstream.AsStruct<P3bbleApplicationMetadata>(out buffer);
+                this.ApplicationRaw = buffer;
                 binstream.Close();
             }
         }
@@ -108,42 +109,17 @@ namespace P3bble.Core.Types
 
         public string FullPath { get; private set; }
 
-        public P3bbleApplicationMetadata Application { get; private set; }
+        internal P3bbleApplicationMetadata Application { get; private set; }
+        internal byte[] ApplicationRaw { get; private set; }
+
+        internal P3bbleBundleManifest Manifest { get; private set; }
 
         public static void DeleteFromStorage(P3bbleBundle bundle)
         {
             IsolatedStorageFile file = IsolatedStorageFile.GetUserStoreForApplication();
-            if (file.FileExists(bundle._privateName))
+            if (file.FileExists(bundle._path))
             {
-                file.DeleteFile(bundle._privateName);
-            }
-        }
-
-        public static async Task<string> DownloadFileAsync(string url)
-        {
-            HttpClient client = new HttpClient();
-            var response = await client.GetAsync(url);
-            if (response.IsSuccessStatusCode)
-            {
-                var downloadStream = await response.Content.ReadAsStreamAsync();
-
-                Guid fileGuid = Guid.NewGuid();
-                IsolatedStorageFile file = IsolatedStorageFile.GetUserStoreForApplication();
-
-                using (IsolatedStorageFileStream stream = new IsolatedStorageFileStream(fileGuid.ToString(), FileMode.CreateNew, file))
-                {
-                    byte[] buffer = new byte[1024];
-                    while (downloadStream.Read(buffer, 0, buffer.Length) > 0)
-                    {
-                        stream.Write(buffer, 0, buffer.Length);
-                    }
-                }
-
-                return fileGuid.ToString();
-            }
-            else
-            {
-                return null;
+                file.DeleteFile(bundle._path);
             }
         }
 
@@ -158,7 +134,7 @@ namespace P3bble.Core.Types
             {
                 // This is pretty ugly, but will do for now.
                 string format = "{0} containing fw version {1} for hw rev {2}";
-                return string.Format(format, this.Filename, this._manifest.Resources.Version, this._manifest.Firmware.HardwareRevision);
+                return string.Format(format, this.Filename, this.Manifest.Resources.Version, this.Manifest.Firmware.HardwareRevision);
             }
         }
 
