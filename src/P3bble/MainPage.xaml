@@ -49,8 +49,8 @@
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <ScrollViewer>
                 <StackPanel Orientation="Vertical">
-                
-                    <Button Click="Button_Click_1" Content="Ping"/>
+                <TextBlock x:Name="MusicControlTextBlock" TextAlignment="Center">Waiting for MusicControls events...</TextBlock>
+                <Button Click="Button_Click_1" Content="Ping"/>
                 <Button Click="Button_Click_2" Content="BadPing"/>
                 <Button Click="Button_Click_3" Content="SendSMS"/>
                 <Button Click="Button_Click_4" Content="SendEMAIL"/>

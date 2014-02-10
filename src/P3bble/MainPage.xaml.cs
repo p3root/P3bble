@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
+using P3bble.Core.EventArguments;
 using P3bble.Resources;
 using System.Threading;
 using P3bble.Core.Bundle;
@@ -36,6 +37,7 @@ namespace P3bble
             {
                 _peb = pebbles[0];
                 _peb.Connected += PebbleConnected;
+				_peb.MusicControlReceived += MusicControlReceived;
                 _peb.Connect();
                 
                 
@@ -43,7 +45,12 @@ namespace P3bble
 
         }
 
-        private void PebbleConnected(object sender, EventArgs e)
+	    private void MusicControlReceived(object sender, MusicControlEventArgs musicControlEventArgs)
+	    {
+		    Dispatcher.BeginInvoke(() => MusicControlTextBlock.Text = string.Concat(musicControlEventArgs.Command, " received"));
+	    }
+
+	    private void PebbleConnected(object sender, EventArgs e)
         {
             _connected = true;
             _peb.GetVersion();

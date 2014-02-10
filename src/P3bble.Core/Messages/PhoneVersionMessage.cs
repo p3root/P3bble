@@ -10,7 +10,8 @@ namespace P3bble.Core.Messages
     internal class PhoneVersionMessage : P3bbleMessage
     {
         uint sessionCaps = (uint)P3bbleSessionCaps.GAMMA_RAY;
-        uint remoteCaps = (uint)(P3bbleRemoteCaps.TELEPHONY | P3bbleRemoteCaps.SMS | P3bbleRemoteCaps.WINDOWS | P3bbleRemoteCaps.GPS);
+		// Use RemoteCaps Android to properly receive MusicControls messages.
+        uint remoteCaps = (uint)(P3bbleRemoteCaps.TELEPHONY | P3bbleRemoteCaps.SMS | P3bbleRemoteCaps.ANDROID);
         ushort length;
 
         public PhoneVersionMessage()

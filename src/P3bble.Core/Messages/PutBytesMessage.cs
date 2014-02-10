@@ -15,7 +15,7 @@ namespace P3bble.Core.Messages
         Binary = 5
     }
 
-    protected enum PutBytesState
+    public enum PutBytesState
     {
         NotStarted,
         WaitForToken,
