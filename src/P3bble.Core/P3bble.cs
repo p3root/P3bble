@@ -43,6 +43,7 @@ namespace P3bble.Core
 
         public EventHandler Connected;
         public EventHandler ConnectionError;
+		public EventHandler<MusicControlEventArgs> MusicControlReceived;
 
         public PeerInformation PeerInformation { get; private set; }
         public P3bbleFirmwareVersion FirmwareVersion { get; private set; }
@@ -103,20 +104,29 @@ namespace P3bble.Core
 
         private void AsynMessageRecived(object sender, P3bbleMessageReceivedEventArgs e)
         {
-            if (e.Message.Endpoint == P3bbleEndpoint.PhoneVersion)
-            {
-                _prot.WriteMessage(new PhoneVersionMessage());
-            }
-            else if (e.Message.Endpoint == P3bbleEndpoint.Version)
-            {
-                VersionMessage message = e.Message as VersionMessage;
-                FirmwareVersion = message.Firmware;
-                RecoveryFirmwareVersion = message.RecoveryFirmware;
-            }
-            Debug.WriteLine(e.Message.Endpoint);
+	        switch (e.Message.Endpoint)
+	        {
+		        case P3bbleEndpoint.PhoneVersion:
+			        _prot.WriteMessage(new PhoneVersionMessage());
+			        break;
+		        case P3bbleEndpoint.Version:
+			        var vMessage = e.Message as VersionMessage;
+			        if (vMessage != null)
+			        {
+						FirmwareVersion = vMessage.Firmware;
+						RecoveryFirmwareVersion = vMessage.RecoveryFirmware;
+			        }
+			        break;
+				case P3bbleEndpoint.MusicControl:
+			        var mcMessage = e.Message as MusicControlMessage;
+			        if (mcMessage != null && MusicControlReceived != null)
+				        MusicControlReceived(this, new MusicControlEventArgs() {Command = mcMessage.Command});
+			        break;
+	        }
+	        Debug.WriteLine(e.Message.Endpoint);
         }
 
-        public void Ping()
+	    public void Ping()
         {
             _prot.WriteMessage(new PingMessage());
         }

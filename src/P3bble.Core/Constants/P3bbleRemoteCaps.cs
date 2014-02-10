@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace P3bble.Core.Constants
 {
+	[Flags]
     public enum P3bbleRemoteCaps : uint
     {
         UNKNOWN = 0,

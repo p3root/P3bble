@@ -36,6 +36,9 @@ namespace P3bble.Core
                 case P3bbleEndpoint.Logs:
                     frame = new LogsMessage();
                     break;
+				case P3bbleEndpoint.MusicControl:
+					frame = new MusicControlMessage();
+		            break;
 
                 default:
                     frame =  new P3bbleMessage(endpoint);

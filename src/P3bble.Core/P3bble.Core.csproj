@@ -86,8 +86,10 @@
     <Compile Include="Bundle\P3bbleBundleManifest.cs" />
     <Compile Include="Bundle\P3bbleBundle.cs" />
     <Compile Include="Communication\Protocol.cs" />
+    <Compile Include="Constants\MusicControls.cs" />
     <Compile Include="Constants\P3bbleHardwareRevision.cs" />
     <Compile Include="EventArguments\CheckForNewFirmwareVersionEventArgs.cs" />
+    <Compile Include="EventArguments\MusicControlEventArgs.cs" />
     <Compile Include="Firmware\P3bbleFirmwareLatest.cs" />
     <Compile Include="Firmware\P3bbleFirmwareVersion.cs" />
     <Compile Include="Helper\ByteHelper.cs" />
@@ -99,6 +101,7 @@
     <Compile Include="Messages\PingMessage.cs" />
     <Compile Include="Messages\PutBytesMessage.cs" />
     <Compile Include="Messages\ResetMessage.cs" />
+    <Compile Include="Messages\MusicControlMessage.cs" />
     <Compile Include="Messages\SetMusicMessage.cs" />
     <Compile Include="Messages\TimeMessage.cs" />
     <Compile Include="Messages\VersionMessage.cs" />
