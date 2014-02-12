@@ -200,5 +200,15 @@ namespace P3bble
                 MessageBox.Show("new version available");
             }
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (_connected)
+                _peb.SetTime(DateTime.Now.AddHours(1));
+            else
+            {
+                MessageBox.Show("Pebble not connected");
+            }
+        }
     }
 }

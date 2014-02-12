@@ -15,6 +15,11 @@ namespace P3bble.Core.Helper
             return new DateTime(1970, 1, 1).AddSeconds(ts);
         }
 
+        public static double DateTimeToTimeStamp(DateTime dateTime)
+        {
+            return (dateTime - new DateTime(1970, 1, 1).ToLocalTime()).TotalSeconds;
+        }
+
         public static T ReadStruct<T>(Stream fs) where T : struct
         {
             // Borrowed from http://stackoverflow.com/a/1936208 because BitConverter-ing all of this would be a pain

@@ -171,6 +171,11 @@ namespace P3bble.Core
             _prot.WriteMessage(new TimeMessage());
         }
 
+        public void SetTime(DateTime dt)
+        {
+            _prot.WriteMessage(new TimeMessage(TimeMessageAction.SetTime, dt));
+        }
+
         public void PhoneCall(string name, string number, byte[] cookie)
         {
             _prot.WriteMessage(new PhoneControlMessage(PhoneControlType.INCOMING_CALL, cookie, number, name));

@@ -10,8 +10,9 @@ namespace P3bble.Core.Messages
 {
     internal enum TimeMessageAction
     {
-        GetTime,
-        SetTime
+        GetTime = 0,
+        GetTimeResponse = 1,
+        SetTime =2
     }
     internal class TimeMessage : P3bbleMessage
     {
@@ -33,10 +34,27 @@ namespace P3bble.Core.Messages
 
         protected override void AddContentToMessage(List<byte> payload)
         {
-            base.AddContentToMessage(payload);
-
             if (_action == TimeMessageAction.GetTime)
-                payload.Add(0x00);
+            {
+                base.AddContentToMessage(payload);
+                payload.Add((int)TimeMessageAction.GetTime);
+
+            }
+            else if (_action == TimeMessageAction.SetTime)
+            {
+                double timestamp = Util.DateTimeToTimeStamp(_dateTime);
+
+                byte[] array = BitConverter.GetBytes((int)timestamp);
+
+                if (BitConverter.IsLittleEndian)
+                {
+                    Array.Reverse(array, 0, 4);
+                }
+                base.AddContentToMessage(payload);
+                payload.Add((int)TimeMessageAction.SetTime);
+                payload.AddRange(array.ToList());
+            }
+          
         }
 
         protected override void GetContentFromMessage(List<byte> payload)
@@ -57,6 +75,8 @@ namespace P3bble.Core.Messages
             {
                 if (_action == TimeMessageAction.GetTime)
                     return 1;
+                else if (_action == TimeMessageAction.SetTime)
+                    return 5;
                 return base.PayloadLength;
             }
         }
