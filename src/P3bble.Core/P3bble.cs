@@ -22,6 +22,12 @@ namespace P3bble.Core
     public delegate void MusicControlReceivedHandler(MusicControlAction action);
 
     /// <summary>
+    /// Delegate to handle installation progress
+    /// </summary>
+    /// <param name="percentComplete">The percent complete.</param>
+    public delegate void InstallProgressHandler(int percentComplete);
+
+    /// <summary>
     /// Defines a connection to a Pebble watch
     /// </summary>
     public class P3bble : IP3bble
@@ -49,6 +55,14 @@ namespace P3bble.Core
         /// The music control received handler.
         /// </value>
         public MusicControlReceivedHandler MusicControlReceived { get; set; }
+
+        /// <summary>
+        /// Gets or sets the install progress handler.
+        /// </summary>
+        /// <value>
+        /// The install progress handler.
+        /// </value>
+        public InstallProgressHandler InstallProgress { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether this instance is connected.
@@ -300,7 +314,7 @@ namespace P3bble.Core
 
             // Get list of installed apps...
             var installedApps = await this.GetInstalledAppsAsync();
-            
+
             // Find the first free slot...
             uint firstFreeBank = 1;
             foreach (var installedApp in installedApps.ApplicationsInstalled)
@@ -312,50 +326,78 @@ namespace P3bble.Core
 
                 if (firstFreeBank == installedApps.ApplicationBanks)
                 {
-                    throw new CannotInstallException();
+                    throw new CannotInstallException("There are no memory slots free");
                 }
             }
 
+            double progress = 0;
+            double totalBytes = app.Manifest.ApplicationManifest.Size + app.Manifest.Resources.Size;
+
+            InstallProgressHandler handler = null;
+
+            if (this.InstallProgress != null)
+            {
+                // Derive overall progress from the bytes sent for the part...
+                handler = new InstallProgressHandler((partProgress) =>
+                {
+                    progress += partProgress;
+                    int percentComplete = (int)(progress / totalBytes * 100);
+                    Debug.WriteLine("Installation " + percentComplete.ToString() + "% complete - " + progress.ToString() + " / " + totalBytes.ToString());
+                    this.InstallProgress(percentComplete);
+                });
+            }
+
             Debug.WriteLine(string.Format("Attempting to add app to bank {0} of {1}", firstFreeBank, installedApps.ApplicationBanks));
+
+            PutBytesMessage binMsg = new PutBytesMessage(PutBytesTransferType.Binary, app.ApplicationBinary, handler, firstFreeBank);
+
+            try
+            {
+                var binResult = await this.SendMessageAndAwaitResponseAsync<PutBytesMessage>(binMsg, 60000);
+
+                if (binResult == null || binResult.Errored)
+                {
+                    throw new CannotInstallException(string.Format("Failed to send application binary {0}", app.Manifest.ApplicationManifest.Filename));
+                }
+            }
+            catch (ProtocolException pex)
+            {
+                throw new CannotInstallException("Sorry, an internal error occurred, please try again");
+            }
 
             string resourcesFile = null;
             if (app.HasResources)
             {
                 resourcesFile = app.Manifest.Resources.Filename;
+
+                PutBytesMessage resourcesMsg = new PutBytesMessage(PutBytesTransferType.Resources, app.ApplicationResources, handler, firstFreeBank);
+
+                try
+                {
+                    var resourceResult = await this.SendMessageAndAwaitResponseAsync<PutBytesMessage>(resourcesMsg, 60000);
+
+                    if (resourceResult == null || resourceResult.Errored)
+                    {
+                        throw new CannotInstallException(string.Format("Failed to send application resources {0}", app.Manifest.Resources.Filename));
+                    }
+                }
+                catch (ProtocolException pex)
+                {
+                    throw new CannotInstallException("Sorry, an internal error occurred, please try again");
+                }
             }
-            
-            PutBytesMessage msg = new PutBytesMessage(PutBytesTransferType.Binary, app.ApplicationRaw, firstFreeBank);
-            var result = await this.SendMessageAndAwaitResponseAsync<PutBytesMessage>(msg, 30000);
 
-/*
-client = PutBytesClient(self, first_free, "BINARY", binary)
-self.register_endpoint("PUTBYTES", client.handle_message)
-client.init()
-while not client._done and not client._error:
-    pass
-if client._error:
-    raise PebbleError(self.id, "Failed to send application binary %s/pebble-app.bin" % pbz_path)
+            Thread.Sleep(1000);
 
-if resources:
-    client = PutBytesClient(self, first_free, "RESOURCES", resources)
-    self.register_endpoint("PUTBYTES", client.handle_message)
-    client.init()
-    while not client._done and not client._error:
-        pass
-    if client._error:
-        raise PebbleError(self.id, "Failed to send application resources %s/app_resources.pbpack" % pbz_path)
+            var appMsg = new AppMessage(P3bbleEndpoint.AppManager) { AppCommand = AppCommand.FinaliseInstall, AppIndex = firstFreeBank };
+            await this._protocol.WriteMessage(appMsg);
 
-time.sleep(2)
-data = pack("!bI", 3, index)
-self._send_message("APP_MANAGER", data)
-time.sleep(2)
+            Thread.Sleep(1000);
 
-if launch_on_install:
-{
-    app_metadata = app.get_app_metadata()
-    self.launcher_message(app_metadata['uuid'].bytes, "RUNNING", uuid_is_string=False)
-}
-*/
+            if (launchAfterInstall)
+            {
+                await this.LaunchApp(app.Application.Uuid);
+            }
         }
 
         //////////////////////////////////////////////////////////////////////////////////
@@ -465,7 +507,7 @@ if launch_on_install:
                 case P3bbleEndpoint.Logs:
                     if (message as LogsMessage != null)
                     {
-                        Debug.WriteLine(">> LOG: " + (message as LogsMessage).Message);
+                        Debug.WriteLine("LOG: " + (message as LogsMessage).Message);
                     }
 
                     break;
@@ -494,12 +536,26 @@ if launch_on_install:
                     if (message.Endpoint == P3bbleEndpoint.PutBytes)
                     {
                         var putMessage = this._pendingMessage as PutBytesMessage;
-                        if (putMessage.HandleStateMessage(putMessage))
+                        if (putMessage.HandleStateMessage(message as PutBytesMessage))
                         {
                             this._pendingMessageSignal.Set();
                         }
+                        else
+                        {
+                            this._protocol.WriteMessage(putMessage);
+                        }
                     }
                     else
+                    {
+                        this._pendingMessage = message;
+                        this._pendingMessageSignal.Set();
+                    }
+                }
+                else
+                {
+                    // We've received a Log message when we were expecting something else,
+                    // this means the protocol comms got messed up somehow, we should abort...
+                    if (message.Endpoint == P3bbleEndpoint.Logs)
                     {
                         this._pendingMessage = message;
                         this._pendingMessageSignal.Set();
@@ -532,7 +588,7 @@ if launch_on_install:
                     this._pendingMessage = message;
 
                     // Send the message...
-                    await _protocol.WriteMessage(message);
+                    await this._protocol.WriteMessage(message);
 
                     // Wait for the response...
                     this._pendingMessageSignal.Wait(millisecondsTimeout);
@@ -541,9 +597,12 @@ if launch_on_install:
 
                     if (this._pendingMessageSignal.IsSet)
                     {
-                        // Store any response will benull if timed out...
+                        // Store any response will be null if timed out...
                         pendingMessage = this._pendingMessage as T;
                     }
+
+                    // See if we have a protocol error
+                    LogsMessage logMessage = this._pendingMessage as LogsMessage;
 
                     // Clear the pending variables...
                     this._pendingMessageSignal = null;
@@ -554,6 +613,11 @@ if launch_on_install:
                     if (pendingMessage != null)
                     {
                         Debug.WriteLine(pendingMessage.GetType().Name + " message received back in " + timeTaken.ToString() + "ms");
+                    }
+                    else if (logMessage != null)
+                    {
+                        // This is untested as it's an intermittent song...
+                        throw new ProtocolException(logMessage);
                     }
                     else
                     {

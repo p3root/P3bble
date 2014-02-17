@@ -22,6 +22,11 @@ namespace P3bble.Core.Messages
         Request = 2,
 
         /// <summary>
+        /// The finalise install command
+        /// </summary>
+        FinaliseInstall = 3,
+
+        /// <summary>
         /// The ack response
         /// </summary>
         Ack = 0xff,
@@ -105,6 +110,8 @@ namespace P3bble.Core.Messages
 
         public AppCommand AppCommand { get; set; }
 
+        public uint AppIndex { get; set; }
+
         /// <summary>
         /// Gets or sets the remaining response.
         /// </summary>
@@ -143,27 +150,40 @@ namespace P3bble.Core.Messages
 
         protected override void AddContentToMessage(List<byte> payload)
         {
-            List<byte> data = new List<byte>();
-
             // Add the command
-            data.Add((byte)this.AppCommand);
+            payload.Add((byte)this.AppCommand);
 
-            // Add a transaction id:
-            data.Add(0);
-
-            // Add the app id:
-            data.AddRange(this.AppUuid.ToByteArray());
-
-            // Add the actual data to send - first the count...
-            data.Add((byte)this._tuples.Count);
-
-            // Now the tuples...
-            foreach (var tuple in this._tuples)
+            if (this.AppCommand == AppCommand.FinaliseInstall)
             {
-                data.AddRange(tuple);
-            }
+                byte[] indexBytes = BitConverter.GetBytes(this.AppIndex);
+                if (BitConverter.IsLittleEndian)
+                {
+                    Array.Reverse(indexBytes);
+                }
 
-            payload.AddRange(data);
+                payload.AddRange(indexBytes);
+            }
+            else
+            {
+                List<byte> data = new List<byte>();
+
+                // Add a transaction id:
+                data.Add(0);
+
+                // Add the app id:
+                data.AddRange(this.AppUuid.ToByteArray());
+
+                // Add the actual data to send - first the count...
+                data.Add((byte)this._tuples.Count);
+
+                // Now the tuples...
+                foreach (var tuple in this._tuples)
+                {
+                    data.AddRange(tuple);
+                }
+
+                payload.AddRange(data);
+            }
         }
 
         protected override void GetContentFromMessage(System.Collections.Generic.List<byte> payload)

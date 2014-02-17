@@ -42,8 +42,6 @@ namespace P3bble.Core.Types
         /// <param name="path">The relative or full path to the file.</param>
         public P3bbleBundle(string path)
         {
-            Stream jsonstream;
-            Stream binstream;
             this._path = path;
 
             IsolatedStorageFile file = IsolatedStorageFile.GetUserStoreForApplication();
@@ -55,21 +53,16 @@ namespace P3bble.Core.Types
             this.FullPath = Path.GetFullPath(path);
             this._bundle = new UnZipper(file.OpenFile(path, FileMode.Open));
 
-            if (this._bundle.FileNamesInZip.Contains("manifest.json"))
-            {
-                jsonstream = this._bundle.GetFileStream("manifest.json");
-            }
-            else
+            if (!this._bundle.FileNamesInZip.Contains("manifest.json"))
             {
                 throw new ArgumentException("manifest.json not found in archive - not a Pebble this.Bundle.");
             }
 
-            var serializer = new DataContractJsonSerializer(typeof(P3bbleBundleManifest));
-
-            this.Manifest = serializer.ReadObject(jsonstream) as P3bbleBundleManifest;
-            jsonstream.Close();
-
-            this.HasResources = this.Manifest.Resources.Size != 0;
+            using (Stream jsonstream = this._bundle.GetFileStream("manifest.json"))
+            {
+                var serializer = new DataContractJsonSerializer(typeof(P3bbleBundleManifest));
+                this.Manifest = serializer.ReadObject(jsonstream) as P3bbleBundleManifest;
+            }
 
             if (this.Manifest.Type == "firmware")
             {
@@ -78,20 +71,18 @@ namespace P3bble.Core.Types
             else
             {
                 this.BundleType = BundleType.Application;
-                if (this._bundle.FileNamesInZip.Contains(this.Manifest.ApplicationManifest.Filename))
-                {
-                    binstream = this._bundle.GetFileStream(this.Manifest.ApplicationManifest.Filename);
-                }
-                else
-                {
-                    string format = "App file {0} not found in archive";
-                    throw new ArgumentException(string.Format(format, this.Manifest.ApplicationManifest.Filename));
-                }
+                this.ApplicationBinary = this.ReadFileToArray(this.Manifest.ApplicationManifest.Filename);
 
-                byte[] buffer;
-                this.Application = binstream.AsStruct<P3bbleApplicationMetadata>(out buffer);
-                this.ApplicationRaw = buffer;
-                binstream.Close();
+                // Convert first part to app manifest
+                byte[] buffer = new byte[Marshal.SizeOf(typeof(P3bbleApplicationMetadata))];
+                Array.Copy(this.ApplicationBinary, 0, buffer, 0, buffer.Length);
+                this.Application = buffer.AsStruct<P3bbleApplicationMetadata>();
+            }
+
+            this.HasResources = this.Manifest.Resources.Size != 0;
+            if (this.HasResources)
+            {
+                this.ApplicationResources = this.ReadFileToArray(this.Manifest.Resources.Filename);
             }
         }
 
@@ -109,9 +100,11 @@ namespace P3bble.Core.Types
 
         public string FullPath { get; private set; }
 
-        internal P3bbleApplicationMetadata Application { get; private set; }
+        public P3bbleApplicationMetadata Application { get; private set; }
 
-        internal byte[] ApplicationRaw { get; private set; }
+        internal byte[] ApplicationBinary { get; private set; }
+
+        internal byte[] ApplicationResources { get; private set; }
 
         internal P3bbleBundleManifest Manifest { get; private set; }
 
@@ -150,6 +143,22 @@ namespace P3bble.Core.Types
                 }
 
                 return true;
+            }
+        }
+
+        private byte[] ReadFileToArray(string file)
+        {
+            if (!this._bundle.FileNamesInZip.Contains(file))
+            {
+                string format = "App file {0} not found in archive";
+                throw new ArgumentException(string.Format(format, file));
+            }
+
+            using (Stream stream = this._bundle.GetFileStream(file))
+            {
+                byte[] result = new byte[stream.Length];
+                stream.Read(result, 0, result.Length);
+                return result;
             }
         }
     }

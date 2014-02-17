@@ -14,7 +14,7 @@ namespace P3bble
     public partial class MainPage : PhoneApplicationPage
     {
         private P3bble.Core.P3bble _pebble;
-        
+
         public MainPage()
         {
             InitializeComponent();
@@ -38,6 +38,7 @@ namespace P3bble
                     PebbleName.Text = "Connected to Pebble " + _pebble.DisplayName;
                     PebbleVersion.Text = "Version " + _pebble.FirmwareVersion.Version + " - " + _pebble.FirmwareVersion.Timestamp.ToShortDateString();
                     _pebble.MusicControlReceived += new MusicControlReceivedHandler(this.MusicControlReceived);
+                    _pebble.InstallProgress += new InstallProgressHandler(this.InstallProgressReceived);
                 }
                 else
                 {
@@ -201,14 +202,31 @@ namespace P3bble
 
         private async void DownloadApp_Click(object sender, RoutedEventArgs e)
         {
-            //P3bbleBundle bundle = await P3bbleBundle.DownloadFileAsync("https://pebblefw.s3.amazonaws.com/pebble/ev2_4/release/pbz/normal_ev2_4_v1.7.1.pbz");
-            //P3bbleBundle bundle = P3bble.Core.Bundle.P3bbleBundle.DownloadFileAsync("http://pebble-static.s3.amazonaws.com/watchfaces/apps/simplicity.pbw");
+            this.InstallAppProgress.IsIndeterminate = true;
+            this.InstallAppProgress.Value = 0;
+            this.InstallAppProgress.Visibility = Visibility.Visible;
+
+            //P3bbleBundle bundle = await this._pebble.DownloadBundleAsync("https://pebblefw.s3.amazonaws.com/pebble/ev2_4/release/pbz/normal_ev2_4_v1.7.1.pbz");
+            //P3bbleBundle bundle = await this._pebble.DownloadBundleAsync("http://pebble-static.s3.amazonaws.com/watchfaces/apps/simplicity.pbw");
             P3bbleBundle bundle = await this._pebble.DownloadBundleAsync("http://u.jdiez.me/pixel.pbw");
             if (bundle != null)
             {
-                MessageBox.Show("bundle is " + bundle.BundleType.ToString() + " - "); 
-                    //bundle.BundleType == BundleType.Application ? bundle.Manifest);
+                MessageBox.Show("bundle is " + bundle.BundleType.ToString() + (bundle.BundleType == BundleType.Application ? (" - " + bundle.Application.AppName) : ""));
+                await this._pebble.InstallApp(bundle, true);
             }
+        }
+
+        private void InstallProgressReceived(int percentComplete)
+        {
+            Dispatcher.BeginInvoke(() =>
+                {
+                    this.InstallAppProgress.IsIndeterminate = false;
+                    this.InstallAppProgress.Value = percentComplete;
+                    if (percentComplete == 100)
+                    {
+                        this.InstallAppProgress.Visibility = Visibility.Collapsed;
+                    }
+                });
         }
 
         //private void LaunchApp_Click(object sender, RoutedEventArgs e)
@@ -245,7 +263,7 @@ namespace P3bble
             if (_pebble != null && _pebble.IsConnected)
             {
                 var apps = await _pebble.GetInstalledAppsAsync();
-                if(apps != null)
+                if (apps != null)
                 {
                     StringBuilder msg = new StringBuilder();
                     msg.AppendLine(apps.ApplicationBanks.ToString() + " app banks available");
@@ -274,7 +292,7 @@ namespace P3bble
                 {
                     if (MessageBox.Show("This example will remove the first app found: " + apps.ApplicationsInstalled[0].Name + " - are you sure you want to continue?", "DANGER!", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
                     {
-                        await _pebble.RemoveAppAsync(apps.ApplicationsInstalled[0]); 
+                        await _pebble.RemoveAppAsync(apps.ApplicationsInstalled[0]);
                     }
                 }
                 else

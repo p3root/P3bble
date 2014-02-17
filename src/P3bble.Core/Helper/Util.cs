@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -8,7 +9,7 @@ namespace P3bble.Core.Helper
     internal static class Util
     {
         private static DateTime _epoch = new DateTime(1970, 1, 1);
-        
+
         public static DateTime AsDateTime(this int ts)
         {
             return _epoch.AddSeconds(ts);
@@ -19,10 +20,10 @@ namespace P3bble.Core.Helper
             return Convert.ToInt32((time - _epoch).TotalSeconds);
         }
 
-        public static T AsStruct<T>(this Stream fs, out byte[] buffer) where T : struct
+        public static T AsStruct<T>(this Stream fs) where T : struct
         {
             // Borrowed from http://stackoverflow.com/a/1936208 because BitConverter-ing all of this would be a pain
-            buffer = new byte[Marshal.SizeOf(typeof(T))];
+            byte[] buffer = new byte[Marshal.SizeOf(typeof(T))];
             fs.Read(buffer, 0, buffer.Length);
             return AsStruct<T>(buffer);
         }
@@ -51,6 +52,61 @@ namespace P3bble.Core.Helper
         public static Version AsVersion(this string version)
         {
             return new Version(version.Remove(0, 1));
+        }
+
+        public static uint Crc32(this List<byte> data)
+        {
+            return CrcProcessBuffer(data);
+        }
+
+        private static uint CrcProcessBuffer(List<byte> data, uint crc = 0xffffffff)
+        {
+            int wordCount = data.Count / 4;
+            if (data.Count % 4 != 0)
+            {
+                wordCount += 1;
+            }
+
+            for (int i = 0; i < wordCount; i++)
+            {
+                byte[] word = new byte[4];
+                data.CopyTo(i * 4, word, 0, Math.Min(data.Count - (i * 4), 4));
+                crc = CrcProcessWord(word, crc);
+            }
+
+            return crc;
+        }
+
+        private static uint CrcProcessWord(byte[] data, uint crc = 0xffffffff)
+        {
+            const uint CRC_POLY = 0x04C11DB7;
+            List<byte> dataArray = new List<byte>(data);
+
+            if (data.Length < 4)
+            {
+                for (int x = 0; x < 4 - data.Length; x++)
+                {
+                    dataArray.Insert(0, 0);
+                }
+
+                dataArray.Reverse();
+            }
+
+            crc = crc ^ BitConverter.ToUInt32(dataArray.ToArray(), 0);
+
+            for (int i = 0; i < 32; i++)
+            {
+                if ((crc & 0x80000000) != 0)
+                {
+                    crc = (crc << 1) ^ CRC_POLY;
+                }
+                else
+                {
+                    crc = crc << 1;
+                }
+            }
+
+            return crc & 0xffffffff;
         }
     }
 }

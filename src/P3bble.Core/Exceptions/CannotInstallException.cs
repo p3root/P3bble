@@ -8,10 +8,11 @@ namespace P3bble.Core
     public class CannotInstallException : Exception
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CannotInstallException"/> class.
+        /// Initializes a new instance of the <see cref="CannotInstallException" /> class.
         /// </summary>
-        public CannotInstallException()
-            : base("There are no memory slots free")
+        /// <param name="message">The message that describes the error.</param>
+        public CannotInstallException(string message)
+            : base(message)
         {
         }
     }
