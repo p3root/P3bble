@@ -252,13 +252,13 @@ namespace P3bble
                 });
         }
 
-        //private void LaunchApp_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (_pebble != null && _pebble.IsConnected)
-        //    {
-        //        _pebble.LaunchApp(new Guid("deadefde-acfe-efbe-99ef-beefbeefbeef"));
-        //    }
-        //}
+        private void LaunchApp_Click(object sender, RoutedEventArgs e)
+        {
+            if (_pebble != null && _pebble.IsConnected)
+            {
+                _pebble.LaunchApp(new Guid("deadefde-acfe-efbe-99ef-beefbeefbeef"));
+            }
+        }
 
         private async void CheckFirmware_Click(object sender, RoutedEventArgs e)
         {

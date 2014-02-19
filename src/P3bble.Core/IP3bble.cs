@@ -88,6 +88,15 @@ namespace P3bble.Core
         /// </returns>
         Task InstallApp(P3bbleBundle app, bool launchAfterInstall = true);
 
+        /// <summary>
+        /// Launches an application.
+        /// </summary>
+        /// <param name="appUuid">The application UUID.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        Task<bool> LaunchApp(Guid appUuid);
+
         Task SmsNotificationAsync(string sender, string message);
         
         Task FacebookNotificationAsync(string sender, string message);

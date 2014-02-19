@@ -133,12 +133,12 @@ namespace P3bble.Core.Messages
             byte[] keyBytes = BitConverter.GetBytes(key);
             byte[] lengthBytes = BitConverter.GetBytes((short)data.Length);
 
-            if (BitConverter.IsLittleEndian)
-            {
-                // Data is transmitted big-endian, so flip.
-                Array.Reverse(keyBytes);
-                Array.Reverse(lengthBytes);
-            }
+            //if (BitConverter.IsLittleEndian)
+            //{
+            //    // Data is transmitted big-endian, so flip.
+            //    Array.Reverse(keyBytes);
+            //    Array.Reverse(lengthBytes);
+            //}
             
             result.AddRange(keyBytes);
             result.Add((byte)dataType);
@@ -174,7 +174,7 @@ namespace P3bble.Core.Messages
                 data.AddRange(this.AppUuid.ToByteArray());
 
                 // Add the actual data to send - first the count...
-                data.Add((byte)this._tuples.Count);
+                data.Add((byte)(this._tuples.Count * 4));
 
                 // Now the tuples...
                 foreach (var tuple in this._tuples)

@@ -42,7 +42,7 @@
                     <Button Click="CheckFirmware_Click" Content="Check Firmware Version"/>
                     <Button Click="DownloadApp_Click" Content="Download &amp; Install Pixel Watchface"/>
                     <ProgressBar x:Name="InstallAppProgress" Value="0" />
-                    <!--<Button Click="LaunchApp_Click" Content="Launch Pixel Watchface"/>-->
+                    <Button Click="LaunchApp_Click" Content="Launch Pixel Watchface"/>
 
                     <Button Click="PlayMusic_Click" Content="Music Control"/>
 

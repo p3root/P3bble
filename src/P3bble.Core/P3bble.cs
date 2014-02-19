@@ -405,6 +405,36 @@ namespace P3bble.Core
             }
         }
 
+        /// <summary>
+        /// Launches an application.
+        /// </summary>
+        /// <param name="appUuid">The application UUID.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        /// <exception cref="System.TimeoutException"></exception>
+        public async Task<bool> LaunchApp(Guid appUuid)
+        {
+            var msg = new AppMessage(P3bbleEndpoint.Launcher)
+            {
+                AppUuid = appUuid,
+                AppCommand = AppCommand.Push
+            };
+
+            msg.AddTuple((uint)LauncherKeys.RunState, AppMessageTupleDataType.UInt, (byte)LauncherParams.Running);
+
+            var result = await this.SendMessageAndAwaitResponseAsync<AppMessage>(msg);
+
+            if (result != null)
+            {
+                return result.AppCommand == AppCommand.Ack;
+            }
+            else
+            {
+                throw new TimeoutException();
+            }
+        }
+
         //////////////////////////////////////////////////////////////////////////////////
         // Demo methods that aren't much use without lower level OS support...
         //////////////////////////////////////////////////////////////////////////////////
@@ -631,28 +661,6 @@ namespace P3bble.Core
 
                     return pendingMessage;
                 });
-        }
-
-        private async Task<bool> LaunchApp(Guid appUuid)
-        {
-            var msg = new AppMessage(P3bbleEndpoint.Launcher)
-            {
-                AppUuid = appUuid,
-                AppCommand = AppCommand.Push
-            };
-
-            msg.AddTuple((uint)LauncherKeys.RunState, AppMessageTupleDataType.UInt, (byte)LauncherParams.Running);
-
-            var result = await this.SendMessageAndAwaitResponseAsync<AppMessage>(msg);
-
-            if (result != null)
-            {
-                return result.AppCommand == AppCommand.Ack;
-            }
-            else
-            {
-                throw new TimeoutException();
-            }
         }
     }
 }
