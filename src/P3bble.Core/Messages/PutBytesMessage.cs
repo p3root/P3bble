@@ -88,6 +88,7 @@ namespace P3bble.Core.Messages
         private PutBytesTransferType _transferType;
         private List<byte> _buffer;
         private int _leftToSend;
+        private int _lastChunkSize;
         private uint _index;
         private uint _token;
         private PutBytesState _state;
@@ -172,8 +173,8 @@ namespace P3bble.Core.Messages
                             Debug.WriteLine(string.Format("Sent {0} of {1} bytes", this._buffer.Count - this._leftToSend, this._buffer.Count));
                             if (this._progressHandler != null)
                             {
-                                // From PutBytes, we send the count of bytes we have sent rather than a percentage...
-                                this._progressHandler(this._buffer.Count - this._leftToSend);
+                                // From PutBytes, we send the number of bytes we just sent rather than a percentage...
+                                this._progressHandler(this._lastChunkSize);
                             }
 
                             return false;
@@ -210,11 +211,6 @@ namespace P3bble.Core.Messages
                     else
                     {
                         this.Completed = true;
-                        if (this._progressHandler != null)
-                        {
-                            this._progressHandler(this._buffer.Count);
-                        }
-
                         return true;
                     }
 
@@ -254,14 +250,14 @@ namespace P3bble.Core.Messages
                 case PutBytesState.InProgress:
                     {
                         // equivalent of python PutBytesClient.send()
-                        int dataToSend = Math.Min(this._leftToSend, 2000);
+                        this._lastChunkSize = Math.Min(this._leftToSend, 2000);
                         int offset = this._buffer.Count - this._leftToSend;
 
                         // another magic number!...
                         payload.Add((byte)this._state);
 
                         byte[] tokenBytes = BitConverter.GetBytes(this._token & 0xFFFFFFFF);
-                        byte[] dataToSendBytes = BitConverter.GetBytes(dataToSend);
+                        byte[] dataToSendBytes = BitConverter.GetBytes(this._lastChunkSize);
 
                         if (BitConverter.IsLittleEndian)
                         {
@@ -272,12 +268,12 @@ namespace P3bble.Core.Messages
                         payload.AddRange(tokenBytes);
                         payload.AddRange(dataToSendBytes);
 
-                        byte[] data = new byte[dataToSend];
-                        this._buffer.CopyTo(offset, data, 0, dataToSend);
+                        byte[] data = new byte[this._lastChunkSize];
+                        this._buffer.CopyTo(offset, data, 0, this._lastChunkSize);
                         payload.AddRange(data);
-                        this._leftToSend -= dataToSend;
+                        this._leftToSend -= this._lastChunkSize;
 
-                        Debug.WriteLine("PutBytes - sending " + dataToSend.ToString() + " byte(s), " + this._leftToSend.ToString() + " byte(s) remain");
+                        Debug.WriteLine("PutBytes - sending " + this._lastChunkSize.ToString() + " byte(s), " + this._leftToSend.ToString() + " byte(s) remain");
                     }
 
                     break;

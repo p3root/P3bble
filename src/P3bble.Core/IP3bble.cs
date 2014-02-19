@@ -86,7 +86,7 @@ namespace P3bble.Core
         /// <returns>
         /// An async task to wait
         /// </returns>
-        Task InstallApp(P3bbleBundle app, bool launchAfterInstall);
+        Task InstallApp(P3bbleBundle app, bool launchAfterInstall = true);
 
         Task SmsNotificationAsync(string sender, string message);
         

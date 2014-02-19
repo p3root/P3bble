@@ -305,7 +305,7 @@ namespace P3bble.Core
         /// <returns>
         /// An async task to wait
         /// </returns>
-        public async Task InstallApp(P3bbleBundle app, bool launchAfterInstall)
+        public async Task InstallApp(P3bbleBundle app, bool launchAfterInstall = true)
         {
             if (app.BundleType != BundleType.Application)
             {
@@ -360,7 +360,7 @@ namespace P3bble.Core
                     throw new CannotInstallException(string.Format("Failed to send application binary {0}", app.Manifest.ApplicationManifest.Filename));
                 }
             }
-            catch (ProtocolException pex)
+            catch (ProtocolException)
             {
                 throw new CannotInstallException("Sorry, an internal error occurred, please try again");
             }
@@ -381,10 +381,15 @@ namespace P3bble.Core
                         throw new CannotInstallException(string.Format("Failed to send application resources {0}", app.Manifest.Resources.Filename));
                     }
                 }
-                catch (ProtocolException pex)
+                catch (ProtocolException)
                 {
                     throw new CannotInstallException("Sorry, an internal error occurred, please try again");
                 }
+            }
+
+            if (this.InstallProgress != null)
+            {
+                this.InstallProgress(100);
             }
 
             Thread.Sleep(1000);

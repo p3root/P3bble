@@ -25,6 +25,7 @@
             <TextBlock Text="{Binding Path=LocalizedResources.ApplicationTitle, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,0"/>
             <TextBlock x:Name="PebbleName" Text="" Style="{StaticResource PhoneTextLargeStyle}"/>
             <TextBlock x:Name="PebbleVersion" Text="" Style="{StaticResource PhoneTextNormalStyle}"/>
+            <Button x:Name="RetryConnection" Click="Retry_Click" Content="Retry Connection" HorizontalAlignment="Left" Visibility="Collapsed"/>
         </StackPanel>
 
         <!--ContentPanel - place additional content here-->

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace P3bble
@@ -26,6 +27,11 @@ namespace P3bble
 
         private async void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
+            await TryConnection();
+        }
+
+        private async Task TryConnection()
+        {
             List<P3bble.Core.P3bble> pebbles = await P3bble.Core.P3bble.DetectPebbles();
 
             if (pebbles.Count >= 1)
@@ -39,14 +45,20 @@ namespace P3bble
                     PebbleVersion.Text = "Version " + _pebble.FirmwareVersion.Version + " - " + _pebble.FirmwareVersion.Timestamp.ToShortDateString();
                     _pebble.MusicControlReceived += new MusicControlReceivedHandler(this.MusicControlReceived);
                     _pebble.InstallProgress += new InstallProgressHandler(this.InstallProgressReceived);
+                    RetryConnection.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
                     PebbleName.Text = "Not connected";
                     PebbleVersion.Text = string.Empty;
+                    RetryConnection.Visibility = Visibility.Visible;
                 }
             }
+        }
 
+        private async void Retry_Click(object sender, RoutedEventArgs e)
+        {
+            await TryConnection();
         }
 
         private async void Ping_Click(object sender, RoutedEventArgs e)
@@ -206,13 +218,24 @@ namespace P3bble
             this.InstallAppProgress.Value = 0;
             this.InstallAppProgress.Visibility = Visibility.Visible;
 
-            //P3bbleBundle bundle = await this._pebble.DownloadBundleAsync("https://pebblefw.s3.amazonaws.com/pebble/ev2_4/release/pbz/normal_ev2_4_v1.7.1.pbz");
-            //P3bbleBundle bundle = await this._pebble.DownloadBundleAsync("http://pebble-static.s3.amazonaws.com/watchfaces/apps/simplicity.pbw");
-            P3bbleBundle bundle = await this._pebble.DownloadBundleAsync("http://u.jdiez.me/pixel.pbw");
-            if (bundle != null)
+            try
             {
-                MessageBox.Show("bundle is " + bundle.BundleType.ToString() + (bundle.BundleType == BundleType.Application ? (" - " + bundle.Application.AppName) : ""));
-                await this._pebble.InstallApp(bundle, true);
+                //P3bbleBundle bundle = await this._pebble.DownloadBundleAsync("https://pebblefw.s3.amazonaws.com/pebble/ev2_4/release/pbz/normal_ev2_4_v1.7.1.pbz");
+                //P3bbleBundle bundle = await this._pebble.DownloadBundleAsync("http://pebble-static.s3.amazonaws.com/watchfaces/apps/simplicity.pbw");
+                P3bbleBundle bundle = await this._pebble.DownloadBundleAsync("http://u.jdiez.me/pixel.pbw");
+                if (bundle != null)
+                {
+                    MessageBox.Show("bundle is " + bundle.BundleType.ToString() + (bundle.BundleType == BundleType.Application ? (" - " + bundle.Application.AppName) : ""));
+                    await this._pebble.InstallApp(bundle, true);
+                }
+            }
+            catch (Exception ex)
+            {
+                this.InstallAppProgress.IsIndeterminate = false;
+                this.InstallAppProgress.Value = 0;
+                this.InstallAppProgress.Visibility = Visibility.Collapsed;
+
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -222,7 +245,7 @@ namespace P3bble
                 {
                     this.InstallAppProgress.IsIndeterminate = false;
                     this.InstallAppProgress.Value = percentComplete;
-                    if (percentComplete == 100)
+                    if (percentComplete == 0 || percentComplete == 100)
                     {
                         this.InstallAppProgress.Visibility = Visibility.Collapsed;
                     }
