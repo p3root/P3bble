@@ -108,7 +108,7 @@ namespace P3bble.Core.Messages
 
         public Guid AppUuid { get; set; }
 
-        public AppCommand AppCommand { get; set; }
+        public AppCommand Command { get; set; }
 
         public uint AppIndex { get; set; }
 
@@ -132,13 +132,6 @@ namespace P3bble.Core.Messages
 
             byte[] keyBytes = BitConverter.GetBytes(key);
             byte[] lengthBytes = BitConverter.GetBytes((short)data.Length);
-
-            //if (BitConverter.IsLittleEndian)
-            //{
-            //    // Data is transmitted big-endian, so flip.
-            //    Array.Reverse(keyBytes);
-            //    Array.Reverse(lengthBytes);
-            //}
             
             result.AddRange(keyBytes);
             result.Add((byte)dataType);
@@ -151,9 +144,9 @@ namespace P3bble.Core.Messages
         protected override void AddContentToMessage(List<byte> payload)
         {
             // Add the command
-            payload.Add((byte)this.AppCommand);
+            payload.Add((byte)this.Command);
 
-            if (this.AppCommand == AppCommand.FinaliseInstall)
+            if (this.Command == AppCommand.FinaliseInstall)
             {
                 byte[] indexBytes = BitConverter.GetBytes(this.AppIndex);
                 if (BitConverter.IsLittleEndian)
@@ -186,7 +179,7 @@ namespace P3bble.Core.Messages
             }
         }
 
-        protected override void GetContentFromMessage(System.Collections.Generic.List<byte> payload)
+        protected override void GetContentFromMessage(List<byte> payload)
         {
             if (payload.Count > 0)
             {
@@ -197,7 +190,7 @@ namespace P3bble.Core.Messages
                     case (byte)AppCommand.Ack:
                     case (byte)AppCommand.Nack:
 
-                        this.AppCommand = (AppCommand)payload[0];
+                        this.Command = (AppCommand)payload[0];
                         break;
                     
                     default:

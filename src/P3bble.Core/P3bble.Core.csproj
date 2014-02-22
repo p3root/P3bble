@@ -95,6 +95,7 @@
     <Compile Include="IP3bble.cs" />
     <Compile Include="Messages\AppManagerMessage.cs" />
     <Compile Include="Messages\AppMessage.cs" />
+    <Compile Include="Messages\SystemMessage.cs" />
     <Compile Include="Messages\LogsMessage.cs" />
     <Compile Include="Messages\MusicMessage.cs" />
     <Compile Include="Messages\NotificationMessage.cs" />

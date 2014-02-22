@@ -6,15 +6,34 @@ using P3bble.Core.Messages;
 
 namespace P3bble.Core
 {
+    /// <summary>
+    /// The base message
+    /// </summary>
     internal abstract class P3bbleMessage
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="P3bbleMessage"/> class.
+        /// </summary>
+        /// <param name="endpoint">The endpoint.</param>
         public P3bbleMessage(P3bbleEndpoint endpoint)
         {
             this.Endpoint = endpoint;
         }
 
+        /// <summary>
+        /// Gets the endpoint.
+        /// </summary>
+        /// <value>
+        /// The endpoint.
+        /// </value>
         public P3bbleEndpoint Endpoint { get; private set; }
 
+        /// <summary>
+        /// Creates an incoming message.
+        /// </summary>
+        /// <param name="endpoint">The endpoint.</param>
+        /// <param name="payload">The payload.</param>
+        /// <returns>A specific message type</returns>
         public static P3bbleMessage CreateMessage(P3bbleEndpoint endpoint, List<byte> payload)
         {
             P3bbleMessage frame = null;
@@ -63,6 +82,10 @@ namespace P3bble.Core
             return frame;
         }
 
+        /// <summary>
+        /// Serialises a message into a byte representation ready for sending
+        /// </summary>
+        /// <returns>A byte array</returns>
         public byte[] ToBuffer()
         {
             List<byte> buf = new List<byte>();
@@ -87,8 +110,16 @@ namespace P3bble.Core
             return buf.ToArray();
         }
 
+        /// <summary>
+        /// Allows descendant classes to add content to the outgoing message.
+        /// </summary>
+        /// <param name="payload">The payload storage.</param>
         protected abstract void AddContentToMessage(List<byte> payload);
 
+        /// <summary>
+        /// Extracts content for the incoming message.
+        /// </summary>
+        /// <param name="payload">The payload.</param>
         protected abstract void GetContentFromMessage(List<byte> payload);
     }
 }

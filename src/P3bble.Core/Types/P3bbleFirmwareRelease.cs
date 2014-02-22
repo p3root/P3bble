@@ -15,5 +15,19 @@ namespace P3bble.Core.Types
 
         [DataMember(Name = "sha-256", IsRequired = true)]
         public string Checksum { get; private set; }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public override string ToString()
+        {
+            string format = "Version: {0}\n"
+                          + "Url:     {1}\n"
+                          + "Notes:   {2}\n";
+            return string.Format(format, this.Version, this.Url, this.Notes);
+        }
     }
 }

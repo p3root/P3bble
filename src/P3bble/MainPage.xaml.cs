@@ -9,12 +9,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace P3bble
 {
     public partial class MainPage : PhoneApplicationPage
     {
         private P3bble.Core.P3bble _pebble;
+        private ProgressBar _currentProgressBar;
 
         public MainPage()
         {
@@ -61,97 +63,7 @@ namespace P3bble
             await TryConnection();
         }
 
-        private async void Ping_Click(object sender, RoutedEventArgs e)
-        {
-            if (_pebble != null && _pebble.IsConnected)
-                await _pebble.PingAsync();
-            else
-            {
-                MessageBox.Show("Pebble not connected");
-            }
-        }
-
-        //private void Button_Click_2(object sender, RoutedEventArgs e)
-        //{
-        //    if (_pebble != null && _pebble.IsConnected)
-        //        _pebble.BadPing();
-        //    else
-        //    {
-        //        MessageBox.Show("Pebble not connected");
-        //    }
-        //}
-
-        private void SmsNotification_Click(object sender, RoutedEventArgs e)
-        {
-            if (_pebble != null && _pebble.IsConnected)
-                _pebble.SmsNotificationAsync("+436604908028", "wow, what a cool app :)");
-            else
-            {
-                MessageBox.Show("Pebble not connected");
-            }
-        }
-
-        private void EmailNotification_Click(object sender, RoutedEventArgs e)
-        {
-            if (_pebble != null && _pebble.IsConnected)
-                _pebble.EmailNotificationAsync("root@p3.co.at", "P3bble", "youre sooo cooool :)");
-            else
-            {
-                MessageBox.Show("Pebble not connected");
-            }
-        }
-
-        private void MediaPlayer_ActiveSongChanged(object sender, EventArgs e)
-        {
-            if (MediaPlayer.Queue.ActiveSong != null)
-            {
-                _pebble.SetNowPlayingAsync(MediaPlayer.Queue.ActiveSong.Artist.Name, MediaPlayer.Queue.ActiveSong.Album.Name, MediaPlayer.Queue.ActiveSong.Name);
-            }
-            else
-            {
-                _pebble.SetNowPlayingAsync(string.Empty, string.Empty, string.Empty);
-            }
-        }
-
-        private void MusicControlReceived(MusicControlAction action)
-        {
-            switch (action)
-            {
-                case MusicControlAction.PlayPause:
-                    if (MediaPlayer.State == MediaState.Playing)
-                    {
-                        MediaPlayer.Pause();
-                    }
-                    else
-                    {
-                        MediaPlayer.Resume();
-                    }
-
-                    break;
-
-                case MusicControlAction.Next:
-                    MediaPlayer.MoveNext();
-                    break;
-
-                case MusicControlAction.Previous:
-                    MediaPlayer.MovePrevious();
-                    break;
-            }
-        }
-
-        private void PlayMusic_Click(object sender, RoutedEventArgs e)
-        {
-            if (_pebble != null && _pebble.IsConnected)
-            {
-                MediaLibrary lib = new MediaLibrary();
-                MediaPlayer.Play(lib.Songs, new Random().Next(lib.Songs.Count));
-                MediaPlayer.IsShuffled = true;
-            }
-            else
-            {
-                MessageBox.Show("Pebble not connected");
-            }
-        }
+        /* Time */
 
         private async void GetTime_Click(object sender, RoutedEventArgs e)
         {
@@ -178,108 +90,7 @@ namespace P3bble
             }
         }
 
-        private void FacebookNotification_Click(object sender, RoutedEventArgs e)
-        {
-            if (_pebble != null && _pebble.IsConnected)
-                _pebble.FacebookNotificationAsync("test", "testmessage");
-            else
-            {
-                MessageBox.Show("Pebble not connected");
-            }
-        }
-
-        private void PhoneCall_Click(object sender, RoutedEventArgs e)
-        {
-            if (_pebble != null && _pebble.IsConnected)
-            {
-                byte[] cookie = new byte[] { 0x00, 0xEB, 0x00, 0x00 };
-                _pebble.PhoneCallAsync("P3root", "555 555 555", cookie);
-                Thread.Sleep(2000);
-                _pebble.RingAsync(cookie);
-                Thread.Sleep(2000);
-                _pebble.RingAsync(cookie);
-                Thread.Sleep(2000);
-                _pebble.RingAsync(cookie);
-
-                Thread.Sleep(3000);
-                _pebble.StartCallAsync(cookie);
-                Thread.Sleep(5000);
-                _pebble.EndCallAsync(cookie);
-            }
-            else
-            {
-                MessageBox.Show("Pebble not connected");
-            }
-        }
-
-        private async void DownloadApp_Click(object sender, RoutedEventArgs e)
-        {
-            this.InstallAppProgress.IsIndeterminate = true;
-            this.InstallAppProgress.Value = 0;
-            this.InstallAppProgress.Visibility = Visibility.Visible;
-
-            try
-            {
-                //P3bbleBundle bundle = await this._pebble.DownloadBundleAsync("https://pebblefw.s3.amazonaws.com/pebble/ev2_4/release/pbz/normal_ev2_4_v1.7.1.pbz");
-                //P3bbleBundle bundle = await this._pebble.DownloadBundleAsync("http://pebble-static.s3.amazonaws.com/watchfaces/apps/simplicity.pbw");
-                P3bbleBundle bundle = await this._pebble.DownloadBundleAsync("http://u.jdiez.me/pixel.pbw");
-                if (bundle != null)
-                {
-                    MessageBox.Show("bundle is " + bundle.BundleType.ToString() + (bundle.BundleType == BundleType.Application ? (" - " + bundle.Application.AppName) : ""));
-                    await this._pebble.InstallApp(bundle, true);
-                }
-            }
-            catch (Exception ex)
-            {
-                this.InstallAppProgress.IsIndeterminate = false;
-                this.InstallAppProgress.Value = 0;
-                this.InstallAppProgress.Visibility = Visibility.Collapsed;
-
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-        private void InstallProgressReceived(int percentComplete)
-        {
-            Dispatcher.BeginInvoke(() =>
-                {
-                    this.InstallAppProgress.IsIndeterminate = false;
-                    this.InstallAppProgress.Value = percentComplete;
-                    if (percentComplete == 0 || percentComplete == 100)
-                    {
-                        this.InstallAppProgress.Visibility = Visibility.Collapsed;
-                    }
-                });
-        }
-
-        private void LaunchApp_Click(object sender, RoutedEventArgs e)
-        {
-            if (_pebble != null && _pebble.IsConnected)
-            {
-                _pebble.LaunchApp(new Guid("deadefde-acfe-efbe-99ef-beefbeefbeef"));
-            }
-        }
-
-        private async void CheckFirmware_Click(object sender, RoutedEventArgs e)
-        {
-            if (_pebble != null && _pebble.IsConnected)
-            {
-                if (_pebble.FirmwareVersion != null)
-                {
-                    var latest = await _pebble.GetLatestFirmwareVersionAsync();
-                    if (latest.FirmwareVersion > _pebble.FirmwareVersion)
-                    {
-                        MessageBox.Show("new version available (" + latest.FirmwareVersion.Version.ToString() + " available, you have " + _pebble.FirmwareVersion.Version.ToString() + ")");
-                    }
-                }
-                else
-                    MessageBox.Show("does not receive version info from p3bble");
-            }
-            else
-            {
-                MessageBox.Show("Pebble not connected");
-            }
-        }
+        /* Apps */
 
         private async void GetInstalledApps_Click(object sender, RoutedEventArgs e)
         {
@@ -327,6 +138,233 @@ namespace P3bble
             {
                 MessageBox.Show("Pebble not connected");
             }
+        }
+
+        private async void DownloadApp_Click(object sender, RoutedEventArgs e)
+        {
+            const string InstallUrl = "http://u.jdiez.me/pixel.pbw";
+            //const string InstallUrl = "https://pebblefw.s3.amazonaws.com/pebble/ev2_4/release/pbz/normal_ev2_4_v1.7.1.pbz";
+            //const string InstallUrl = "http://pebble-static.s3.amazonaws.com/watchfaces/apps/simplicity.pbw";
+            
+            this._currentProgressBar = this.InstallAppProgress;
+            await InstallBundle(InstallUrl);
+        }
+
+        private void InstallProgressReceived(int percentComplete)
+        {
+            Dispatcher.BeginInvoke(() =>
+                {
+                    this._currentProgressBar.IsIndeterminate = false;
+                    this._currentProgressBar.Value = percentComplete;
+                    if (percentComplete == 0 || percentComplete == 100)
+                    {
+                        this._currentProgressBar.Visibility = Visibility.Collapsed;
+                    }
+                });
+        }
+
+        private async void LaunchApp_Click(object sender, RoutedEventArgs e)
+        {
+            if (_pebble != null && _pebble.IsConnected)
+            {
+                await _pebble.LaunchApp(new Guid("deadefde-acfe-efbe-99ef-beefbeefbeef"));
+            }
+        }
+
+        /* Firmware */
+
+        private async void CheckFirmware_Click(object sender, RoutedEventArgs e)
+        {
+            if (_pebble != null && _pebble.IsConnected)
+            {
+                if (_pebble.FirmwareVersion != null)
+                {
+                    var latest = await _pebble.GetLatestFirmwareVersionAsync();
+                    if (latest.FirmwareVersion > _pebble.FirmwareVersion)
+                    {
+                        MessageBox.Show("new version available (" + latest.FirmwareVersion.Version.ToString() + " available, you have " + _pebble.FirmwareVersion.Version.ToString() + ")");
+                    }
+                    else
+                    {
+                        MessageBox.Show("you have the latest firmware " + _pebble.FirmwareVersion.Version.ToString());
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("we did not manage to get version info from p3bble");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Pebble not connected");
+            }
+        }
+
+        private async void DownloadFirmware_Click(object sender, RoutedEventArgs e)
+        {
+            const string InstallUrl = "http://pebblebits.com/firmware/2.0.1-ev2_4-battery-sym+en.pbz";
+
+            this._currentProgressBar = this.InstallFirmwareProgress;
+            await InstallBundle(InstallUrl);
+        }
+
+        /* Music Control */
+
+        private void PlayMusic_Click(object sender, RoutedEventArgs e)
+        {
+            if (_pebble != null && _pebble.IsConnected)
+            {
+                MediaLibrary lib = new MediaLibrary();
+                MediaPlayer.Play(lib.Songs, new Random().Next(lib.Songs.Count));
+                MediaPlayer.IsShuffled = true;
+            }
+            else
+            {
+                MessageBox.Show("Pebble not connected");
+            }
+        }
+
+        private void MediaPlayer_ActiveSongChanged(object sender, EventArgs e)
+        {
+            if (MediaPlayer.Queue.ActiveSong != null)
+            {
+                _pebble.SetNowPlayingAsync(MediaPlayer.Queue.ActiveSong.Artist.Name, MediaPlayer.Queue.ActiveSong.Album.Name, MediaPlayer.Queue.ActiveSong.Name);
+            }
+            else
+            {
+                _pebble.SetNowPlayingAsync(string.Empty, string.Empty, string.Empty);
+            }
+        }
+
+        private void MusicControlReceived(MusicControlAction action)
+        {
+            switch (action)
+            {
+                case MusicControlAction.PlayPause:
+                    if (MediaPlayer.State == MediaState.Playing)
+                    {
+                        MediaPlayer.Pause();
+                    }
+                    else
+                    {
+                        MediaPlayer.Resume();
+                    }
+
+                    break;
+
+                case MusicControlAction.Next:
+                    MediaPlayer.MoveNext();
+                    break;
+
+                case MusicControlAction.Previous:
+                    MediaPlayer.MovePrevious();
+                    break;
+            }
+        }
+
+        /* Notification Demos */
+
+        private async void Ping_Click(object sender, RoutedEventArgs e)
+        {
+            if (_pebble != null && _pebble.IsConnected)
+                await _pebble.PingAsync();
+            else
+            {
+                MessageBox.Show("Pebble not connected");
+            }
+        }
+
+        private void SmsNotification_Click(object sender, RoutedEventArgs e)
+        {
+            if (_pebble != null && _pebble.IsConnected)
+                _pebble.SmsNotificationAsync("+436604908028", "wow, what a cool app :)");
+            else
+            {
+                MessageBox.Show("Pebble not connected");
+            }
+        }
+
+        private void EmailNotification_Click(object sender, RoutedEventArgs e)
+        {
+            if (_pebble != null && _pebble.IsConnected)
+                _pebble.EmailNotificationAsync("root@p3.co.at", "P3bble", "youre sooo cooool :)");
+            else
+            {
+                MessageBox.Show("Pebble not connected");
+            }
+        }
+
+        private void FacebookNotification_Click(object sender, RoutedEventArgs e)
+        {
+            if (_pebble != null && _pebble.IsConnected)
+                _pebble.FacebookNotificationAsync("test", "testmessage");
+            else
+            {
+                MessageBox.Show("Pebble not connected");
+            }
+        }
+
+        private void PhoneCall_Click(object sender, RoutedEventArgs e)
+        {
+            if (_pebble != null && _pebble.IsConnected)
+            {
+                byte[] cookie = new byte[] { 0x00, 0xEB, 0x00, 0x00 };
+                _pebble.PhoneCallAsync("P3root", "555 555 555", cookie);
+                Thread.Sleep(2000);
+                _pebble.RingAsync(cookie);
+                Thread.Sleep(2000);
+                _pebble.RingAsync(cookie);
+                Thread.Sleep(2000);
+                _pebble.RingAsync(cookie);
+
+                Thread.Sleep(3000);
+                _pebble.StartCallAsync(cookie);
+                Thread.Sleep(5000);
+                _pebble.EndCallAsync(cookie);
+            }
+            else
+            {
+                MessageBox.Show("Pebble not connected");
+            }
+        }
+
+        /* Util methods */
+
+        private async Task InstallBundle(string bundleUrl)
+        {
+            this._currentProgressBar.IsIndeterminate = true;
+            this._currentProgressBar.Value = 0;
+            this._currentProgressBar.Visibility = Visibility.Visible;
+
+            try
+            {
+                P3bbleBundle bundle = await this._pebble.DownloadBundleAsync(bundleUrl);
+                if (bundle != null)
+                {
+                    switch (bundle.BundleType)
+                    {
+                        case BundleType.Application:
+                            await this._pebble.InstallApp(bundle);
+                            break;
+
+                        case BundleType.Firmware:
+                            await this._pebble.InstallFirmware(bundle, false);
+                            break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                this._currentProgressBar.IsIndeterminate = false;
+                this._currentProgressBar.Value = 0;
+                this._currentProgressBar.Visibility = Visibility.Collapsed;
+
+                MessageBox.Show(ex.Message);
+            }
+
+            this._currentProgressBar.IsIndeterminate = false;
+            this._currentProgressBar.Value = 0;
+            this._currentProgressBar.Visibility = Visibility.Collapsed;
         }
     }
 }

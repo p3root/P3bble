@@ -81,12 +81,11 @@ namespace P3bble.Core
         /// <summary>
         /// Installs an application.
         /// </summary>
-        /// <param name="app">The application.</param>
-        /// <param name="launchAfterInstall">Whether to launch after install.</param>
+        /// <param name="bundle">The application.</param>
         /// <returns>
         /// An async task to wait
         /// </returns>
-        Task InstallApp(P3bbleBundle app, bool launchAfterInstall = true);
+        Task InstallApp(P3bbleBundle bundle);
 
         /// <summary>
         /// Launches an application.
@@ -96,6 +95,16 @@ namespace P3bble.Core
         /// An async task to wait
         /// </returns>
         Task<bool> LaunchApp(Guid appUuid);
+
+        /// <summary>
+        /// Installs a firmware bundle.
+        /// </summary>
+        /// <param name="bundle">The firmware.</param>
+        /// <param name="recovery">Whether to install recovery firmware.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        Task InstallFirmware(P3bbleBundle bundle, bool recovery);
 
         Task SmsNotificationAsync(string sender, string message);
         

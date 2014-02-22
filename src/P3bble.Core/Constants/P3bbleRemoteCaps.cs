@@ -9,6 +9,7 @@ namespace P3bble.Core.Constants
     /// <summary>
     /// The phone capabilites
     /// </summary>
+    [Flags]
     public enum P3bbleRemoteCaps : uint
     {
         /// <summary>

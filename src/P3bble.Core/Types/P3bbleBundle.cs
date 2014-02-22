@@ -67,22 +67,23 @@ namespace P3bble.Core.Types
             if (this.Manifest.Type == "firmware")
             {
                 this.BundleType = BundleType.Firmware;
+                this.BinaryContent = this.ReadFileToArray(this.Manifest.Firmware.Filename);
             }
             else
             {
                 this.BundleType = BundleType.Application;
-                this.ApplicationBinary = this.ReadFileToArray(this.Manifest.ApplicationManifest.Filename);
+                this.BinaryContent = this.ReadFileToArray(this.Manifest.ApplicationManifest.Filename);
 
                 // Convert first part to app manifest
                 byte[] buffer = new byte[Marshal.SizeOf(typeof(P3bbleApplicationMetadata))];
-                Array.Copy(this.ApplicationBinary, 0, buffer, 0, buffer.Length);
+                Array.Copy(this.BinaryContent, 0, buffer, 0, buffer.Length);
                 this.Application = buffer.AsStruct<P3bbleApplicationMetadata>();
             }
 
             this.HasResources = this.Manifest.Resources.Size != 0;
             if (this.HasResources)
             {
-                this.ApplicationResources = this.ReadFileToArray(this.Manifest.Resources.Filename);
+                this.Resources = this.ReadFileToArray(this.Manifest.Resources.Filename);
             }
         }
 
@@ -102,9 +103,9 @@ namespace P3bble.Core.Types
 
         public P3bbleApplicationMetadata Application { get; private set; }
 
-        internal byte[] ApplicationBinary { get; private set; }
+        internal byte[] BinaryContent { get; private set; }
 
-        internal byte[] ApplicationResources { get; private set; }
+        internal byte[] Resources { get; private set; }
 
         internal P3bbleBundleManifest Manifest { get; private set; }
 

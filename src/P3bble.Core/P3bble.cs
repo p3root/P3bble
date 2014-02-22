@@ -300,14 +300,13 @@ namespace P3bble.Core
         /// <summary>
         /// Installs an application.
         /// </summary>
-        /// <param name="app">The application.</param>
-        /// <param name="launchAfterInstall">Whether to launch after install.</param>
+        /// <param name="bundle">The application.</param>
         /// <returns>
         /// An async task to wait
         /// </returns>
-        public async Task InstallApp(P3bbleBundle app, bool launchAfterInstall = true)
+        public async Task InstallApp(P3bbleBundle bundle)
         {
-            if (app.BundleType != BundleType.Application)
+            if (bundle.BundleType != BundleType.Application)
             {
                 throw new ArgumentException("Only app bundles can be installed");
             }
@@ -331,7 +330,7 @@ namespace P3bble.Core
             }
 
             double progress = 0;
-            double totalBytes = app.Manifest.ApplicationManifest.Size + app.Manifest.Resources.Size;
+            double totalBytes = bundle.Manifest.ApplicationManifest.Size + bundle.Manifest.Resources.Size;
 
             InstallProgressHandler handler = null;
 
@@ -349,7 +348,7 @@ namespace P3bble.Core
 
             Debug.WriteLine(string.Format("Attempting to add app to bank {0} of {1}", firstFreeBank, installedApps.ApplicationBanks));
 
-            PutBytesMessage binMsg = new PutBytesMessage(PutBytesTransferType.Binary, app.ApplicationBinary, handler, firstFreeBank);
+            PutBytesMessage binMsg = new PutBytesMessage(PutBytesTransferType.Binary, bundle.BinaryContent, handler, firstFreeBank);
 
             try
             {
@@ -357,7 +356,7 @@ namespace P3bble.Core
 
                 if (binResult == null || binResult.Errored)
                 {
-                    throw new CannotInstallException(string.Format("Failed to send application binary {0}", app.Manifest.ApplicationManifest.Filename));
+                    throw new CannotInstallException(string.Format("Failed to send binary {0}", bundle.Manifest.ApplicationManifest.Filename));
                 }
             }
             catch (ProtocolException)
@@ -365,12 +364,9 @@ namespace P3bble.Core
                 throw new CannotInstallException("Sorry, an internal error occurred, please try again");
             }
 
-            string resourcesFile = null;
-            if (app.HasResources)
+            if (bundle.HasResources)
             {
-                resourcesFile = app.Manifest.Resources.Filename;
-
-                PutBytesMessage resourcesMsg = new PutBytesMessage(PutBytesTransferType.Resources, app.ApplicationResources, handler, firstFreeBank);
+                PutBytesMessage resourcesMsg = new PutBytesMessage(PutBytesTransferType.Resources, bundle.Resources, handler, firstFreeBank);
 
                 try
                 {
@@ -378,7 +374,7 @@ namespace P3bble.Core
 
                     if (resourceResult == null || resourceResult.Errored)
                     {
-                        throw new CannotInstallException(string.Format("Failed to send application resources {0}", app.Manifest.Resources.Filename));
+                        throw new CannotInstallException(string.Format("Failed to send resources {0}", bundle.Manifest.Resources.Filename));
                     }
                 }
                 catch (ProtocolException)
@@ -394,15 +390,13 @@ namespace P3bble.Core
 
             Thread.Sleep(1000);
 
-            var appMsg = new AppMessage(P3bbleEndpoint.AppManager) { AppCommand = AppCommand.FinaliseInstall, AppIndex = firstFreeBank };
+            var appMsg = new AppMessage(P3bbleEndpoint.AppManager) { Command = AppCommand.FinaliseInstall, AppIndex = firstFreeBank };
             await this._protocol.WriteMessage(appMsg);
 
             Thread.Sleep(1000);
 
-            if (launchAfterInstall)
-            {
-                await this.LaunchApp(app.Application.Uuid);
-            }
+            // Now launch the new app
+            await this.LaunchApp(bundle.Application.Uuid);
         }
 
         /// <summary>
@@ -412,13 +406,12 @@ namespace P3bble.Core
         /// <returns>
         /// An async task to wait
         /// </returns>
-        /// <exception cref="System.TimeoutException"></exception>
         public async Task<bool> LaunchApp(Guid appUuid)
         {
             var msg = new AppMessage(P3bbleEndpoint.Launcher)
             {
                 AppUuid = appUuid,
-                AppCommand = AppCommand.Push
+                Command = AppCommand.Push
             };
 
             msg.AddTuple((uint)LauncherKeys.RunState, AppMessageTupleDataType.UInt, (byte)LauncherParams.Running);
@@ -427,11 +420,88 @@ namespace P3bble.Core
 
             if (result != null)
             {
-                return result.AppCommand == AppCommand.Ack;
+                return result.Command == AppCommand.Ack;
             }
             else
             {
                 throw new TimeoutException();
+            }
+        }
+
+        /// <summary>
+        /// Installs a firmware bundle.
+        /// </summary>
+        /// <param name="bundle">The firmware.</param>
+        /// <param name="recovery">Whether to install recovery firmware.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        public async Task InstallFirmware(P3bbleBundle bundle, bool recovery)
+        {
+            if (bundle.BundleType != BundleType.Firmware)
+            {
+                throw new ArgumentException("Only firmware bundles can be installed");
+            }
+
+            double progress = 0;
+            double totalBytes = bundle.Manifest.Firmware.Size + bundle.Manifest.Resources.Size;
+
+            InstallProgressHandler handler = null;
+
+            if (this.InstallProgress != null)
+            {
+                // Derive overall progress from the bytes sent for the part...
+                handler = new InstallProgressHandler((partProgress) =>
+                {
+                    progress += partProgress;
+                    int percentComplete = (int)(progress / totalBytes * 100);
+                    Debug.WriteLine("Installation " + percentComplete.ToString() + "% complete - " + progress.ToString() + " / " + totalBytes.ToString());
+                    this.InstallProgress(percentComplete);
+                });
+            }
+
+            await this._protocol.WriteMessage(new SystemMessage(SystemCommand.FirmwareStart));
+
+            if (bundle.HasResources)
+            {
+                PutBytesMessage resourcesMsg = new PutBytesMessage(PutBytesTransferType.SystemResources, bundle.Resources, handler);
+
+                try
+                {
+                    var resourceResult = await this.SendMessageAndAwaitResponseAsync<PutBytesMessage>(resourcesMsg, 60000);
+
+                    if (resourceResult == null || resourceResult.Errored)
+                    {
+                        throw new CannotInstallException(string.Format("Failed to send resources {0}", bundle.Manifest.Resources.Filename));
+                    }
+                }
+                catch (ProtocolException)
+                {
+                    throw new CannotInstallException("Sorry, an internal error occurred, please try again");
+                }
+            }
+
+            PutBytesMessage binMsg = new PutBytesMessage(recovery ? PutBytesTransferType.Recovery : PutBytesTransferType.Firmware, bundle.BinaryContent, handler);
+
+            try
+            {
+                var binResult = await this.SendMessageAndAwaitResponseAsync<PutBytesMessage>(binMsg, 60000);
+
+                if (binResult == null || binResult.Errored)
+                {
+                    throw new CannotInstallException(string.Format("Failed to send binary {0}", bundle.Manifest.Firmware.Filename));
+                }
+            }
+            catch (ProtocolException)
+            {
+                throw new CannotInstallException("Sorry, an internal error occurred, please try again");
+            }
+
+            await this._protocol.WriteMessage(new SystemMessage(SystemCommand.FirmwareComplete));
+
+            if (this.InstallProgress != null)
+            {
+                this.InstallProgress(100);
             }
         }
 
