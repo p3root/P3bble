@@ -289,7 +289,9 @@ namespace P3bble.Core
                     }
                 }
 
-                return new P3bbleBundle(fileGuid.ToString());
+                var bundle = new P3bbleBundle(fileGuid.ToString());
+                await bundle.Initialise();
+                return bundle;
             }
             else
             {
@@ -359,9 +361,9 @@ namespace P3bble.Core
                     throw new CannotInstallException(string.Format("Failed to send binary {0}", bundle.Manifest.ApplicationManifest.Filename));
                 }
             }
-            catch (ProtocolException)
+            catch (ProtocolException pex)
             {
-                throw new CannotInstallException("Sorry, an internal error occurred, please try again");
+                throw new CannotInstallException("Sorry, an internal error occurred: " + pex.Message);
             }
 
             if (bundle.HasResources)
@@ -370,16 +372,16 @@ namespace P3bble.Core
 
                 try
                 {
-                    var resourceResult = await this.SendMessageAndAwaitResponseAsync<PutBytesMessage>(resourcesMsg, 60000);
+                    var resourceResult = await this.SendMessageAndAwaitResponseAsync<PutBytesMessage>(resourcesMsg, 240000);
 
                     if (resourceResult == null || resourceResult.Errored)
                     {
                         throw new CannotInstallException(string.Format("Failed to send resources {0}", bundle.Manifest.Resources.Filename));
                     }
                 }
-                catch (ProtocolException)
+                catch (ProtocolException pex)
                 {
-                    throw new CannotInstallException("Sorry, an internal error occurred, please try again");
+                    throw new CannotInstallException("Sorry, an internal error occurred: " + pex.Message);
                 }
             }
 
@@ -468,16 +470,16 @@ namespace P3bble.Core
 
                 try
                 {
-                    var resourceResult = await this.SendMessageAndAwaitResponseAsync<PutBytesMessage>(resourcesMsg, 60000);
+                    var resourceResult = await this.SendMessageAndAwaitResponseAsync<PutBytesMessage>(resourcesMsg, 720000);
 
                     if (resourceResult == null || resourceResult.Errored)
                     {
                         throw new CannotInstallException(string.Format("Failed to send resources {0}", bundle.Manifest.Resources.Filename));
                     }
                 }
-                catch (ProtocolException)
+                catch (ProtocolException pex)
                 {
-                    throw new CannotInstallException("Sorry, an internal error occurred, please try again");
+                    throw new CannotInstallException("Sorry, an internal error occurred: " + pex.Message);
                 }
             }
 
@@ -485,16 +487,16 @@ namespace P3bble.Core
 
             try
             {
-                var binResult = await this.SendMessageAndAwaitResponseAsync<PutBytesMessage>(binMsg, 60000);
+                var binResult = await this.SendMessageAndAwaitResponseAsync<PutBytesMessage>(binMsg, 720000);
 
                 if (binResult == null || binResult.Errored)
                 {
                     throw new CannotInstallException(string.Format("Failed to send binary {0}", bundle.Manifest.Firmware.Filename));
                 }
             }
-            catch (ProtocolException)
+            catch (ProtocolException pex)
             {
-                throw new CannotInstallException("Sorry, an internal error occurred, please try again");
+                throw new CannotInstallException("Sorry, an internal error occurred: " + pex.Message);
             }
 
             await this._protocol.WriteMessage(new SystemMessage(SystemCommand.FirmwareComplete));

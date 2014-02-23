@@ -126,12 +126,14 @@
     <Compile Include="Types\P3bbleInstalledApplications.cs" />
     <Compile Include="Types\P3bbleResourcesManifest.cs" />
     <Compile Include="Types\P3bbleVersion.cs" />
-    <Compile Include="Zip\UnZipper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="SharpCompress">
+      <HintPath>..\packages\sharpcompress.0.10.3\lib\portable-net4+sl5+wp8+win8\SharpCompress.dll</HintPath>
+    </Reference>
     <Reference Include="System.Net.Http">
       <HintPath>..\packages\Microsoft.Net.Http.2.2.18\lib\sl4-windowsphone71\System.Net.Http.dll</HintPath>
     </Reference>

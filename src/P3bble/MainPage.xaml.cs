@@ -202,7 +202,8 @@ namespace P3bble
 
         private async void DownloadFirmware_Click(object sender, RoutedEventArgs e)
         {
-            const string InstallUrl = "http://pebblebits.com/firmware/2.0.1-ev2_4-battery-sym+en.pbz";
+            //const string InstallUrl = "http://pebblebits.com/firmware/2.0.1-ev2_4-battery-sym+en.pbz";
+            const string InstallUrl = "https://pebblefw.s3.amazonaws.com/pebble/ev2_4/release/pbz/normal_ev2_4_v1.14.1_release-v1.x-34.pbz";
 
             this._currentProgressBar = this.InstallFirmwareProgress;
             await InstallBundle(InstallUrl);

@@ -50,7 +50,7 @@
                     <TextBlock Text="Firmware" Style="{StaticResource PhoneTextSubtleStyle}"/>
                     
                     <Button Click="CheckFirmware_Click" Content="Check for Latest Firmware"/>
-                    <Button Click="DownloadFirmware_Click" Content="Download &amp; Install Latest Firmware"/>
+                    <Button Click="DownloadFirmware_Click" Content="Download &amp; Install Firmware"/>
                     <ProgressBar x:Name="InstallFirmwareProgress" Value="0" />
 
                     <TextBlock Text="Music Control" Style="{StaticResource PhoneTextSubtleStyle}"/>
