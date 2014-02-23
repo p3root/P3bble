@@ -158,7 +158,7 @@ namespace P3bble
                     this._currentProgressBar.Value = percentComplete;
                     if (percentComplete == 0 || percentComplete == 100)
                     {
-                        this._currentProgressBar.Visibility = Visibility.Collapsed;
+                        this._currentProgressBar.Value = 0;
                     }
                 });
         }
@@ -357,14 +357,12 @@ namespace P3bble
             {
                 this._currentProgressBar.IsIndeterminate = false;
                 this._currentProgressBar.Value = 0;
-                this._currentProgressBar.Visibility = Visibility.Collapsed;
 
                 MessageBox.Show(ex.Message);
             }
 
             this._currentProgressBar.IsIndeterminate = false;
             this._currentProgressBar.Value = 0;
-            this._currentProgressBar.Visibility = Visibility.Collapsed;
         }
     }
 }
