@@ -298,7 +298,10 @@ namespace P3bble.Core.Messages
                     {
                         payload.Add((byte)this._state);
                         byte[] tokenBytes = BitConverter.GetBytes(this._token & 0xFFFFFFFF);
-                        byte[] crcBytes = BitConverter.GetBytes(this._buffer.Crc32());
+
+                        uint crc = this._buffer.Crc32();
+                        byte[] crcBytes = BitConverter.GetBytes(crc);
+                        Debug.WriteLine("Sending CRC of {0:X}", crc);
 
                         if (BitConverter.IsLittleEndian)
                         {

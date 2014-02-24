@@ -105,17 +105,56 @@
     <Compile Include="..\P3bble.Core\Communication\Protocol.cs">
       <Link>Communication\Protocol.cs</Link>
     </Compile>
+    <Compile Include="..\P3bble.Core\Constants\P3bbleEndpoint.cs">
+      <Link>Constants\P3bbleEndpoint.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Constants\P3bbleHardwareRevision.cs">
+      <Link>Constants\P3bbleHardwareRevision.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Constants\P3bbleRemoteCaps.cs">
+      <Link>Constants\P3bbleRemoteCaps.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Constants\P3bbleSessionCaps.cs">
+      <Link>Constants\P3bbleSessionCaps.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Exceptions\CannotInstallException.cs">
+      <Link>Exceptions\CannotInstallException.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Exceptions\NotConnectedException.cs">
+      <Link>Exceptions\NotConnectedException.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Exceptions\ProtocolException.cs">
+      <Link>Exceptions\ProtocolException.cs</Link>
+    </Compile>
     <Compile Include="..\P3bble.Core\Helper\ByteHelper.cs">
       <Link>Helper\ByteHelper.cs</Link>
     </Compile>
     <Compile Include="..\P3bble.Core\Helper\Util.cs">
       <Link>Helper\Util.cs</Link>
     </Compile>
+    <Compile Include="..\P3bble.Core\IP3bble.cs">
+      <Link>IP3bble.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\AppManagerMessage.cs">
+      <Link>Messages\AppManagerMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\AppMessage.cs">
+      <Link>Messages\AppMessage.cs</Link>
+    </Compile>
     <Compile Include="..\P3bble.Core\Messages\LogsMessage.cs">
       <Link>Messages\LogsMessage.cs</Link>
     </Compile>
+    <Compile Include="..\P3bble.Core\Messages\MusicMessage.cs">
+      <Link>Messages\MusicMessage.cs</Link>
+    </Compile>
     <Compile Include="..\P3bble.Core\Messages\NotificationMessage.cs">
       <Link>Messages\NotificationMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\P3bbleMessage.cs">
+      <Link>Messages\P3bbleMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\PhoneControlMessage.cs">
+      <Link>Messages\PhoneControlMessage.cs</Link>
     </Compile>
     <Compile Include="..\P3bble.Core\Messages\PhoneVersionMessage.cs">
       <Link>Messages\PhoneVersionMessage.cs</Link>
@@ -123,11 +162,14 @@
     <Compile Include="..\P3bble.Core\Messages\PingMessage.cs">
       <Link>Messages\PingMessage.cs</Link>
     </Compile>
+    <Compile Include="..\P3bble.Core\Messages\PutBytesMessage.cs">
+      <Link>Messages\PutBytesMessage.cs</Link>
+    </Compile>
     <Compile Include="..\P3bble.Core\Messages\ResetMessage.cs">
       <Link>Messages\ResetMessage.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\Messages\SetMusicMessage.cs">
-      <Link>Messages\SetMusicMessage.cs</Link>
+    <Compile Include="..\P3bble.Core\Messages\SystemMessage.cs">
+      <Link>Messages\SystemMessage.cs</Link>
     </Compile>
     <Compile Include="..\P3bble.Core\Messages\TimeMessage.cs">
       <Link>Messages\TimeMessage.cs</Link>
@@ -138,20 +180,44 @@
     <Compile Include="..\P3bble.Core\P3bble.cs">
       <Link>P3bble.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\P3bbleEndpoint.cs">
-      <Link>P3bbleEndpoint.cs</Link>
+    <Compile Include="..\P3bble.Core\Types\MusicControlAction.cs">
+      <Link>Types\MusicControlAction.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\P3bbleMessage.cs">
-      <Link>P3bbleMessage.cs</Link>
+    <Compile Include="..\P3bble.Core\Types\P3bbleApplicationManifest.cs">
+      <Link>Types\P3bbleApplicationManifest.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\P3bbleState.cs">
-      <Link>P3bbleState.cs</Link>
+    <Compile Include="..\P3bble.Core\Types\P3bbleApplicationMetadata.cs">
+      <Link>Types\P3bbleApplicationMetadata.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\RemoteCaps.cs">
-      <Link>RemoteCaps.cs</Link>
+    <Compile Include="..\P3bble.Core\Types\P3bbleBundle.cs">
+      <Link>Types\P3bbleBundle.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\SessionCaps.cs">
-      <Link>SessionCaps.cs</Link>
+    <Compile Include="..\P3bble.Core\Types\P3bbleBundleManifest.cs">
+      <Link>Types\P3bbleBundleManifest.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\P3bbleFirmwareManifest.cs">
+      <Link>Types\P3bbleFirmwareManifest.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\P3bbleFirmwareRelease.cs">
+      <Link>Types\P3bbleFirmwareRelease.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\P3bbleFirmwareResponse.cs">
+      <Link>Types\P3bbleFirmwareResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\P3bbleFirmwareVersion.cs">
+      <Link>Types\P3bbleFirmwareVersion.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\P3bbleInstalledApplication.cs">
+      <Link>Types\P3bbleInstalledApplication.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\P3bbleInstalledApplications.cs">
+      <Link>Types\P3bbleInstalledApplications.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\P3bbleResourcesManifest.cs">
+      <Link>Types\P3bbleResourcesManifest.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\P3bbleVersion.cs">
+      <Link>Types\P3bbleVersion.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

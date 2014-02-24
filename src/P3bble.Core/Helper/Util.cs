@@ -70,7 +70,13 @@ namespace P3bble.Core.Helper
             for (int i = 0; i < wordCount; i++)
             {
                 byte[] word = new byte[4];
-                data.CopyTo(i * 4, word, 0, Math.Min(data.Count - (i * 4), 4));
+                int len = Math.Min(data.Count - (i * 4), 4);
+                data.CopyTo(i * 4, word, 4 - len, len);
+                if (len < 4)
+                {
+                    Array.Reverse(word);
+                }
+
                 crc = CrcProcessWord(word, crc);
             }
 
@@ -81,16 +87,6 @@ namespace P3bble.Core.Helper
         {
             const uint CRC_POLY = 0x04C11DB7;
             List<byte> dataArray = new List<byte>(data);
-
-            if (data.Length < 4)
-            {
-                for (int x = 0; x < 4 - data.Length; x++)
-                {
-                    dataArray.Insert(0, 0);
-                }
-
-                dataArray.Reverse();
-            }
 
             crc = crc ^ BitConverter.ToUInt32(dataArray.ToArray(), 0);
 

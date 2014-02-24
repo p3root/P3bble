@@ -43,19 +43,26 @@ namespace P3bble
 
                 if (_pebble != null && _pebble.IsConnected)
                 {
-                    PebbleName.Text = "Connected to Pebble " + _pebble.DisplayName;
-                    PebbleVersion.Text = "Version " + _pebble.FirmwareVersion.Version + " - " + _pebble.FirmwareVersion.Timestamp.ToShortDateString();
                     _pebble.MusicControlReceived += new MusicControlReceivedHandler(this.MusicControlReceived);
                     _pebble.InstallProgress += new InstallProgressHandler(this.InstallProgressReceived);
+
+                    PebbleName.Text = "Connected to Pebble " + _pebble.DisplayName;
+                    PebbleVersion.Text = "Version " + _pebble.FirmwareVersion.Version + " - " + _pebble.FirmwareVersion.Timestamp.ToShortDateString();
                     RetryConnection.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
-                    PebbleName.Text = "Not connected";
-                    PebbleVersion.Text = string.Empty;
-                    RetryConnection.Visibility = Visibility.Visible;
+                    NotConnected();
                 }
             }
+        }
+
+        private void NotConnected()
+        {
+            _pebble = null;
+            PebbleName.Text = "Not connected";
+            PebbleVersion.Text = string.Empty;
+            RetryConnection.Visibility = Visibility.Visible;
         }
 
         private async void Retry_Click(object sender, RoutedEventArgs e)
@@ -142,9 +149,8 @@ namespace P3bble
 
         private async void DownloadApp_Click(object sender, RoutedEventArgs e)
         {
-            const string InstallUrl = "http://u.jdiez.me/pixel.pbw";
-            //const string InstallUrl = "https://pebblefw.s3.amazonaws.com/pebble/ev2_4/release/pbz/normal_ev2_4_v1.7.1.pbz";
             //const string InstallUrl = "http://pebble-static.s3.amazonaws.com/watchfaces/apps/simplicity.pbw";
+            const string InstallUrl = "http://u.jdiez.me/pixel.pbw";
             
             this._currentProgressBar = this.InstallAppProgress;
             await InstallBundle(InstallUrl);
@@ -207,6 +213,9 @@ namespace P3bble
 
             this._currentProgressBar = this.InstallFirmwareProgress;
             await InstallBundle(InstallUrl);
+
+            // Reset the connection
+            this.NotConnected();
         }
 
         /* Music Control */
