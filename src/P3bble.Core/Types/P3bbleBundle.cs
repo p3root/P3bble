@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices;
@@ -9,6 +8,7 @@ using System.Threading.Tasks;
 using P3bble.Core.Helper;
 using SharpCompress.Archive;
 using SharpCompress.Archive.Zip;
+using Windows.Storage;
 
 namespace P3bble.Core.Types
 {
@@ -68,15 +68,26 @@ namespace P3bble.Core.Types
 
         internal P3bbleBundleManifest Manifest { get; private set; }
 
-        public static void DeleteFromStorage(P3bbleBundle bundle)
+        /// <summary>
+        /// Deletes a bundle from storage.
+        /// </summary>
+        /// <param name="bundle">The bundle.</param>
+        /// <returns>An async task to await</returns>
+        public static async Task DeleteFromStorage(P3bbleBundle bundle)
         {
-            IsolatedStorageFile file = IsolatedStorageFile.GetUserStoreForApplication();
-            if (file.FileExists(bundle._path))
+            StorageFile file = await ApplicationData.Current.LocalFolder.GetFileAsync(bundle._path);
+            if (file != null)
             {
-                file.DeleteFile(bundle._path);
+                await file.DeleteAsync();
             }
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
             if (this.BundleType == BundleType.Application)
@@ -94,16 +105,16 @@ namespace P3bble.Core.Types
 
         internal async Task Initialise()
         {
-            IsolatedStorageFile file = IsolatedStorageFile.GetUserStoreForApplication();
-            if (!file.FileExists(this._path))
+            StorageFile file = await ApplicationData.Current.LocalFolder.GetFileAsync(this._path);
+            if (file == null)
             {
                 throw new FileNotFoundException("the file could not be found in the isolated storage");
             }
 
-            this.FullPath = Path.GetFullPath(this._path);
-            this._bundle = ZipArchive.Open(file.OpenFile(this._path, FileMode.Open));
+            this.FullPath = file.Path;
+            this._bundle = ZipArchive.Open(await file.OpenStreamForReadAsync());
 
-            var manifestEntry = this._bundle.Entries.Where(e => string.Compare(e.FilePath, "manifest.json", StringComparison.InvariantCultureIgnoreCase) == 0).FirstOrDefault();
+            var manifestEntry = this._bundle.Entries.Where(e => string.Compare(e.FilePath, "manifest.json", StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
             if (manifestEntry == null)
             {
                 throw new ArgumentException("manifest.json not found in archive - not a Pebble this.Bundle.");
@@ -138,23 +149,9 @@ namespace P3bble.Core.Types
             }
         }
 
-        private static bool IsSpaceIsAvailable(long spaceReq)
-        {
-            using (var store = IsolatedStorageFile.GetUserStoreForApplication())
-            {
-                long spaceAvail = store.AvailableFreeSpace;
-                if (spaceReq > spaceAvail)
-                {
-                    return false;
-                }
-
-                return true;
-            }
-        }
-
         private async Task<byte[]> ReadFileToArray(string file, int size)
         {
-            var entry = this._bundle.Entries.Where(e => string.Compare(e.FilePath, file, StringComparison.InvariantCultureIgnoreCase) == 0).FirstOrDefault();
+            var entry = this._bundle.Entries.Where(e => string.Compare(e.FilePath, file, StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
 
             if (entry == null)
             {

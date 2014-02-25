@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.IO.IsolatedStorage;
 using System.Net.Http;
 using System.Runtime.Serialization.Json;
 using System.Threading;
@@ -12,6 +11,7 @@ using P3bble.Core.Constants;
 using P3bble.Core.Messages;
 using P3bble.Core.Types;
 using Windows.Networking.Proximity;
+using Windows.Storage;
 
 namespace P3bble.Core
 {
@@ -205,16 +205,15 @@ namespace P3bble.Core
             var response = await client.GetAsync(url);
             if (response.IsSuccessStatusCode)
             {
-                var stream = await response.Content.ReadAsStreamAsync();
-                var serializer = new DataContractJsonSerializer(typeof(P3bbleFirmwareResponse));
-                P3bbleFirmwareResponse info = serializer.ReadObject(stream) as P3bbleFirmwareResponse;
-                stream.Close();
-                return info;
+                using (var stream = await response.Content.ReadAsStreamAsync())
+                {
+                    var serializer = new DataContractJsonSerializer(typeof(P3bbleFirmwareResponse));
+                    P3bbleFirmwareResponse info = serializer.ReadObject(stream) as P3bbleFirmwareResponse;
+                    return info;
+                }
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         /// <summary>
@@ -278,14 +277,15 @@ namespace P3bble.Core
                 var downloadStream = await response.Content.ReadAsStreamAsync();
 
                 Guid fileGuid = Guid.NewGuid();
-                IsolatedStorageFile file = IsolatedStorageFile.GetUserStoreForApplication();
 
-                using (IsolatedStorageFileStream stream = new IsolatedStorageFileStream(fileGuid.ToString(), FileMode.CreateNew, file))
+                var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(fileGuid.ToString());
+
+                using (var stream = await file.OpenStreamForWriteAsync())
                 {
                     byte[] buffer = new byte[1024];
                     while (downloadStream.Read(buffer, 0, buffer.Length) > 0)
                     {
-                        stream.Write(buffer, 0, buffer.Length);
+                        await stream.WriteAsync(buffer, 0, buffer.Length);
                     }
                 }
 
@@ -385,17 +385,15 @@ namespace P3bble.Core
                 }
             }
 
+            var appMsg = new AppMessage(P3bbleEndpoint.AppManager) { Command = AppCommand.FinaliseInstall, AppIndex = firstFreeBank };
+            await this.SendMessageAndAwaitResponseAsync<AppManagerMessage>(appMsg);
+
+            await P3bbleBundle.DeleteFromStorage(bundle);
+
             if (this.InstallProgress != null)
             {
                 this.InstallProgress(100);
             }
-
-            Thread.Sleep(1000);
-
-            var appMsg = new AppMessage(P3bbleEndpoint.AppManager) { Command = AppCommand.FinaliseInstall, AppIndex = firstFreeBank };
-            await this._protocol.WriteMessage(appMsg);
-
-            Thread.Sleep(1000);
 
             // Now launch the new app
             await this.LaunchApp(bundle.Application.Uuid);
@@ -501,6 +499,8 @@ namespace P3bble.Core
 
             await this._protocol.WriteMessage(new SystemMessage(SystemCommand.FirmwareComplete));
 
+            await P3bbleBundle.DeleteFromStorage(bundle);
+
             if (this.InstallProgress != null)
             {
                 this.InstallProgress(100);
@@ -567,7 +567,6 @@ namespace P3bble.Core
 #if NETFX_CORE
             PeerFinder.Start();
 #endif
-
             IReadOnlyList<PeerInformation> pairedDevices = PeerFinder.FindAllPeersAsync().AsTask().Result;
             List<P3bble> lst = new List<P3bble>();
 
@@ -575,7 +574,7 @@ namespace P3bble.Core
             // stop us getting headphones, etc. showing up...
             foreach (PeerInformation pi in pairedDevices)
             {
-                if (pi.DisplayName.StartsWith("Pebble", StringComparison.InvariantCultureIgnoreCase))
+                if (pi.DisplayName.StartsWith("Pebble", StringComparison.OrdinalIgnoreCase))
                 {
                     lst.Add(new P3bble(pi));
                 }
