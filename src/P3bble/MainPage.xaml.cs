@@ -234,15 +234,15 @@ namespace P3bble
             }
         }
 
-        private void MediaPlayer_ActiveSongChanged(object sender, EventArgs e)
+        private async void MediaPlayer_ActiveSongChanged(object sender, EventArgs e)
         {
             if (MediaPlayer.Queue.ActiveSong != null)
             {
-                _pebble.SetNowPlayingAsync(MediaPlayer.Queue.ActiveSong.Artist.Name, MediaPlayer.Queue.ActiveSong.Album.Name, MediaPlayer.Queue.ActiveSong.Name);
+                await _pebble.SetNowPlayingAsync(MediaPlayer.Queue.ActiveSong.Artist.Name, MediaPlayer.Queue.ActiveSong.Album.Name, MediaPlayer.Queue.ActiveSong.Name);
             }
             else
             {
-                _pebble.SetNowPlayingAsync(string.Empty, string.Empty, string.Empty);
+                await _pebble.SetNowPlayingAsync(string.Empty, string.Empty, string.Empty);
             }
         }
 
@@ -284,53 +284,48 @@ namespace P3bble
             }
         }
 
-        private void SmsNotification_Click(object sender, RoutedEventArgs e)
+        private async void SmsNotification_Click(object sender, RoutedEventArgs e)
         {
             if (_pebble != null && _pebble.IsConnected)
-                _pebble.SmsNotificationAsync("+436604908028", "wow, what a cool app :)");
+                await _pebble.SmsNotificationAsync("+436604908028", "wow, what a cool app :)");
             else
             {
                 MessageBox.Show("Pebble not connected");
             }
         }
 
-        private void EmailNotification_Click(object sender, RoutedEventArgs e)
+        private async void EmailNotification_Click(object sender, RoutedEventArgs e)
         {
             if (_pebble != null && _pebble.IsConnected)
-                _pebble.EmailNotificationAsync("root@p3.co.at", "P3bble", "youre sooo cooool :)");
+                await _pebble.EmailNotificationAsync("root@p3.co.at", "P3bble", "youre sooo cooool :)");
             else
             {
                 MessageBox.Show("Pebble not connected");
             }
         }
 
-        private void FacebookNotification_Click(object sender, RoutedEventArgs e)
+        private async void FacebookNotification_Click(object sender, RoutedEventArgs e)
         {
             if (_pebble != null && _pebble.IsConnected)
-                _pebble.FacebookNotificationAsync("test", "testmessage");
+                await _pebble.FacebookNotificationAsync("test", "testmessage");
             else
             {
                 MessageBox.Show("Pebble not connected");
             }
         }
 
-        private void PhoneCall_Click(object sender, RoutedEventArgs e)
+        private async void PhoneCall_Click(object sender, RoutedEventArgs e)
         {
             if (_pebble != null && _pebble.IsConnected)
             {
                 byte[] cookie = new byte[] { 0x00, 0xEB, 0x00, 0x00 };
-                _pebble.PhoneCallAsync("P3root", "555 555 555", cookie);
-                Thread.Sleep(2000);
-                _pebble.RingAsync(cookie);
-                Thread.Sleep(2000);
-                _pebble.RingAsync(cookie);
-                Thread.Sleep(2000);
-                _pebble.RingAsync(cookie);
+                await _pebble.PhoneCallAsync("P3root", "555 555 555", cookie);
+                await _pebble.RingAsync(cookie);
+                await _pebble.RingAsync(cookie);
+                await _pebble.RingAsync(cookie);
 
-                Thread.Sleep(3000);
-                _pebble.StartCallAsync(cookie);
-                Thread.Sleep(5000);
-                _pebble.EndCallAsync(cookie);
+                await _pebble.StartCallAsync(cookie);
+                await _pebble.EndCallAsync(cookie);
             }
             else
             {

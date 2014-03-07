@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-  <Identity Name="ea196283-4b24-42f1-abc2-43357ec1c4c5" Publisher="CN=Patrik" Version="1.0.0.0" />
+  <Identity Name="ea196283-4b24-42f1-abc2-43357ec1c4c5" Publisher="CN=P3bble" Version="1.0.0.0" />
   <Properties>
-    <DisplayName>P3bbleWP8</DisplayName>
+    <DisplayName>P3bble</DisplayName>
     <PublisherDisplayName>Patrik</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
