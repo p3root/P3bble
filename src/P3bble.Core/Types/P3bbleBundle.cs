@@ -46,10 +46,28 @@ namespace P3bble.Core.Types
             this._path = path;
         }
 
+        /// <summary>
+        /// Gets the type of the bundle.
+        /// </summary>
+        /// <value>
+        /// The type of the bundle.
+        /// </value>
         public BundleType BundleType { get; private set; }
 
+        /// <summary>
+        /// Gets a value indicating whether the bundle has resources.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if the bundle has resources.
+        /// </value>
         public bool HasResources { get; private set; }
 
+        /// <summary>
+        /// Gets the filename.
+        /// </summary>
+        /// <value>
+        /// The filename.
+        /// </value>
         public string Filename
         {
             get
@@ -58,8 +76,20 @@ namespace P3bble.Core.Types
             }
         }
 
+        /// <summary>
+        /// Gets the full path.
+        /// </summary>
+        /// <value>
+        /// The full path.
+        /// </value>
         public string FullPath { get; private set; }
 
+        /// <summary>
+        /// Gets the application details.
+        /// </summary>
+        /// <value>
+        /// The application.
+        /// </value>
         public P3bbleApplicationMetadata Application { get; private set; }
 
         internal byte[] BinaryContent { get; private set; }

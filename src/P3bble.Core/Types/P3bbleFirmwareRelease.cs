@@ -4,15 +4,36 @@ using P3bble.Core.Helper;
 
 namespace P3bble.Core.Types
 {
+    /// <summary>
+    /// Details about a firmware release
+    /// </summary>
     [DataContract]
     public class P3bbleFirmwareRelease : P3bbleVersion
     {
+        /// <summary>
+        /// Gets the URL.
+        /// </summary>
+        /// <value>
+        /// The URL.
+        /// </value>
         [DataMember(Name = "url", IsRequired = true)]
         public string Url { get; private set; }
 
+        /// <summary>
+        /// Gets the notes.
+        /// </summary>
+        /// <value>
+        /// The notes.
+        /// </value>
         [DataMember(Name = "notes", IsRequired = true)]
         public string Notes { get; private set; }
 
+        /// <summary>
+        /// Gets the checksum.
+        /// </summary>
+        /// <value>
+        /// The checksum.
+        /// </value>
         [DataMember(Name = "sha-256", IsRequired = true)]
         public string Checksum { get; private set; }
 

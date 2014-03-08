@@ -517,36 +517,112 @@ namespace P3bble.Core
         ////    _protocol.WriteMessage(new PingMessage(new byte[7] { 1, 2, 3, 4, 5, 6, 7 }));
         ////}
 
+        /// <summary>
+        /// Sends an SMS notification.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="message">The message.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        /// <remarks>
+        /// Mainly for demoing capability
+        /// </remarks>
         public Task SmsNotificationAsync(string sender, string message)
         {
             return this._protocol.WriteMessage(new NotificationMessage(NotificationType.SMS, sender, message));
         }
 
+        /// <summary>
+        /// Sends a Facebook notification.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="message">The message.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        /// <remarks>
+        /// Mainly for demoing capability
+        /// </remarks>
         public Task FacebookNotificationAsync(string sender, string message)
         {
             return this._protocol.WriteMessage(new NotificationMessage(NotificationType.Facebook, sender, message));
         }
 
+        /// <summary>
+        /// Sends an Email notification.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="subject">The subject.</param>
+        /// <param name="body">The body.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        /// <remarks>
+        /// Mainly for demoing capability
+        /// </remarks>
         public Task EmailNotificationAsync(string sender, string subject, string body)
         {
             return this._protocol.WriteMessage(new NotificationMessage(NotificationType.Email, sender, body, subject));
         }
 
+        /// <summary>
+        /// Starts a Phone call notification.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="number">The number.</param>
+        /// <param name="cookie">The cookie.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        /// <remarks>
+        /// Mainly for demoing capability
+        /// </remarks>
         public Task PhoneCallAsync(string name, string number, byte[] cookie)
         {
             return this._protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.IncomingCall, cookie, number, name));
         }
 
+        /// <summary>
+        /// Starts a Phone call Ring.
+        /// </summary>
+        /// <param name="cookie">The cookie.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        /// <remarks>
+        /// Mainly for demoing capability
+        /// </remarks>
         public Task RingAsync(byte[] cookie)
         {
             return this._protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.Ring, cookie));
         }
 
+        /// <summary>
+        /// Indicate that a Phone call has started.
+        /// </summary>
+        /// <param name="cookie">The cookie.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        /// <remarks>
+        /// Mainly for demoing capability
+        /// </remarks>
         public Task StartCallAsync(byte[] cookie)
         {
             return this._protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.Start, cookie));
         }
 
+        /// <summary>
+        /// Indicate that a Phone call has ended.
+        /// </summary>
+        /// <param name="cookie">The cookie.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        /// <remarks>
+        /// Mainly for demoing capability
+        /// </remarks>
         public Task EndCallAsync(byte[] cookie)
         {
             return this._protocol.WriteMessage(new PhoneControlMessage(PhoneControlType.End, cookie));

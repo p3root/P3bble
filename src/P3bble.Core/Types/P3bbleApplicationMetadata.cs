@@ -4,6 +4,9 @@ using System.Runtime.InteropServices;
 
 namespace P3bble.Core.Types
 {
+    /// <summary>
+    /// Represents details of an application
+    /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     [SuppressMessage("Microsoft.StyleCop.CSharp.OrderingRules", "SA1202:ElementsMustBeOrderedByAccess", Justification = "It's a structure deserialized from a stream")]
     public struct P3bbleApplicationMetadata
@@ -28,10 +31,19 @@ namespace P3bble.Core.Types
         internal readonly uint Offset;
         [MarshalAs(UnmanagedType.U4)]
         internal readonly uint CRC;
+
+        /// <summary>
+        /// The application name
+        /// </summary>
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
         public readonly string AppName;
+
+        /// <summary>
+        /// The company name
+        /// </summary>
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
         public readonly string CompanyName;
+        
         [MarshalAs(UnmanagedType.U4)]
         internal readonly uint IconResourceID;
         [MarshalAs(UnmanagedType.U4)]
@@ -45,6 +57,20 @@ namespace P3bble.Core.Types
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
         internal readonly byte[] UuidInternal;
 
+        internal Version StructVersion
+        {
+            get
+            {
+                return new Version(string.Format("{0}.{1}", this.StructMajorVersion, this.StructMinorVersion));
+            }
+        }
+
+        /// <summary>
+        /// Gets the application version.
+        /// </summary>
+        /// <value>
+        /// The application version.
+        /// </value>
         public Version AppVersion
         {
             get
@@ -53,6 +79,12 @@ namespace P3bble.Core.Types
             }
         }
 
+        /// <summary>
+        /// Gets the SDK version.
+        /// </summary>
+        /// <value>
+        /// The SDK version.
+        /// </value>
         public Version SdkVersion
         {
             get
@@ -61,14 +93,12 @@ namespace P3bble.Core.Types
             }
         }
 
-        public Version StructVersion
-        {
-            get
-            {
-                return new Version(string.Format("{0}.{1}", this.StructMajorVersion, this.StructMinorVersion));
-            }
-        }
-
+        /// <summary>
+        /// Gets the application UUID.
+        /// </summary>
+        /// <value>
+        /// The UUID.
+        /// </value>
         public Guid Uuid
         {
             get
@@ -77,6 +107,12 @@ namespace P3bble.Core.Types
             }
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
             string format = "{0}, version {1}.{2} by {3}";

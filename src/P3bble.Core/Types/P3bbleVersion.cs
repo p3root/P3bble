@@ -4,9 +4,18 @@ using P3bble.Core.Helper;
 
 namespace P3bble.Core.Types
 {
+    /// <summary>
+    /// Version information
+    /// </summary>
     [DataContract]
     public abstract class P3bbleVersion : IComparable<P3bbleVersion>
     {
+        /// <summary>
+        /// Gets the timestamp.
+        /// </summary>
+        /// <value>
+        /// The timestamp.
+        /// </value>
         public DateTime Timestamp
         {
             get
@@ -15,6 +24,12 @@ namespace P3bble.Core.Types
             }
         }
 
+        /// <summary>
+        /// Gets the version.
+        /// </summary>
+        /// <value>
+        /// The version.
+        /// </value>
         public Version Version
         {
             get
@@ -29,21 +44,45 @@ namespace P3bble.Core.Types
         [DataMember(Name = "friendlyVersion", IsRequired = true)]
         internal string VersionInternal { get; set; }
 
+        /// <summary>
+        /// Determines whether one specified P3bbleVersion is greater than another specified P3bbleVersion.
+        /// </summary>
+        /// <param name="v1">The first object to compare.</param>
+        /// <param name="v2">The second object to compare.</param>
+        /// <returns>true if v1 is greater than v2; otherwise, false.</returns>
         public static bool operator >(P3bbleVersion v1, P3bbleVersion v2)
         {
             return v1 != null && v2 != null && v1.Version > v2.Version;
         }
 
+        /// <summary>
+        /// Determines whether one specified P3bbleVersion is less than another specified P3bbleVersion.
+        /// </summary>
+        /// <param name="v1">The first object to compare.</param>
+        /// <param name="v2">The second object to compare.</param>
+        /// <returns>true if v1 is less than v2; otherwise, false.</returns>
         public static bool operator <(P3bbleVersion v1, P3bbleVersion v2)
         {
             return v1 != null && v2 != null && v1.Version < v2.Version;
         }
 
+        /// <summary>
+        /// Determines whether one specified P3bbleVersion is equal to another specified P3bbleVersion.
+        /// </summary>
+        /// <param name="v1">The first object to compare.</param>
+        /// <param name="v2">The second object to compare.</param>
+        /// <returns>true if v1 is equal to v2; otherwise, false.</returns>
         public static bool operator ==(P3bbleVersion v1, P3bbleVersion v2)
         {
             return v1.Equals(v2);
         }
 
+        /// <summary>
+        /// Determines whether one specified P3bbleVersion is not equal to another specified P3bbleVersion.
+        /// </summary>
+        /// <param name="v1">The first object to compare.</param>
+        /// <param name="v2">The second object to compare.</param>
+        /// <returns>true if v1 is not equal to v2; otherwise, false.</returns>
         public static bool operator !=(P3bbleVersion v1, P3bbleVersion v2)
         {
             return !v1.Equals(v2);

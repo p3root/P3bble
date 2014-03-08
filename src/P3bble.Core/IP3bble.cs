@@ -106,18 +106,90 @@ namespace P3bble.Core
         /// </returns>
         Task InstallFirmware(P3bbleBundle bundle, bool recovery);
 
+        /// <summary>
+        /// Sends an SMS notification.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="message">The message.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        /// <remarks>Mainly for demoing capability</remarks>
         Task SmsNotificationAsync(string sender, string message);
-        
+
+        /// <summary>
+        /// Sends a Facebook notification.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="message">The message.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        /// <remarks>Mainly for demoing capability</remarks>
         Task FacebookNotificationAsync(string sender, string message);
-        
+
+        /// <summary>
+        /// Sends an Email notification.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="subject">The subject.</param>
+        /// <param name="body">The body.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        /// <remarks>
+        /// Mainly for demoing capability
+        /// </remarks>
         Task EmailNotificationAsync(string sender, string subject, string body);
-        
+
+        /// <summary>
+        /// Starts a Phone call notification.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="number">The number.</param>
+        /// <param name="cookie">The cookie.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        /// <remarks>
+        /// Mainly for demoing capability
+        /// </remarks>
         Task PhoneCallAsync(string name, string number, byte[] cookie);
-        
+
+        /// <summary>
+        /// Starts a Phone call Ring.
+        /// </summary>
+        /// <param name="cookie">The cookie.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        /// <remarks>
+        /// Mainly for demoing capability
+        /// </remarks>
         Task RingAsync(byte[] cookie);
-        
+
+        /// <summary>
+        /// Indicate that a Phone call has started.
+        /// </summary>
+        /// <param name="cookie">The cookie.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        /// <remarks>
+        /// Mainly for demoing capability
+        /// </remarks>
         Task StartCallAsync(byte[] cookie);
 
+        /// <summary>
+        /// Indicate that a Phone call has ended.
+        /// </summary>
+        /// <param name="cookie">The cookie.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        /// <remarks>
+        /// Mainly for demoing capability
+        /// </remarks>
         Task EndCallAsync(byte[] cookie);
     }
 }
