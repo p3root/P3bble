@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace P3bble.Core.Helper
+namespace P3bble.Helper
 {
     internal class ByteHelper
     {

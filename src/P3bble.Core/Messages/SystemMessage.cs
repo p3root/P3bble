@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using P3bble.Core.Constants;
+using P3bble.Constants;
 
-namespace P3bble.Core.Messages
+namespace P3bble.Messages
 {
     /// <summary>
     /// System command
@@ -61,7 +61,7 @@ namespace P3bble.Core.Messages
     internal class SystemMessage : P3bbleMessage
     {
         public SystemMessage()
-            : base(P3bbleEndpoint.SystemMessage)
+            : base(Endpoint.SystemMessage)
         {
         }
 

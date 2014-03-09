@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using P3bble.Core.Helper;
+using P3bble.Helper;
 
-namespace P3bble.Core.Types
+namespace P3bble.Types
 {
     /// <summary>
     /// Represents an application manifest
     /// </summary>
     [DataContract]
-    public struct P3bbleApplicationManifest
+    public struct ApplicationManifest
     {
         /// <summary>
         /// Gets the filename.

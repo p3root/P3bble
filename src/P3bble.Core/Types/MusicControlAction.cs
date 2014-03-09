@@ -1,4 +1,4 @@
-﻿namespace P3bble.Core.Types
+﻿namespace P3bble.Types
 {
     /// <summary>
     /// The music control action

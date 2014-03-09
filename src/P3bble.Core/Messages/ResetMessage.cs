@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
-using P3bble.Core.Constants;
+using P3bble.Constants;
 
-namespace P3bble.Core.Messages
+namespace P3bble.Messages
 {
     internal class ResetMessage : P3bbleMessage
     {
         public ResetMessage()
-            : base(P3bbleEndpoint.Reset)
+            : base(Endpoint.Reset)
         {
         }
 

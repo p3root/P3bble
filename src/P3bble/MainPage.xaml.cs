@@ -1,7 +1,7 @@
 ﻿using Microsoft.Phone.Controls;
 using Microsoft.Xna.Framework.Media;
-using P3bble.Core;
-using P3bble.Core.Types;
+using P3bble;
+using P3bble.Types;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -15,7 +15,7 @@ namespace P3bble
 {
     public partial class MainPage : PhoneApplicationPage
     {
-        private P3bble.Core.P3bble _pebble;
+        private Pebble _pebble;
         private ProgressBar _currentProgressBar;
 
         public MainPage()
@@ -34,7 +34,7 @@ namespace P3bble
 
         private async Task TryConnection()
         {
-            List<P3bble.Core.P3bble> pebbles = await P3bble.Core.P3bble.DetectPebbles();
+            List<Pebble> pebbles = await Pebble.DetectPebbles();
 
             if (pebbles.Count >= 1)
             {
@@ -343,7 +343,7 @@ namespace P3bble
 
             try
             {
-                P3bbleBundle bundle = await this._pebble.DownloadBundleAsync(bundleUrl);
+                Bundle bundle = await this._pebble.DownloadBundleAsync(bundleUrl);
                 if (bundle != null)
                 {
                     switch (bundle.BundleType)

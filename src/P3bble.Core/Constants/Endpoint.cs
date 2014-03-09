@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace P3bble.Core.Constants
+namespace P3bble.Constants
 {
     /// <summary>
     /// The endpoint
     /// </summary>
-    internal enum P3bbleEndpoint
+    internal enum Endpoint
     {
         /// <summary>
         /// Firmware endpoint

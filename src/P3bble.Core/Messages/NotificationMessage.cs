@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using P3bble.Core.Constants;
+using P3bble.Constants;
 
-namespace P3bble.Core.Messages
+namespace P3bble.Messages
 {
     /// <summary>
     /// Represents a notification type
@@ -34,7 +34,7 @@ namespace P3bble.Core.Messages
         private List<string> _parts;
 
         public NotificationMessage(NotificationType type, params string[] parts)
-            : base(P3bbleEndpoint.Notification)
+            : base(Endpoint.Notification)
         {
             this._type = type;
             this._parts = parts.ToList();

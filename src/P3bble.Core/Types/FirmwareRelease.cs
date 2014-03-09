@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using P3bble.Core.Helper;
+using P3bble.Helper;
 
-namespace P3bble.Core.Types
+namespace P3bble.Types
 {
     /// <summary>
     /// Details about a firmware release
     /// </summary>
     [DataContract]
-    public class P3bbleFirmwareRelease : P3bbleVersion
+    public class FirmwareRelease : VersionInfo
     {
         /// <summary>
         /// Gets the URL.

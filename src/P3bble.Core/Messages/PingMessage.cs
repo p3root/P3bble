@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using P3bble.Core.Constants;
+using P3bble.Constants;
 
-namespace P3bble.Core.Messages
+namespace P3bble.Messages
 {
     internal class PingMessage : P3bbleMessage
     {
         private byte[] _cookie;
 
         public PingMessage(byte[] cookie = null)
-            : base(P3bbleEndpoint.Ping)
+            : base(Endpoint.Ping)
         {
             if (cookie == null)
             {

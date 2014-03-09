@@ -2,14 +2,14 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
-namespace P3bble.Core.Types
+namespace P3bble.Types
 {
     /// <summary>
     /// Represents details of an application
     /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     [SuppressMessage("Microsoft.StyleCop.CSharp.OrderingRules", "SA1202:ElementsMustBeOrderedByAccess", Justification = "It's a structure deserialized from a stream")]
-    public struct P3bbleApplicationMetadata
+    public struct ApplicationMetadata
     {
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 8)]
         internal readonly string Header;

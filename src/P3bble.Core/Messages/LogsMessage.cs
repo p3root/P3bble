@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using P3bble.Core.Constants;
-using P3bble.Core.Helper;
+using P3bble.Constants;
+using P3bble.Helper;
 
-namespace P3bble.Core.Messages
+namespace P3bble.Messages
 {
     /// <summary>
     /// The log level
     /// </summary>
-    public enum LogLevel
+    internal enum LogLevel
     {
         /// <summary>
         /// All levels
@@ -47,7 +47,7 @@ namespace P3bble.Core.Messages
     internal class LogsMessage : P3bbleMessage
     {
         public LogsMessage()
-            : base(P3bbleEndpoint.Logs)
+            : base(Endpoint.Logs)
         {
         }
 

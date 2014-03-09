@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using P3bble.Core.Constants;
+using P3bble.Constants;
 
-namespace P3bble.Core.Messages
+namespace P3bble.Messages
 {
     /// <summary>
     /// Application command
@@ -97,11 +97,11 @@ namespace P3bble.Core.Messages
         private List<byte[]> _tuples = new List<byte[]>();
         
         public AppMessage()
-            : this(P3bbleEndpoint.ApplicationMessage)
+            : this(Endpoint.ApplicationMessage)
         {
         }
 
-        public AppMessage(P3bbleEndpoint messageType)
+        public AppMessage(Endpoint messageType)
             : base(messageType)
         {
         }

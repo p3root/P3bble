@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using P3bble.Core.Constants;
-using P3bble.Core.Types;
+using P3bble.Constants;
+using P3bble.Types;
 
-namespace P3bble.Core.Messages
+namespace P3bble.Messages
 {
     internal class MusicMessage : P3bbleMessage
     {
@@ -13,12 +13,12 @@ namespace P3bble.Core.Messages
         private string _track;
 
         public MusicMessage()
-            : base(P3bbleEndpoint.MusicControl)
+            : base(Endpoint.MusicControl)
         {
         }
 
         public MusicMessage(string artist, string album, string track)
-            : base(P3bbleEndpoint.MusicControl)
+            : base(Endpoint.MusicControl)
         {
             this._artist = artist;
             this._album = album;

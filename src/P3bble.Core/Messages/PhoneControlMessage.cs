@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using P3bble.Core.Constants;
+using P3bble.Constants;
 
-namespace P3bble.Core.Messages
+namespace P3bble.Messages
 {
     /// <summary>
     /// Represents the phone control type
@@ -64,7 +64,7 @@ namespace P3bble.Core.Messages
         private byte[] _cookie;
 
         public PhoneControlMessage(PhoneControlType type, byte[] cookie, params string[] parts)
-            : base(P3bbleEndpoint.PhoneControl)
+            : base(Endpoint.PhoneControl)
         {
             this._type = type;
             this._parts = parts.ToList();

@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace P3bble.Core.Constants
+namespace P3bble.Constants
 {
     /// <summary>
     /// Session capabilities
     /// </summary>
-    public enum P3bbleSessionCaps : uint
+    internal enum SessionCaps : uint
     {
         /// <summary>
         /// Gamma ray

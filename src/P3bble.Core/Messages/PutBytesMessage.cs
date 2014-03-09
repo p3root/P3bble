@@ -4,11 +4,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using P3bble.Core.Constants;
-using P3bble.Core.Helper;
-using P3bble.Core.Types;
+using P3bble.Constants;
+using P3bble.Helper;
+using P3bble.Types;
 
-namespace P3bble.Core.Messages
+namespace P3bble.Messages
 {
     /// <summary>
     /// Represents the type we're putting on the Pebble
@@ -96,12 +96,12 @@ namespace P3bble.Core.Messages
         private InstallProgressHandler _progressHandler;
 
         public PutBytesMessage()
-            : base(P3bbleEndpoint.PutBytes)
+            : base(Endpoint.PutBytes)
         {
         }
 
         public PutBytesMessage(PutBytesTransferType transferType, byte[] buffer, InstallProgressHandler progressHandler, uint index = 0)
-            : base(P3bbleEndpoint.PutBytes)
+            : base(Endpoint.PutBytes)
         {
             this._transferType = transferType;
             this._buffer = new List<byte>(buffer);

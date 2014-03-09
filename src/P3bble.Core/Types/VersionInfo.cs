@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using P3bble.Core.Helper;
+using P3bble.Helper;
 
-namespace P3bble.Core.Types
+namespace P3bble.Types
 {
     /// <summary>
     /// Version information
     /// </summary>
     [DataContract]
-    public abstract class P3bbleVersion : IComparable<P3bbleVersion>
+    public abstract class VersionInfo : IComparable<VersionInfo>
     {
         /// <summary>
         /// Gets the timestamp.
@@ -50,7 +50,7 @@ namespace P3bble.Core.Types
         /// <param name="v1">The first object to compare.</param>
         /// <param name="v2">The second object to compare.</param>
         /// <returns>true if v1 is greater than v2; otherwise, false.</returns>
-        public static bool operator >(P3bbleVersion v1, P3bbleVersion v2)
+        public static bool operator >(VersionInfo v1, VersionInfo v2)
         {
             return v1 != null && v2 != null && v1.Version > v2.Version;
         }
@@ -61,7 +61,7 @@ namespace P3bble.Core.Types
         /// <param name="v1">The first object to compare.</param>
         /// <param name="v2">The second object to compare.</param>
         /// <returns>true if v1 is less than v2; otherwise, false.</returns>
-        public static bool operator <(P3bbleVersion v1, P3bbleVersion v2)
+        public static bool operator <(VersionInfo v1, VersionInfo v2)
         {
             return v1 != null && v2 != null && v1.Version < v2.Version;
         }
@@ -72,7 +72,7 @@ namespace P3bble.Core.Types
         /// <param name="v1">The first object to compare.</param>
         /// <param name="v2">The second object to compare.</param>
         /// <returns>true if v1 is equal to v2; otherwise, false.</returns>
-        public static bool operator ==(P3bbleVersion v1, P3bbleVersion v2)
+        public static bool operator ==(VersionInfo v1, VersionInfo v2)
         {
             return v1.Equals(v2);
         }
@@ -83,7 +83,7 @@ namespace P3bble.Core.Types
         /// <param name="v1">The first object to compare.</param>
         /// <param name="v2">The second object to compare.</param>
         /// <returns>true if v1 is not equal to v2; otherwise, false.</returns>
-        public static bool operator !=(P3bbleVersion v1, P3bbleVersion v2)
+        public static bool operator !=(VersionInfo v1, VersionInfo v2)
         {
             return !v1.Equals(v2);
         }
@@ -95,7 +95,7 @@ namespace P3bble.Core.Types
         /// <returns>
         /// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
         /// </returns>
-        public int CompareTo(P3bbleVersion other)
+        public int CompareTo(VersionInfo other)
         {
             return this.Version.CompareTo(other.Version);
         }
@@ -109,7 +109,7 @@ namespace P3bble.Core.Types
         /// </returns>
         public override bool Equals(object obj)
         {
-            var ver = obj as P3bbleVersion;
+            var ver = obj as VersionInfo;
             if (obj != null)
             {
                 return this.Version == ver.Version;

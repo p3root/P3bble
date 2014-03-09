@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("P3bble.Core")]
+[assembly: AssemblyTitle("P3bble")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("P3bble.Core")]
+[assembly: AssemblyProduct("P3bble")]
 [assembly: AssemblyCopyright("Copyright ©  2014 Patrik Pfaffenbauer and Steve Robbins")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

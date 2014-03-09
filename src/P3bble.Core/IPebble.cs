@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using P3bble.Core.Types;
+using P3bble.Types;
 
-namespace P3bble.Core
+namespace P3bble
 {
     /// <summary>
     /// Defines the Pebble interface
     /// </summary>
-    public interface IP3bble
+    public interface IPebble
     {
         /// <summary>
         /// Connects this instance.
@@ -45,13 +45,13 @@ namespace P3bble.Core
         /// Gets the latest firmware version.
         /// </summary>
         /// <returns>An async task to wait that will result in firmware info</returns>
-        Task<P3bbleFirmwareResponse> GetLatestFirmwareVersionAsync();
+        Task<FirmwareResponse> GetLatestFirmwareVersionAsync();
 
         /// <summary>
         /// Gets a list of the installed apps.
         /// </summary>
         /// <returns>An async task to wait that will result in a list of apps</returns>
-        Task<P3bbleInstalledApplications> GetInstalledAppsAsync();
+        Task<InstalledApplications> GetInstalledAppsAsync();
 
         /// <summary>
         /// Remove an installed application from the specified app-bank.
@@ -60,7 +60,7 @@ namespace P3bble.Core
         /// <returns>
         /// An async task to wait
         /// </returns>
-        Task RemoveAppAsync(P3bbleInstalledApplication app);
+        Task RemoveAppAsync(InstalledApplication app);
 
         /// <summary>
         /// Sets the now playing track.
@@ -76,7 +76,7 @@ namespace P3bble.Core
         /// </summary>
         /// <param name="uri">The URI.</param>
         /// <returns>An async task to wait</returns>
-        Task<P3bbleBundle> DownloadBundleAsync(string uri);
+        Task<Bundle> DownloadBundleAsync(string uri);
 
         /// <summary>
         /// Installs an application.
@@ -85,7 +85,7 @@ namespace P3bble.Core
         /// <returns>
         /// An async task to wait
         /// </returns>
-        Task InstallApp(P3bbleBundle bundle);
+        Task InstallApp(Bundle bundle);
 
         /// <summary>
         /// Launches an application.
@@ -104,7 +104,7 @@ namespace P3bble.Core
         /// <returns>
         /// An async task to wait
         /// </returns>
-        Task InstallFirmware(P3bbleBundle bundle, bool recovery);
+        Task InstallFirmware(Bundle bundle, bool recovery);
 
         /// <summary>
         /// Sends an SMS notification.

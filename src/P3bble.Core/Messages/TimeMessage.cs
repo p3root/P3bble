@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using P3bble.Core.Constants;
-using P3bble.Core.Helper;
+using P3bble.Constants;
+using P3bble.Helper;
 
-namespace P3bble.Core.Messages
+namespace P3bble.Messages
 {
     /// <summary>
     /// Represents the time message
@@ -27,13 +27,13 @@ namespace P3bble.Core.Messages
         private TimeMessageAction _action;
         
         public TimeMessage()
-            : base(P3bbleEndpoint.Time)
+            : base(Endpoint.Time)
         {
             this._action = TimeMessageAction.GetTime;
         }
 
         public TimeMessage(DateTime time)
-            : base(P3bbleEndpoint.Time)
+            : base(Endpoint.Time)
         {
             this._action = TimeMessageAction.SetTime;
             this.Time = time;

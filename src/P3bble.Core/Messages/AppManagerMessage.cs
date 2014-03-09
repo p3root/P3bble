@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using P3bble.Core.Constants;
-using P3bble.Core.Helper;
-using P3bble.Core.Types;
+using P3bble.Constants;
+using P3bble.Helper;
+using P3bble.Types;
 
-namespace P3bble.Core.Messages
+namespace P3bble.Messages
 {
     /// <summary>
     /// Represents the result of an application operation
@@ -62,7 +62,7 @@ namespace P3bble.Core.Messages
         }
 
         public AppManagerMessage(AppManagerAction action)
-            : base(P3bbleEndpoint.AppManager)
+            : base(Endpoint.AppManager)
         {
             this._action = action;
         }
@@ -80,7 +80,7 @@ namespace P3bble.Core.Messages
         /// <value>
         /// The installed applications.
         /// </value>
-        public P3bbleInstalledApplications InstalledApplications { get; private set; }
+        public InstalledApplications InstalledApplications { get; private set; }
 
         /// <summary>
         /// Gets the result.
@@ -140,7 +140,7 @@ namespace P3bble.Core.Messages
                     uint appBanksAvailable = BitConverter.ToUInt32(numBanks, 0);
                     uint appsInstalled = BitConverter.ToUInt32(numApps, 0);
 
-                    this.InstalledApplications = new P3bbleInstalledApplications(appBanksAvailable);
+                    this.InstalledApplications = new InstalledApplications(appBanksAvailable);
 
                     for (int i = 0; i < appsInstalled; i++)
                     {
@@ -172,7 +172,7 @@ namespace P3bble.Core.Messages
                         int companyLength = Array.IndexOf(company, (byte)0); 
 
                         this.InstalledApplications.ApplicationsInstalled.Add(
-                            new P3bbleInstalledApplication()
+                            new InstalledApplication()
                             {
                                 Id = BitConverter.ToUInt32(id, 0),
                                 Index = BitConverter.ToUInt32(index, 0),

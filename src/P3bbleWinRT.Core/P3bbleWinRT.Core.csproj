@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -14,6 +14,9 @@
     <DefaultLanguage>de-DE</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetPlatformVersion>8.1</TargetPlatformVersion>
+    <MinimumVisualStudioVersion>12</MinimumVisualStudioVersion>
+    <TargetFrameworkVersion />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -106,17 +109,17 @@
     <Compile Include="..\P3bble.Core\Communication\Protocol.cs">
       <Link>Communication\Protocol.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\Constants\P3bbleEndpoint.cs">
-      <Link>Constants\P3bbleEndpoint.cs</Link>
+    <Compile Include="..\P3bble.Core\Constants\Endpoint.cs">
+      <Link>Constants\Endpoint.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\Constants\P3bbleHardwareRevision.cs">
-      <Link>Constants\P3bbleHardwareRevision.cs</Link>
+    <Compile Include="..\P3bble.Core\Constants\HardwareRevision.cs">
+      <Link>Constants\HardwareRevision.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\Constants\P3bbleRemoteCaps.cs">
-      <Link>Constants\P3bbleRemoteCaps.cs</Link>
+    <Compile Include="..\P3bble.Core\Constants\RemoteCaps.cs">
+      <Link>Constants\RemoteCaps.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\Constants\P3bbleSessionCaps.cs">
-      <Link>Constants\P3bbleSessionCaps.cs</Link>
+    <Compile Include="..\P3bble.Core\Constants\SessionCaps.cs">
+      <Link>Constants\SessionCaps.cs</Link>
     </Compile>
     <Compile Include="..\P3bble.Core\Exceptions\CannotInstallException.cs">
       <Link>Exceptions\CannotInstallException.cs</Link>
@@ -133,8 +136,8 @@
     <Compile Include="..\P3bble.Core\Helper\Util.cs">
       <Link>Helper\Util.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\IP3bble.cs">
-      <Link>IP3bble.cs</Link>
+    <Compile Include="..\P3bble.Core\IPebble.cs">
+      <Link>IPebble.cs</Link>
     </Compile>
     <Compile Include="..\P3bble.Core\Messages\AppManagerMessage.cs">
       <Link>Messages\AppManagerMessage.cs</Link>
@@ -178,47 +181,47 @@
     <Compile Include="..\P3bble.Core\Messages\VersionMessage.cs">
       <Link>Messages\VersionMessage.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\P3bble.cs">
-      <Link>P3bble.cs</Link>
+    <Compile Include="..\P3bble.Core\Pebble.cs">
+      <Link>Pebble.cs</Link>
     </Compile>
     <Compile Include="..\P3bble.Core\Types\MusicControlAction.cs">
       <Link>Types\MusicControlAction.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\Types\P3bbleApplicationManifest.cs">
-      <Link>Types\P3bbleApplicationManifest.cs</Link>
+    <Compile Include="..\P3bble.Core\Types\ApplicationManifest.cs">
+      <Link>Types\ApplicationManifest.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\Types\P3bbleApplicationMetadata.cs">
-      <Link>Types\P3bbleApplicationMetadata.cs</Link>
+    <Compile Include="..\P3bble.Core\Types\ApplicationMetadata.cs">
+      <Link>Types\ApplicationMetadata.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\Types\P3bbleBundle.cs">
-      <Link>Types\P3bbleBundle.cs</Link>
+    <Compile Include="..\P3bble.Core\Types\Bundle.cs">
+      <Link>Types\Bundle.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\Types\P3bbleBundleManifest.cs">
-      <Link>Types\P3bbleBundleManifest.cs</Link>
+    <Compile Include="..\P3bble.Core\Types\BundleManifest.cs">
+      <Link>Types\BundleManifest.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\Types\P3bbleFirmwareManifest.cs">
-      <Link>Types\P3bbleFirmwareManifest.cs</Link>
+    <Compile Include="..\P3bble.Core\Types\FirmwareManifest.cs">
+      <Link>Types\FirmwareManifest.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\Types\P3bbleFirmwareRelease.cs">
-      <Link>Types\P3bbleFirmwareRelease.cs</Link>
+    <Compile Include="..\P3bble.Core\Types\FirmwareRelease.cs">
+      <Link>Types\FirmwareRelease.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\Types\P3bbleFirmwareResponse.cs">
-      <Link>Types\P3bbleFirmwareResponse.cs</Link>
+    <Compile Include="..\P3bble.Core\Types\FirmwareResponse.cs">
+      <Link>Types\FirmwareResponse.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\Types\P3bbleFirmwareVersion.cs">
-      <Link>Types\P3bbleFirmwareVersion.cs</Link>
+    <Compile Include="..\P3bble.Core\Types\FirmwareVersion.cs">
+      <Link>Types\FirmwareVersion.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\Types\P3bbleInstalledApplication.cs">
-      <Link>Types\P3bbleInstalledApplication.cs</Link>
+    <Compile Include="..\P3bble.Core\Types\InstalledApplication.cs">
+      <Link>Types\InstalledApplication.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\Types\P3bbleInstalledApplications.cs">
-      <Link>Types\P3bbleInstalledApplications.cs</Link>
+    <Compile Include="..\P3bble.Core\Types\InstalledApplications.cs">
+      <Link>Types\InstalledApplications.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\Types\P3bbleResourcesManifest.cs">
-      <Link>Types\P3bbleResourcesManifest.cs</Link>
+    <Compile Include="..\P3bble.Core\Types\ResourcesManifest.cs">
+      <Link>Types\ResourcesManifest.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\Types\P3bbleVersion.cs">
-      <Link>Types\P3bbleVersion.cs</Link>
+    <Compile Include="..\P3bble.Core\Types\VersionInfo.cs">
+      <Link>Types\VersionInfo.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -233,8 +236,8 @@
       <HintPath>..\packages\Microsoft.Net.Http.2.2.18\lib\win8\System.Net.Http.Primitives.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
-    <VisualStudioVersion>11.0</VisualStudioVersion>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
+    <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.13\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.13\tools\Microsoft.Bcl.Build.targets')" />

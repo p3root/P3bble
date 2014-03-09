@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using P3bble.Core.Helper;
+using P3bble.Helper;
 
-namespace P3bble.Core.Types
+namespace P3bble.Types
 {
     [DataContract]
-    internal class P3bbleBundleManifest
+    internal class BundleManifest
     {
         [DataMember(Name = "manifestVersion", IsRequired = true)]
         public int ManifestVersion { get; private set; }
@@ -22,13 +22,13 @@ namespace P3bble.Core.Types
         public string GeneratedBy { get; private set; }
 
         [DataMember(Name = "application", IsRequired = false)]
-        public P3bbleApplicationManifest ApplicationManifest { get; private set; }
+        public ApplicationManifest ApplicationManifest { get; private set; }
 
         [DataMember(Name = "firmware", IsRequired = false)]
-        public P3bbleFirmwareManifest Firmware { get; private set; }
+        public FirmwareManifest Firmware { get; private set; }
 
         [DataMember(Name = "resources", IsRequired = false)]
-        public P3bbleResourcesManifest Resources { get; private set; }
+        public ResourcesManifest Resources { get; private set; }
 
         [DataMember(Name = "type", IsRequired = true)]
         public string Type { get; private set; }

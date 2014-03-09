@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using P3bble.Core.Constants;
-using P3bble.Core.Helper;
-using P3bble.Core.Messages;
+using P3bble.Constants;
+using P3bble.Helper;
+using P3bble.Messages;
 
-namespace P3bble.Core
+namespace P3bble
 {
     /// <summary>
     /// The base message
@@ -15,7 +15,7 @@ namespace P3bble.Core
         /// Initializes a new instance of the <see cref="P3bbleMessage"/> class.
         /// </summary>
         /// <param name="endpoint">The endpoint.</param>
-        public P3bbleMessage(P3bbleEndpoint endpoint)
+        public P3bbleMessage(Endpoint endpoint)
         {
             this.Endpoint = endpoint;
         }
@@ -26,7 +26,7 @@ namespace P3bble.Core
         /// <value>
         /// The endpoint.
         /// </value>
-        public P3bbleEndpoint Endpoint { get; private set; }
+        public Endpoint Endpoint { get; private set; }
 
         /// <summary>
         /// Creates an incoming message.
@@ -34,42 +34,42 @@ namespace P3bble.Core
         /// <param name="endpoint">The endpoint.</param>
         /// <param name="payload">The payload.</param>
         /// <returns>A specific message type</returns>
-        public static P3bbleMessage CreateMessage(P3bbleEndpoint endpoint, List<byte> payload)
+        public static P3bbleMessage CreateMessage(Endpoint endpoint, List<byte> payload)
         {
             P3bbleMessage frame = null;
 
             switch (endpoint)
             {
-                case P3bbleEndpoint.Ping:
+                case Endpoint.Ping:
                     frame = new PingMessage();
                     break;
 
-                case P3bbleEndpoint.Version:
+                case Endpoint.Version:
                     frame = new VersionMessage();
                     break;
                 
-                case P3bbleEndpoint.Time:
+                case Endpoint.Time:
                     frame = new TimeMessage();
                     break;
                 
-                case P3bbleEndpoint.Logs:
+                case Endpoint.Logs:
                     frame = new LogsMessage();
                     break;
 
-                case P3bbleEndpoint.AppManager:
+                case Endpoint.AppManager:
                     frame = new AppManagerMessage();
                     break;
 
-                case P3bbleEndpoint.MusicControl:
+                case Endpoint.MusicControl:
                     frame = new MusicMessage();
                     break;
 
-                case P3bbleEndpoint.ApplicationMessage:
-                case P3bbleEndpoint.Launcher:
+                case Endpoint.ApplicationMessage:
+                case Endpoint.Launcher:
                     frame = new AppMessage(endpoint);
                     break;
 
-                case P3bbleEndpoint.PutBytes:
+                case Endpoint.PutBytes:
                     frame = new PutBytesMessage();
                     break;
             }

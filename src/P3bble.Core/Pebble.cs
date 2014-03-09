@@ -6,14 +6,14 @@ using System.Net.Http;
 using System.Runtime.Serialization.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using P3bble.Core.Communication;
-using P3bble.Core.Constants;
-using P3bble.Core.Messages;
-using P3bble.Core.Types;
+using P3bble.Communication;
+using P3bble.Constants;
+using P3bble.Messages;
+using P3bble.Types;
 using Windows.Networking.Proximity;
 using Windows.Storage;
 
-namespace P3bble.Core
+namespace P3bble
 {
     /// <summary>
     /// Delegate to handle music control events
@@ -30,7 +30,7 @@ namespace P3bble.Core
     /// <summary>
     /// Defines a connection to a Pebble watch
     /// </summary>
-    public class P3bble : IP3bble
+    public class Pebble : IPebble
     {
         // The underlying protocol handler...
         private Protocol _protocol;
@@ -40,10 +40,10 @@ namespace P3bble.Core
         private P3bbleMessage _pendingMessage;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="P3bble"/> class.
+        /// Initializes a new instance of the <see cref="Pebble"/> class.
         /// </summary>
         /// <param name="peerInformation">The peer device to connect to.</param>
-        internal P3bble(PeerInformation peerInformation)
+        internal Pebble(PeerInformation peerInformation)
         {
             PeerInformation = peerInformation;
         }
@@ -92,7 +92,7 @@ namespace P3bble.Core
         /// <value>
         /// The firmware version.
         /// </value>
-        public P3bbleFirmwareVersion FirmwareVersion { get; private set; }
+        public FirmwareVersion FirmwareVersion { get; private set; }
 
         /// <summary>
         /// Gets the recovery firmware version.
@@ -100,7 +100,7 @@ namespace P3bble.Core
         /// <value>
         /// The recovery firmware version.
         /// </value>
-        public P3bbleFirmwareVersion RecoveryFirmwareVersion { get; private set; }
+        public FirmwareVersion RecoveryFirmwareVersion { get; private set; }
 
         /// <summary>
         /// Gets the underlying Bluetooth peer information.
@@ -114,9 +114,9 @@ namespace P3bble.Core
         /// Detects any paired pebbles.
         /// </summary>
         /// <returns>A list of pebbles if some are found</returns>
-        public static Task<List<P3bble>> DetectPebbles()
+        public static Task<List<Pebble>> DetectPebbles()
         {
-            return Task<List<P3bble>>.Factory.StartNew(() => FindPebbles());
+            return Task<List<Pebble>>.Factory.StartNew(() => FindPebbles());
         }
 
         /// <summary>
@@ -197,7 +197,7 @@ namespace P3bble.Core
         /// Gets the latest firmware version.
         /// </summary>
         /// <returns>An async task to wait that will result in firmware info</returns>
-        public async Task<P3bbleFirmwareResponse> GetLatestFirmwareVersionAsync()
+        public async Task<FirmwareResponse> GetLatestFirmwareVersionAsync()
         {
             string url = this.FirmwareVersion.GetFirmwareServerUrl(false);
 
@@ -207,8 +207,8 @@ namespace P3bble.Core
             {
                 using (var stream = await response.Content.ReadAsStreamAsync())
                 {
-                    var serializer = new DataContractJsonSerializer(typeof(P3bbleFirmwareResponse));
-                    P3bbleFirmwareResponse info = serializer.ReadObject(stream) as P3bbleFirmwareResponse;
+                    var serializer = new DataContractJsonSerializer(typeof(FirmwareResponse));
+                    FirmwareResponse info = serializer.ReadObject(stream) as FirmwareResponse;
                     return info;
                 }
             }
@@ -222,7 +222,7 @@ namespace P3bble.Core
         /// <returns>
         /// An async task to wait that will result in a list of apps
         /// </returns>
-        public async Task<P3bbleInstalledApplications> GetInstalledAppsAsync()
+        public async Task<InstalledApplications> GetInstalledAppsAsync()
         {
             var result = await this.SendMessageAndAwaitResponseAsync<AppManagerMessage>(new AppManagerMessage(AppManagerAction.ListApps));
             if (result != null)
@@ -242,7 +242,7 @@ namespace P3bble.Core
         /// <returns>
         /// An async task to wait
         /// </returns>
-        public Task RemoveAppAsync(P3bbleInstalledApplication app)
+        public Task RemoveAppAsync(InstalledApplication app)
         {
             return this._protocol.WriteMessage(new AppManagerMessage(AppManagerAction.RemoveApp, app.Id, app.Index));
         }
@@ -268,7 +268,7 @@ namespace P3bble.Core
         /// <returns>
         /// An async task to wait
         /// </returns>
-        public async Task<P3bbleBundle> DownloadBundleAsync(string uri)
+        public async Task<Bundle> DownloadBundleAsync(string uri)
         {
             HttpClient client = new HttpClient();
             var response = await client.GetAsync(uri);
@@ -289,7 +289,7 @@ namespace P3bble.Core
                     }
                 }
 
-                var bundle = new P3bbleBundle(fileGuid.ToString());
+                var bundle = new Bundle(fileGuid.ToString());
                 await bundle.Initialise();
                 return bundle;
             }
@@ -306,7 +306,7 @@ namespace P3bble.Core
         /// <returns>
         /// An async task to wait
         /// </returns>
-        public async Task InstallApp(P3bbleBundle bundle)
+        public async Task InstallApp(Bundle bundle)
         {
             if (bundle.BundleType != BundleType.Application)
             {
@@ -385,10 +385,10 @@ namespace P3bble.Core
                 }
             }
 
-            var appMsg = new AppMessage(P3bbleEndpoint.AppManager) { Command = AppCommand.FinaliseInstall, AppIndex = firstFreeBank };
+            var appMsg = new AppMessage(Endpoint.AppManager) { Command = AppCommand.FinaliseInstall, AppIndex = firstFreeBank };
             await this.SendMessageAndAwaitResponseAsync<AppManagerMessage>(appMsg);
 
-            await P3bbleBundle.DeleteFromStorage(bundle);
+            await Bundle.DeleteFromStorage(bundle);
 
             if (this.InstallProgress != null)
             {
@@ -408,7 +408,7 @@ namespace P3bble.Core
         /// </returns>
         public async Task<bool> LaunchApp(Guid appUuid)
         {
-            var msg = new AppMessage(P3bbleEndpoint.Launcher)
+            var msg = new AppMessage(Endpoint.Launcher)
             {
                 AppUuid = appUuid,
                 Command = AppCommand.Push
@@ -436,7 +436,7 @@ namespace P3bble.Core
         /// <returns>
         /// An async task to wait
         /// </returns>
-        public async Task InstallFirmware(P3bbleBundle bundle, bool recovery)
+        public async Task InstallFirmware(Bundle bundle, bool recovery)
         {
             if (bundle.BundleType != BundleType.Firmware)
             {
@@ -499,7 +499,7 @@ namespace P3bble.Core
 
             await this._protocol.WriteMessage(new SystemMessage(SystemCommand.FirmwareComplete));
 
-            await P3bbleBundle.DeleteFromStorage(bundle);
+            await Bundle.DeleteFromStorage(bundle);
 
             if (this.InstallProgress != null)
             {
@@ -636,7 +636,7 @@ namespace P3bble.Core
         /// Finds paired pebbles.
         /// </summary>
         /// <returns>A list of pebbles</returns>
-        private static List<P3bble> FindPebbles()
+        private static List<Pebble> FindPebbles()
         {
             PeerFinder.AlternateIdentities["Bluetooth:Paired"] = string.Empty;
 
@@ -644,7 +644,7 @@ namespace P3bble.Core
             PeerFinder.Start();
 #endif
             IReadOnlyList<PeerInformation> pairedDevices = PeerFinder.FindAllPeersAsync().AsTask().Result;
-            List<P3bble> lst = new List<P3bble>();
+            List<Pebble> lst = new List<Pebble>();
 
             // Filter to only devices that are named Pebble - right now, that's the only way to
             // stop us getting headphones, etc. showing up...
@@ -652,7 +652,7 @@ namespace P3bble.Core
             {
                 if (pi.DisplayName.StartsWith("Pebble", StringComparison.OrdinalIgnoreCase))
                 {
-                    lst.Add(new P3bble(pi));
+                    lst.Add(new Pebble(pi));
                 }
             }
 
@@ -674,19 +674,19 @@ namespace P3bble.Core
 
             switch (message.Endpoint)
             {
-                case P3bbleEndpoint.PhoneVersion:
+                case Endpoint.PhoneVersion:
                     // We need to tell the Pebble what we are...
                     this._protocol.WriteMessage(new PhoneVersionMessage());
                     break;
 
-                case P3bbleEndpoint.Version:
+                case Endpoint.Version:
                     // Store version info we got from the Pebble...
                     VersionMessage version = message as VersionMessage;
                     this.FirmwareVersion = version.Firmware;
                     this.RecoveryFirmwareVersion = version.RecoveryFirmware;
                     break;
 
-                case P3bbleEndpoint.Logs:
+                case Endpoint.Logs:
                     if (message as LogsMessage != null)
                     {
                         Debug.WriteLine("LOG: " + (message as LogsMessage).Message);
@@ -694,7 +694,7 @@ namespace P3bble.Core
 
                     break;
 
-                case P3bbleEndpoint.MusicControl:
+                case Endpoint.MusicControl:
                     var musicMessage = message as MusicMessage;
                     if (this.MusicControlReceived != null && musicMessage != null && musicMessage.ControlAction != MusicControlAction.Unknown)
                     {
@@ -715,7 +715,7 @@ namespace P3bble.Core
                     Debug.WriteLine("ProtocolMessageReceived: we were waiting for this type of message");
 
                     // PutBytes messages are state machines, so need special treatment...
-                    if (message.Endpoint == P3bbleEndpoint.PutBytes)
+                    if (message.Endpoint == Endpoint.PutBytes)
                     {
                         var putMessage = this._pendingMessage as PutBytesMessage;
                         if (putMessage.HandleStateMessage(message as PutBytesMessage))
@@ -737,7 +737,7 @@ namespace P3bble.Core
                 {
                     // We've received a Log message when we were expecting something else,
                     // this means the protocol comms got messed up somehow, we should abort...
-                    if (message.Endpoint == P3bbleEndpoint.Logs)
+                    if (message.Endpoint == Endpoint.Logs)
                     {
                         this._pendingMessage = message;
                         this._pendingMessageSignal.Set();

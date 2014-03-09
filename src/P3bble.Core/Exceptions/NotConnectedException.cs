@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace P3bble.Core
+namespace P3bble
 {
     /// <summary>
     /// Raised when calling a method on an unconnected Pebble

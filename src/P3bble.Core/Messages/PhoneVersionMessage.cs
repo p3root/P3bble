@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using P3bble.Core.Constants;
+using P3bble.Constants;
 
-namespace P3bble.Core.Messages
+namespace P3bble.Messages
 {
     internal class PhoneVersionMessage : P3bbleMessage
     {
-        private uint _sessionCaps = (uint)P3bbleSessionCaps.GammaRay;
-        private uint _remoteCaps = (uint)(P3bbleRemoteCaps.Telephony | P3bbleRemoteCaps.Sms | P3bbleRemoteCaps.Android | P3bbleRemoteCaps.Gps);
+        private uint _sessionCaps = (uint)SessionCaps.GammaRay;
+        private uint _remoteCaps = (uint)(RemoteCaps.Telephony | RemoteCaps.Sms | RemoteCaps.Android | RemoteCaps.Gps);
 
         public PhoneVersionMessage()
-            : base(P3bbleEndpoint.PhoneVersion)
+            : base(Endpoint.PhoneVersion)
         {
         }
 

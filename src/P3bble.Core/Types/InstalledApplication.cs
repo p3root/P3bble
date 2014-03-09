@@ -1,9 +1,9 @@
-﻿namespace P3bble.Core.Types
+﻿namespace P3bble.Types
 {
     /// <summary>
     /// Represents an installed application
     /// </summary>
-    public struct P3bbleInstalledApplication
+    public struct InstalledApplication
     {
         /// <summary>
         /// The application id

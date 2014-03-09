@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace P3bble.Core.Helper
+namespace P3bble.Helper
 {
     internal static class Util
     {
@@ -23,14 +23,22 @@ namespace P3bble.Core.Helper
         public static T AsStruct<T>(this Stream fs) where T : struct
         {
             // Borrowed from http://stackoverflow.com/a/1936208 because BitConverter-ing all of this would be a pain
+#if NETFX_CORE
+            byte[] buffer = new byte[Marshal.SizeOf<T>()];
+#else
             byte[] buffer = new byte[Marshal.SizeOf(typeof(T))];
+#endif
             fs.Read(buffer, 0, buffer.Length);
             return AsStruct<T>(buffer);
         }
 
         public static T AsStruct<T>(this byte[] bytes) where T : struct
         {
+#if NETFX_CORE
+            if (bytes.Count() != Marshal.SizeOf<T>())
+#else
             if (bytes.Count() != Marshal.SizeOf(typeof(T)))
+#endif
             {
                 throw new ArgumentException("Byte array does not match size of target type.");
             }
@@ -39,7 +47,11 @@ namespace P3bble.Core.Helper
             GCHandle hdl = GCHandle.Alloc(bytes, GCHandleType.Pinned);
             try
             {
+#if NETFX_CORE
+                ret = (T)Marshal.PtrToStructure<T>(hdl.AddrOfPinnedObject());
+#else
                 ret = (T)Marshal.PtrToStructure(hdl.AddrOfPinnedObject(), typeof(T));
+#endif
             }
             finally
             {

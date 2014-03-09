@@ -4,12 +4,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using P3bble.Core.Constants;
+using P3bble.Constants;
 using Windows.Networking.Proximity;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 
-namespace P3bble.Core.Communication
+namespace P3bble.Communication
 {
     /// <summary>
     /// Encapsulates comms with the Pebble
@@ -73,7 +73,7 @@ namespace P3bble.Core.Communication
                 this._mutex.WaitOne();
 
                 byte[] package = message.ToBuffer();
-                Debug.WriteLine("<< SEND MESSAGE FOR ENDPOINT " + ((P3bbleEndpoint)message.Endpoint).ToString() + " (" + ((int)message.Endpoint).ToString() + ")");
+                Debug.WriteLine("<< SEND MESSAGE FOR ENDPOINT " + ((Endpoint)message.Endpoint).ToString() + " (" + ((int)message.Endpoint).ToString() + ")");
                 Debug.WriteLine("<< PAYLOAD: " + BitConverter.ToString(package));
 
                 this._writer.WriteBytes(package);
@@ -86,7 +86,8 @@ namespace P3bble.Core.Communication
 #if NETFX_CORE
         private void Run(object host)
         {
-            Task.Factory.StartNew(async () =>
+            Task.Factory.StartNew(
+                async () =>
             {
 #else
         private async void Run(object host)
@@ -106,7 +107,7 @@ namespace P3bble.Core.Communication
 
                         this.GetLengthAndEndpoint(buffer, out payloadLength, out endpoint);
 #if DEBUG
-                        Debug.WriteLine(">> RECEIVED MESSAGE FOR ENDPOINT: " + ((P3bbleEndpoint)endpoint).ToString() + " (" + endpoint.ToString() + ") - " + payloadLength.ToString() + " bytes");
+                        Debug.WriteLine(">> RECEIVED MESSAGE FOR ENDPOINT: " + ((Endpoint)endpoint).ToString() + " (" + endpoint.ToString() + ") - " + payloadLength.ToString() + " bytes");
 #endif
                         await this._reader.LoadAsync(payloadLength);
                         IBuffer buf = this._reader.ReadBuffer(payloadLength);
@@ -127,7 +128,8 @@ namespace P3bble.Core.Communication
 #endif
             }
 #if NETFX_CORE
-            }, TaskCreationOptions.LongRunning);
+            },
+            TaskCreationOptions.LongRunning);
 #endif
         }
 
@@ -175,7 +177,7 @@ namespace P3bble.Core.Communication
             byte[] array = lstBytes.ToArray();
             Debug.WriteLine(">> PAYLOAD: " + BitConverter.ToString(array));
 #endif
-            return Task.FromResult<P3bbleMessage>(P3bbleMessage.CreateMessage((P3bbleEndpoint)endpoint, lstBytes));
+            return Task.FromResult<P3bbleMessage>(P3bbleMessage.CreateMessage((Endpoint)endpoint, lstBytes));
         }
 
         private IBuffer GetBufferFromByteArray(byte[] package)

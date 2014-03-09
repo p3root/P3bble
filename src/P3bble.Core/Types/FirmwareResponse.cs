@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using P3bble.Core.Helper;
+using P3bble.Helper;
 
-namespace P3bble.Core.Types
+namespace P3bble.Types
 {
     /// <summary>
     /// Represents firmware information from the cloud
     /// </summary>
     [DataContract]
-    public class P3bbleFirmwareResponse
+    public class FirmwareResponse
     {
         /// <summary>
         /// Gets the recovery firmware version.
@@ -17,7 +17,7 @@ namespace P3bble.Core.Types
         /// The recovery firmware version.
         /// </value>
         [DataMember(Name = "recovery")]
-        public P3bbleFirmwareRelease RecoveryFirmwareVersion { get; private set; }
+        public FirmwareRelease RecoveryFirmwareVersion { get; private set; }
 
         /// <summary>
         /// Gets the firmware version.
@@ -26,6 +26,6 @@ namespace P3bble.Core.Types
         /// The firmware version.
         /// </value>
         [DataMember(Name = "normal")]
-        public P3bbleFirmwareRelease FirmwareVersion { get; private set; }
+        public FirmwareRelease FirmwareVersion { get; private set; }
     }
 }

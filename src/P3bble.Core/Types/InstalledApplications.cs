@@ -4,21 +4,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace P3bble.Core.Types
+namespace P3bble.Types
 {
     /// <summary>
     /// Represents the installed applications
     /// </summary>
-    public class P3bbleInstalledApplications
+    public class InstalledApplications
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="P3bbleInstalledApplications"/> class.
+        /// Initializes a new instance of the <see cref="InstalledApplications"/> class.
         /// </summary>
         /// <param name="banks">The banks.</param>
-        internal P3bbleInstalledApplications(uint banks)
+        internal InstalledApplications(uint banks)
         {
             this.ApplicationBanks = banks;
-            this.ApplicationsInstalled = new List<P3bbleInstalledApplication>();
+            this.ApplicationsInstalled = new List<InstalledApplication>();
         }
 
         /// <summary>
@@ -35,6 +35,6 @@ namespace P3bble.Core.Types
         /// <value>
         /// The applications installed.
         /// </value>
-        public List<P3bbleInstalledApplication> ApplicationsInstalled { get; private set; }
+        public List<InstalledApplication> ApplicationsInstalled { get; private set; }
     }
 }

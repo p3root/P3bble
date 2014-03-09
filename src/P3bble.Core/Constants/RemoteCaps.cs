@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace P3bble.Core.Constants
+namespace P3bble.Constants
 {
     /// <summary>
     /// The phone capabilites
     /// </summary>
     [Flags]
-    public enum P3bbleRemoteCaps : uint
+    internal enum RemoteCaps : uint
     {
         /// <summary>
         /// Unknown capability

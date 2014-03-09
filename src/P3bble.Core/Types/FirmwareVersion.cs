@@ -1,16 +1,16 @@
-﻿using P3bble.Core.Constants;
+﻿using P3bble.Constants;
 
-namespace P3bble.Core.Types
+namespace P3bble.Types
 {
     /// <summary>
     /// Represents firmware version information from the Pebble
     /// </summary>
-    public class P3bbleFirmwareVersion : P3bbleVersion
+    public class FirmwareVersion : VersionInfo
     {
         private const string URL = "http://pebblefw.s3.amazonaws.com/pebble/{0}/{1}/latest.json";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="P3bbleFirmwareVersion"/> class.
+        /// Initializes a new instance of the <see cref="FirmwareVersion"/> class.
         /// </summary>
         /// <param name="timestamp">The timestamp.</param>
         /// <param name="version">The version.</param>
@@ -18,14 +18,14 @@ namespace P3bble.Core.Types
         /// <param name="isrecovery">if set to <c>true</c> [isrecovery].</param>
         /// <param name="hardwareplatform">The hardwareplatform.</param>
         /// <param name="metadataversion">The metadataversion.</param>
-        public P3bbleFirmwareVersion(int timestamp, string version, string commit, bool isrecovery, byte hardwareplatform, byte metadataversion)
+        public FirmwareVersion(int timestamp, string version, string commit, bool isrecovery, byte hardwareplatform, byte metadataversion)
         {
             this.TimestampInternal = timestamp;
             this.VersionInternal = version;
             this.Commit = commit;
             this.IsRecovery = isrecovery;
             this.HardwarePlatform = hardwareplatform;
-            this.HardwareRevision = (P3bbleHardwareRevision)hardwareplatform;
+            this.HardwareRevision = (HardwareRevision)hardwareplatform;
             this.MetadataVersion = metadataversion;
         }
 
@@ -67,7 +67,7 @@ namespace P3bble.Core.Types
         /// <value>
         /// The hardware revision.
         /// </value>
-        public P3bbleHardwareRevision HardwareRevision { get; set; }
+        public HardwareRevision HardwareRevision { get; set; }
 
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.

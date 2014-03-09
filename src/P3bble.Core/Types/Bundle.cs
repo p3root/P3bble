@@ -5,12 +5,12 @@ using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
-using P3bble.Core.Helper;
+using P3bble.Helper;
 using SharpCompress.Archive;
 using SharpCompress.Archive.Zip;
 using Windows.Storage;
 
-namespace P3bble.Core.Types
+namespace P3bble.Types
 {
     /// <summary>
     /// The bundle type
@@ -32,7 +32,7 @@ namespace P3bble.Core.Types
     /// Represents an app this.Bundle
     /// <remarks>STRUCT_DEFINITION in pebble.py</remarks>
     /// </summary>
-    public class P3bbleBundle
+    public class Bundle
     {
         private string _path;
         private IArchive _bundle;
@@ -41,7 +41,7 @@ namespace P3bble.Core.Types
         /// Create a new Pebblethis.Bundle from a .pwb file and parse its metadata.
         /// </summary>
         /// <param name="path">The relative or full path to the file.</param>
-        internal P3bbleBundle(string path)
+        internal Bundle(string path)
         {
             this._path = path;
         }
@@ -90,20 +90,20 @@ namespace P3bble.Core.Types
         /// <value>
         /// The application.
         /// </value>
-        public P3bbleApplicationMetadata Application { get; private set; }
+        public ApplicationMetadata Application { get; private set; }
 
         internal byte[] BinaryContent { get; private set; }
 
         internal byte[] Resources { get; private set; }
 
-        internal P3bbleBundleManifest Manifest { get; private set; }
+        internal BundleManifest Manifest { get; private set; }
 
         /// <summary>
         /// Deletes a bundle from storage.
         /// </summary>
         /// <param name="bundle">The bundle.</param>
         /// <returns>An async task to await</returns>
-        public static async Task DeleteFromStorage(P3bbleBundle bundle)
+        public static async Task DeleteFromStorage(Bundle bundle)
         {
             StorageFile file = await ApplicationData.Current.LocalFolder.GetFileAsync(bundle._path);
             if (file != null)
@@ -152,8 +152,8 @@ namespace P3bble.Core.Types
 
             using (Stream jsonstream = manifestEntry.OpenEntryStream())
             {
-                var serializer = new DataContractJsonSerializer(typeof(P3bbleBundleManifest));
-                this.Manifest = serializer.ReadObject(jsonstream) as P3bbleBundleManifest;
+                var serializer = new DataContractJsonSerializer(typeof(BundleManifest));
+                this.Manifest = serializer.ReadObject(jsonstream) as BundleManifest;
             }
 
             if (this.Manifest.Type == "firmware")
@@ -167,9 +167,13 @@ namespace P3bble.Core.Types
                 this.BinaryContent = await this.ReadFileToArray(this.Manifest.ApplicationManifest.Filename, this.Manifest.ApplicationManifest.Size);
 
                 // Convert first part to app manifest
-                byte[] buffer = new byte[Marshal.SizeOf(typeof(P3bbleApplicationMetadata))];
+#if NETFX_CORE
+                byte[] buffer = new byte[Marshal.SizeOf<ApplicationMetadata>()];
+#else
+                byte[] buffer = new byte[Marshal.SizeOf(typeof(ApplicationMetadata))];
+#endif
                 Array.Copy(this.BinaryContent, 0, buffer, 0, buffer.Length);
-                this.Application = buffer.AsStruct<P3bbleApplicationMetadata>();
+                this.Application = buffer.AsStruct<ApplicationMetadata>();
             }
 
             this.HasResources = this.Manifest.Resources.Size != 0;

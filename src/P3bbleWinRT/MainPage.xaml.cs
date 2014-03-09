@@ -1,5 +1,5 @@
-﻿using P3bble.Core;
-using P3bble.Core.Types;
+﻿using P3bble;
+using P3bble.Types;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,7 +23,7 @@ namespace P3bbleWP8
 {
     public sealed partial class MainPage : Page
     {
-        private P3bble.Core.P3bble _pebble;
+        private Pebble _pebble;
         private ProgressBar _currentProgressBar;
 
         public MainPage()
@@ -42,7 +42,7 @@ namespace P3bbleWP8
 
         private async Task TryConnection()
         {
-            List<P3bble.Core.P3bble> pebbles = await P3bble.Core.P3bble.DetectPebbles();
+            List<Pebble> pebbles = await Pebble.DetectPebbles();
 
             if (pebbles.Count >= 1)
             {
@@ -353,7 +353,7 @@ namespace P3bbleWP8
 
             try
             {
-                P3bbleBundle bundle = await this._pebble.DownloadBundleAsync(bundleUrl);
+                var bundle = await this._pebble.DownloadBundleAsync(bundleUrl);
                 if (bundle != null)
                 {
                     switch (bundle.BundleType)

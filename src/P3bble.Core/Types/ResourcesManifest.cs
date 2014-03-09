@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using P3bble.Core.Helper;
+using P3bble.Helper;
 
-namespace P3bble.Core.Types
+namespace P3bble.Types
 {
     /// <summary>
     /// Gets the details of bundle resources
     /// </summary>
     [DataContract]
-    public class P3bbleResourcesManifest : P3bbleVersion
+    public class ResourcesManifest : VersionInfo
     {
         /// <summary>
         /// Gets the filename.

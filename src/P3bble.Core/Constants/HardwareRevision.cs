@@ -1,9 +1,9 @@
-﻿namespace P3bble.Core.Constants
+﻿namespace P3bble.Types
 {
     /// <summary>
     /// Represents Pebble Hardware
     /// </summary>
-    public enum P3bbleHardwareRevision
+    public enum HardwareRevision
     {
         /// <summary>
         /// The ev1 revision

@@ -1,7 +1,7 @@
 ﻿using System;
-using P3bble.Core.Messages;
+using P3bble.Messages;
 
-namespace P3bble.Core
+namespace P3bble
 {
     /// <summary>
     /// Raised when there's a protocol error
