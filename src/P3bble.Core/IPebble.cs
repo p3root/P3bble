@@ -60,7 +60,7 @@ namespace P3bble
         /// <returns>
         /// An async task to wait
         /// </returns>
-        Task RemoveAppAsync(InstalledApplication app);
+        Task<bool> RemoveAppAsync(InstalledApplication app);
 
         /// <summary>
         /// Sets the now playing track.

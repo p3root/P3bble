@@ -82,7 +82,7 @@ namespace P3bble
         {
             get
             {
-                return PeerInformation.DisplayName.Replace("Pebble", string.Empty).Trim();
+                return PeerInformation.DisplayName.Trim();
             }
         }
 
@@ -224,6 +224,7 @@ namespace P3bble
         /// </returns>
         public async Task<InstalledApplications> GetInstalledAppsAsync()
         {
+            Debug.WriteLine("GetInstalledAppsAsync");
             var result = await this.SendMessageAndAwaitResponseAsync<AppManagerMessage>(new AppManagerMessage(AppManagerAction.ListApps));
             if (result != null)
             {
@@ -242,9 +243,18 @@ namespace P3bble
         /// <returns>
         /// An async task to wait
         /// </returns>
-        public Task RemoveAppAsync(InstalledApplication app)
+        public async Task<bool> RemoveAppAsync(InstalledApplication app)
         {
-            return this._protocol.WriteMessage(new AppManagerMessage(AppManagerAction.RemoveApp, app.Id, app.Index));
+            Debug.WriteLine("RemoveAppAsync");
+            var result = await this.SendMessageAndAwaitResponseAsync<AppManagerMessage>(new AppManagerMessage(AppManagerAction.RemoveApp, app.Id, app.Index));
+            if (result != null)
+            {
+                return result.Result == AppManagerResult.AppRemoved;
+            }
+            else
+            {
+                throw new TimeoutException();
+            }
         }
 
         /// <summary>
@@ -638,30 +648,39 @@ namespace P3bble
         /// <returns>A list of pebbles</returns>
         private static List<Pebble> FindPebbles()
         {
-            PeerFinder.AlternateIdentities["Bluetooth:Paired"] = string.Empty;
+            List<Pebble> result = new List<Pebble>();
+
+            try
+            {
+                PeerFinder.AlternateIdentities["Bluetooth:Paired"] = string.Empty;
 
 #if NETFX_CORE
             PeerFinder.Start();
 #endif
-            IReadOnlyList<PeerInformation> pairedDevices = PeerFinder.FindAllPeersAsync().AsTask().Result;
-            List<Pebble> lst = new List<Pebble>();
+                IReadOnlyList<PeerInformation> pairedDevices = PeerFinder.FindAllPeersAsync().AsTask().Result;
 
-            // Filter to only devices that are named Pebble - right now, that's the only way to
-            // stop us getting headphones, etc. showing up...
-            foreach (PeerInformation pi in pairedDevices)
-            {
-                if (pi.DisplayName.StartsWith("Pebble", StringComparison.OrdinalIgnoreCase))
+                // Filter to only devices that are named Pebble - right now, that's the only way to
+                // stop us getting headphones, etc. showing up...
+                foreach (PeerInformation pi in pairedDevices)
                 {
-                    lst.Add(new Pebble(pi));
+                    if (pi.DisplayName.StartsWith("Pebble", StringComparison.OrdinalIgnoreCase))
+                    {
+                        result.Add(new Pebble(pi));
+                    }
+                }
+
+                if (pairedDevices.Count == 0)
+                {
+                    Debug.WriteLine("No paired devices were found.");
                 }
             }
-
-            if (pairedDevices.Count == 0)
+            catch (Exception ex)
             {
-                Debug.WriteLine("No paired devices were found.");
+                // If Bluetooth is turned off, we will get an exception. We catch it to return a zero-count list.
+                Debug.WriteLine("Exception looking for Pebbles: " + ex.ToString());
             }
 
-            return lst;
+            return result;
         }
 
         /// <summary>
@@ -785,6 +804,7 @@ namespace P3bble
 
                     // See if we have a protocol error
                     LogsMessage logMessage = this._pendingMessage as LogsMessage;
+                    Type pendingMessageType = this._pendingMessage.GetType();
 
                     // Clear the pending variables...
                     this._pendingMessageSignal = null;
@@ -803,7 +823,7 @@ namespace P3bble
                     }
                     else
                     {
-                        Debug.WriteLine(message.GetType().Name + " message timed out in " + timeTaken.ToString() + "ms");
+                        Debug.WriteLine(message.GetType().Name + " message timed out in " + timeTaken.ToString() + "ms - type received was " + pendingMessageType.ToString());
                     }
 
                     return pendingMessage;

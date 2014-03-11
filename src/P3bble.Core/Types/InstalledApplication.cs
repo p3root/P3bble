@@ -3,36 +3,36 @@
     /// <summary>
     /// Represents an installed application
     /// </summary>
-    public struct InstalledApplication
+    public class InstalledApplication
     {
         /// <summary>
-        /// The application id
+        /// Gets the application id
         /// </summary>
-        public uint Id;
+        public uint Id { get; internal set; }
 
         /// <summary>
-        /// The application index
+        /// Gets the application index
         /// </summary>
-        public uint Index;
+        public uint Index { get; internal set; }
 
         /// <summary>
-        /// The name
+        /// Gets the name
         /// </summary>
-        public string Name;
+        public string Name { get; internal set; }
 
         /// <summary>
-        /// The company
+        /// Gets the company
         /// </summary>
-        public string Company;
+        public string Company { get; internal set; }
 
         /// <summary>
-        /// The flags
+        /// Gets the flags
         /// </summary>
-        public uint Flags;
+        public uint Flags { get; internal set; }
 
         /// <summary>
-        /// The version
+        /// Gets the version
         /// </summary>
-        public ushort Version;
+        public ushort Version { get; internal set; }
     }
 }
