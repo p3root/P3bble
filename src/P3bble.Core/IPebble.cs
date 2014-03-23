@@ -85,7 +85,7 @@ namespace P3bble
         /// <returns>
         /// An async task to wait
         /// </returns>
-        Task InstallApp(Bundle bundle);
+        Task InstallAppAsync(Bundle bundle);
 
         /// <summary>
         /// Launches an application.
@@ -94,7 +94,7 @@ namespace P3bble
         /// <returns>
         /// An async task to wait
         /// </returns>
-        Task<bool> LaunchApp(Guid appUuid);
+        Task<bool> LaunchAppAsync(Guid appUuid);
 
         /// <summary>
         /// Installs a firmware bundle.
@@ -104,7 +104,17 @@ namespace P3bble
         /// <returns>
         /// An async task to wait
         /// </returns>
-        Task InstallFirmware(Bundle bundle, bool recovery);
+        Task InstallFirmwareAsync(Bundle bundle, bool recovery);
+
+        /// <summary>
+        /// Installs an app or firmware bundle.
+        /// </summary>
+        /// <param name="bundle">The bundle.</param>
+        /// <remarks>Convenience method wrapping InstallAppAsync and InstallFirmwareAsync</remarks>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        Task InstallBundleAsync(Bundle bundle);
 
         /// <summary>
         /// Sends an SMS notification.

@@ -173,7 +173,7 @@ namespace P3bble
         {
             if (_pebble != null && _pebble.IsConnected)
             {
-                await _pebble.LaunchApp(new Guid("deadefde-acfe-efbe-99ef-beefbeefbeef"));
+                await _pebble.LaunchAppAsync(new Guid("deadefde-acfe-efbe-99ef-beefbeefbeef"));
             }
         }
 
@@ -349,11 +349,11 @@ namespace P3bble
                     switch (bundle.BundleType)
                     {
                         case BundleType.Application:
-                            await this._pebble.InstallApp(bundle);
+                            await this._pebble.InstallAppAsync(bundle);
                             break;
 
                         case BundleType.Firmware:
-                            await this._pebble.InstallFirmware(bundle, false);
+                            await this._pebble.InstallFirmwareAsync(bundle, false);
                             break;
                     }
                 }

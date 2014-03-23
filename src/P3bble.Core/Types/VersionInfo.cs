@@ -41,7 +41,7 @@ namespace P3bble.Types
         [DataMember(Name = "timestamp", IsRequired = true)]
         internal int TimestampInternal { get; set; }
 
-        [DataMember(Name = "friendlyVersion", IsRequired = true)]
+        [DataMember(Name = "friendlyVersion", IsRequired = false)]
         internal string VersionInternal { get; set; }
 
         /// <summary>

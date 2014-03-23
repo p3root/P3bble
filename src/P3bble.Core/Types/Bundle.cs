@@ -99,13 +99,24 @@ namespace P3bble.Types
         internal BundleManifest Manifest { get; private set; }
 
         /// <summary>
-        /// Deletes a bundle from storage.
+        /// Loads a bundle from ApplicationData.Current.LocalFolder.
         /// </summary>
-        /// <param name="bundle">The bundle.</param>
-        /// <returns>An async task to await</returns>
-        public static async Task DeleteFromStorage(Bundle bundle)
+        /// <param name="name">The name of the file in ApplicationData.Current.LocalFolder.</param>
+        /// <returns>A bundle</returns>
+        public static async Task<Bundle> LoadFromLocalStorageAsync(string name)
         {
-            StorageFile file = await ApplicationData.Current.LocalFolder.GetFileAsync(bundle._path);
+            var bundle = new Bundle(name);
+            await bundle.Initialise();
+            return bundle;
+        }
+
+        /// <summary>
+        /// Deletes the bundle from storage.
+        /// </summary>
+        /// <returns>An async task to await</returns>
+        public async Task DeleteFromStorage()
+        {
+            StorageFile file = await ApplicationData.Current.LocalFolder.GetFileAsync(this._path);
             if (file != null)
             {
                 await file.DeleteAsync();

@@ -25,7 +25,7 @@ namespace P3bble.Types
         /// <value>
         /// The required firmware version.
         /// </value>
-        [DataMember(Name = "reqFwVer", IsRequired = true)]
+        [DataMember(Name = "reqFwVer", IsRequired = false)]
         public int RequiredFirmwareVersion { get; private set; }
 
         /// <summary>

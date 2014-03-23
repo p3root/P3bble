@@ -65,6 +65,14 @@ namespace P3bble
         public InstallProgressHandler InstallProgress { get; set; }
 
         /// <summary>
+        /// Gets a value indicating whether the Pebble is busy.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if busy; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsBusy { get; private set; }
+
+        /// <summary>
         /// Gets a value indicating whether this instance is connected.
         /// </summary>
         /// <value>
@@ -316,7 +324,7 @@ namespace P3bble
         /// <returns>
         /// An async task to wait
         /// </returns>
-        public async Task InstallApp(Bundle bundle)
+        public async Task InstallAppAsync(Bundle bundle)
         {
             if (bundle.BundleType != BundleType.Application)
             {
@@ -398,7 +406,7 @@ namespace P3bble
             var appMsg = new AppMessage(Endpoint.AppManager) { Command = AppCommand.FinaliseInstall, AppIndex = firstFreeBank };
             await this.SendMessageAndAwaitResponseAsync<AppManagerMessage>(appMsg);
 
-            await Bundle.DeleteFromStorage(bundle);
+            await bundle.DeleteFromStorage();
 
             if (this.InstallProgress != null)
             {
@@ -406,7 +414,7 @@ namespace P3bble
             }
 
             // Now launch the new app
-            await this.LaunchApp(bundle.Application.Uuid);
+            await this.LaunchAppAsync(bundle.Application.Uuid);
         }
 
         /// <summary>
@@ -416,7 +424,7 @@ namespace P3bble
         /// <returns>
         /// An async task to wait
         /// </returns>
-        public async Task<bool> LaunchApp(Guid appUuid)
+        public async Task<bool> LaunchAppAsync(Guid appUuid)
         {
             var msg = new AppMessage(Endpoint.Launcher)
             {
@@ -446,7 +454,7 @@ namespace P3bble
         /// <returns>
         /// An async task to wait
         /// </returns>
-        public async Task InstallFirmware(Bundle bundle, bool recovery)
+        public async Task InstallFirmwareAsync(Bundle bundle, bool recovery)
         {
             if (bundle.BundleType != BundleType.Firmware)
             {
@@ -509,11 +517,45 @@ namespace P3bble
 
             await this._protocol.WriteMessage(new SystemMessage(SystemCommand.FirmwareComplete));
 
-            await Bundle.DeleteFromStorage(bundle);
+            await bundle.DeleteFromStorage();
 
             if (this.InstallProgress != null)
             {
                 this.InstallProgress(100);
+            }
+        }
+
+        /// <summary>
+        /// Installs an app or firmware bundle.
+        /// </summary>
+        /// <param name="bundle">The bundle.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        /// <remarks>
+        /// Convenience method wrapping InstallAppAsync and InstallFirmwareAsync
+        /// </remarks>
+        public async Task InstallBundleAsync(Bundle bundle)
+        {
+            if (bundle != null)
+            {
+                switch (bundle.BundleType)
+                {
+                    case BundleType.Application:
+                        await this.InstallAppAsync(bundle);
+                        break;
+
+                    case BundleType.Firmware:
+                        await this.InstallFirmwareAsync(bundle, false);
+                        break;
+
+                    default:
+                        throw new ArgumentException("Unknown bundle type");
+                }
+            }
+            else
+            {
+                throw new ArgumentNullException("bundle", "Bundle must be supplied");
             }
         }
 
@@ -687,7 +729,7 @@ namespace P3bble
         /// Handles protocol messages
         /// </summary>
         /// <param name="message">The message.</param>
-        private void ProtocolMessageReceived(P3bbleMessage message)
+        private async void ProtocolMessageReceived(P3bbleMessage message)
         {
             Debug.WriteLine("ProtocolMessageReceived: " + message.Endpoint.ToString());
 
@@ -695,7 +737,7 @@ namespace P3bble
             {
                 case Endpoint.PhoneVersion:
                     // We need to tell the Pebble what we are...
-                    this._protocol.WriteMessage(new PhoneVersionMessage());
+                    await this._protocol.WriteMessage(new PhoneVersionMessage());
                     break;
 
                 case Endpoint.Version:
@@ -743,7 +785,7 @@ namespace P3bble
                         }
                         else
                         {
-                            this._protocol.WriteMessage(putMessage);
+                            await this._protocol.WriteMessage(putMessage);
                         }
                     }
                     else
@@ -777,13 +819,15 @@ namespace P3bble
         private Task<T> SendMessageAndAwaitResponseAsync<T>(P3bbleMessage message, int millisecondsTimeout = 10000)
             where T : P3bbleMessage
         {
-            if (this._pendingMessageSignal != null)
+            if (this._pendingMessageSignal != null || this.IsBusy)
             {
                 throw new InvalidOperationException("A message is being waited for already");
             }
 
             return Task.Run<T>(async () =>
                 {
+                    this.IsBusy = true;
+
                     int startTicks = Environment.TickCount;
                     this._pendingMessageSignal = new ManualResetEventSlim(false);
                     this._pendingMessage = message;
@@ -811,6 +855,8 @@ namespace P3bble
                     this._pendingMessage = null;
 
                     int timeTaken = Environment.TickCount - startTicks;
+
+                    this.IsBusy = false;
 
                     if (pendingMessage != null)
                     {
