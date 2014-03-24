@@ -8,7 +8,6 @@
     <owners>Steve Robbins</owners>
     <licenseUrl>https://github.com/srgb/P3bble/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/srgb/P3bble</projectUrl>
-    <iconUrl>http://dev.mixrad.io/assets/icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>P3bble is a framework for connecting to Pebble SmartWatches from Windows Phone 8.</summary>
     <description>P3bble is a framework for connecting to Pebble SmartWatches from Windows Phone 8.</description>
