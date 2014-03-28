@@ -49,7 +49,7 @@ namespace P3bble.Messages
             }
             else
             {
-                Debug.WriteLine("Set Time to " + this.Time.ToString());
+                Logger.WriteLine("Set Time to " + this.Time.ToString());
 
                 byte[] rawTime = BitConverter.GetBytes(this.Time.AsEpoch());
                 if (BitConverter.IsLittleEndian)

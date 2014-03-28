@@ -7,12 +7,24 @@ namespace P3bble.Messages
 {
     internal class PhoneVersionMessage : P3bbleMessage
     {
-        private uint _sessionCaps = (uint)SessionCaps.GammaRay;
-        private uint _remoteCaps = (uint)(RemoteCaps.Telephony | RemoteCaps.Sms | RemoteCaps.Android | RemoteCaps.Gps);
+        private const uint PhoneSessionCaps = (uint)SessionCaps.GammaRay;
+        private const uint RemoteCapsMusicControl = (uint)(RemoteCaps.Telephony | RemoteCaps.Sms | RemoteCaps.Android | RemoteCaps.Gps);
+        private const uint RemoteCapsNormal = (uint)(RemoteCaps.Telephony | RemoteCaps.Sms | RemoteCaps.Windows | RemoteCaps.Gps);
 
-        public PhoneVersionMessage()
+        private uint _remoteCaps;
+        
+        public PhoneVersionMessage(bool musicControlEnabled)
             : base(Endpoint.PhoneVersion)
         {
+            Logger.WriteLine("PhoneVersionMessage musicControlEnabled=" + musicControlEnabled.ToString());
+            if (musicControlEnabled)
+            {
+                this._remoteCaps = RemoteCapsMusicControl;
+            }
+            else
+            {
+                this._remoteCaps = RemoteCapsNormal;
+            }
         }
 
         protected override void GetContentFromMessage(List<byte> payload)
@@ -22,7 +34,7 @@ namespace P3bble.Messages
         protected override void AddContentToMessage(List<byte> payload)
         {
             byte[] prefix = { 0x01, 0xFF, 0xFF, 0xFF, 0xFF };
-            byte[] session = BitConverter.GetBytes(this._sessionCaps);
+            byte[] session = BitConverter.GetBytes(PhoneSessionCaps);
             byte[] remote = BitConverter.GetBytes(this._remoteCaps);
             if (BitConverter.IsLittleEndian)
             {

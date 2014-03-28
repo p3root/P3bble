@@ -19,6 +19,7 @@ namespace P3bble
     /// Delegate to handle music control events
     /// </summary>
     /// <param name="action">The control action.</param>
+    /// <remarks>Using this requires you set Pebble.IsMusicControlEnabled to true</remarks>
     public delegate void MusicControlReceivedHandler(MusicControlAction action);
 
     /// <summary>
@@ -30,7 +31,7 @@ namespace P3bble
     /// <summary>
     /// Defines a connection to a Pebble watch
     /// </summary>
-    public class Pebble : IPebble
+    public class Pebble : IPebble, IDisposable
     {
         // The underlying protocol handler...
         private Protocol _protocol;
@@ -47,6 +48,34 @@ namespace P3bble
         {
             PeerInformation = peerInformation;
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether logging is enabled.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if logging enabled; otherwise, <c>false</c>.
+        /// </value>
+        public static bool IsLoggingEnabled
+        {
+            get
+            {
+                return Logger.IsEnabled;
+            }
+
+            set
+            {
+                Logger.IsEnabled = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether music control is enabled.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if music control enabled; otherwise, <c>false</c>.
+        /// </value>
+        /// <remarks>Turning this on tells the Pebble we are running Android</remarks>
+        public static bool IsMusicControlEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets the music control received handler.
@@ -124,6 +153,10 @@ namespace P3bble
         /// <returns>A list of pebbles if some are found</returns>
         public static Task<List<Pebble>> DetectPebbles()
         {
+#if DEBUG
+            // Turn on logging for debug builds by default
+            Logger.IsEnabled = true;
+#endif
             return Task<List<Pebble>>.Factory.StartNew(() => FindPebbles());
         }
 
@@ -154,6 +187,31 @@ namespace P3bble
             }
 
             return this.IsConnected;
+        }
+
+        /// <summary>
+        /// Disconnects this instance.
+        /// </summary>
+        public void Disconnect()
+        {
+            if (this._protocol != null)
+            {
+                this._protocol.Dispose();
+                this._protocol = null;
+            }
+
+            if (!Logger.IsEnabled)
+            {
+                Logger.ClearUp();
+            }
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            this.Disconnect();
         }
 
         /// <summary>
@@ -232,7 +290,7 @@ namespace P3bble
         /// </returns>
         public async Task<InstalledApplications> GetInstalledAppsAsync()
         {
-            Debug.WriteLine("GetInstalledAppsAsync");
+            Logger.WriteLine("GetInstalledAppsAsync");
             var result = await this.SendMessageAndAwaitResponseAsync<AppManagerMessage>(new AppManagerMessage(AppManagerAction.ListApps));
             if (result != null)
             {
@@ -253,7 +311,7 @@ namespace P3bble
         /// </returns>
         public async Task<bool> RemoveAppAsync(InstalledApplication app)
         {
-            Debug.WriteLine("RemoveAppAsync");
+            Logger.WriteLine("RemoveAppAsync");
             var result = await this.SendMessageAndAwaitResponseAsync<AppManagerMessage>(new AppManagerMessage(AppManagerAction.RemoveApp, app.Id, app.Index));
             if (result != null)
             {
@@ -274,6 +332,7 @@ namespace P3bble
         /// <returns>
         /// An async task to wait
         /// </returns>
+        /// <remarks>Using this method requires you set Pebble.IsMusicControlEnabled to true</remarks>
         public Task SetNowPlayingAsync(string artist, string album, string track)
         {
             return this._protocol.WriteMessage(new MusicMessage(artist, album, track));
@@ -361,12 +420,12 @@ namespace P3bble
                 {
                     progress += partProgress;
                     int percentComplete = (int)(progress / totalBytes * 100);
-                    Debug.WriteLine("Installation " + percentComplete.ToString() + "% complete - " + progress.ToString() + " / " + totalBytes.ToString());
+                    Logger.WriteLine("Installation " + percentComplete.ToString() + "% complete - " + progress.ToString() + " / " + totalBytes.ToString());
                     this.InstallProgress(percentComplete);
                 });
             }
 
-            Debug.WriteLine(string.Format("Attempting to add app to bank {0} of {1}", firstFreeBank, installedApps.ApplicationBanks));
+            Logger.WriteLine(string.Format("Attempting to add app to bank {0} of {1}", firstFreeBank, installedApps.ApplicationBanks));
 
             PutBytesMessage binMsg = new PutBytesMessage(PutBytesTransferType.Binary, bundle.BinaryContent, handler, firstFreeBank);
 
@@ -473,7 +532,7 @@ namespace P3bble
                 {
                     progress += partProgress;
                     int percentComplete = (int)(progress / totalBytes * 100);
-                    Debug.WriteLine("Installation " + percentComplete.ToString() + "% complete - " + progress.ToString() + " / " + totalBytes.ToString());
+                    Logger.WriteLine("Installation " + percentComplete.ToString() + "% complete - " + progress.ToString() + " / " + totalBytes.ToString());
                     this.InstallProgress(percentComplete);
                 });
             }
@@ -713,13 +772,13 @@ namespace P3bble
 
                 if (pairedDevices.Count == 0)
                 {
-                    Debug.WriteLine("No paired devices were found.");
+                    Logger.WriteLine("No paired devices were found.");
                 }
             }
             catch (Exception ex)
             {
                 // If Bluetooth is turned off, we will get an exception. We catch it to return a zero-count list.
-                Debug.WriteLine("Exception looking for Pebbles: " + ex.ToString());
+                Logger.WriteLine("Exception looking for Pebbles: " + ex.ToString());
             }
 
             return result;
@@ -731,13 +790,13 @@ namespace P3bble
         /// <param name="message">The message.</param>
         private async void ProtocolMessageReceived(P3bbleMessage message)
         {
-            Debug.WriteLine("ProtocolMessageReceived: " + message.Endpoint.ToString());
+            Logger.WriteLine("ProtocolMessageReceived: " + message.Endpoint.ToString());
 
             switch (message.Endpoint)
             {
                 case Endpoint.PhoneVersion:
                     // We need to tell the Pebble what we are...
-                    await this._protocol.WriteMessage(new PhoneVersionMessage());
+                    await this._protocol.WriteMessage(new PhoneVersionMessage(IsMusicControlEnabled));
                     break;
 
                 case Endpoint.Version:
@@ -750,7 +809,7 @@ namespace P3bble
                 case Endpoint.Logs:
                     if (message as LogsMessage != null)
                     {
-                        Debug.WriteLine("LOG: " + (message as LogsMessage).Message);
+                        Logger.WriteLine("LOG: '" + (message as LogsMessage).Message + "'");
                     }
 
                     break;
@@ -773,7 +832,7 @@ namespace P3bble
             {
                 if (this._pendingMessage.Endpoint == message.Endpoint)
                 {
-                    Debug.WriteLine("ProtocolMessageReceived: we were waiting for this type of message");
+                    Logger.WriteLine("ProtocolMessageReceived: we were waiting for this type of message");
 
                     // PutBytes messages are state machines, so need special treatment...
                     if (message.Endpoint == Endpoint.PutBytes)
@@ -860,16 +919,11 @@ namespace P3bble
 
                     if (pendingMessage != null)
                     {
-                        Debug.WriteLine(pendingMessage.GetType().Name + " message received back in " + timeTaken.ToString() + "ms");
-                    }
-                    else if (logMessage != null)
-                    {
-                        // This is untested as it's an intermittent song...
-                        throw new ProtocolException(logMessage);
+                        Logger.WriteLine(pendingMessage.GetType().Name + " message received back in " + timeTaken.ToString() + "ms");
                     }
                     else
                     {
-                        Debug.WriteLine(message.GetType().Name + " message timed out in " + timeTaken.ToString() + "ms - type received was " + pendingMessageType.ToString());
+                        Logger.WriteLine(message.GetType().Name + " message timed out in " + timeTaken.ToString() + "ms - type received was " + pendingMessageType.ToString());
                     }
 
                     return pendingMessage;

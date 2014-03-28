@@ -14,7 +14,7 @@ namespace P3bble.Communication
     /// <summary>
     /// Encapsulates comms with the Pebble
     /// </summary>
-    internal class Protocol
+    internal class Protocol : IDisposable
     {
         private readonly Mutex _mutex = new Mutex();
         private StreamSocket _socket;
@@ -73,14 +73,43 @@ namespace P3bble.Communication
                 this._mutex.WaitOne();
 
                 byte[] package = message.ToBuffer();
-                Debug.WriteLine("<< SEND MESSAGE FOR ENDPOINT " + ((Endpoint)message.Endpoint).ToString() + " (" + ((int)message.Endpoint).ToString() + ")");
-                Debug.WriteLine("<< PAYLOAD: " + BitConverter.ToString(package));
+                Logger.WriteLine("<< SEND MESSAGE FOR ENDPOINT " + ((Endpoint)message.Endpoint).ToString() + " (" + ((int)message.Endpoint).ToString() + ")");
+                Logger.WriteLine("<< PAYLOAD: " + BitConverter.ToString(package));
 
                 this._writer.WriteBytes(package);
                 this._writer.StoreAsync().AsTask().Wait();
 
                 this._mutex.ReleaseMutex();
             });
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            if (this._writer != null)
+            {
+                this._writer.Dispose();
+                this._writer = null;
+            }
+
+            if (this._reader != null)
+            {
+                this._reader.Dispose();
+                this._reader = null;
+            }
+
+            if (this._socket != null)
+            {
+                this._socket.Dispose();
+                this._socket = null;
+            }
+
+            if (this._mutex != null)
+            {
+                this._mutex.Dispose();
+            }
         }
 
 #if NETFX_CORE
@@ -93,30 +122,44 @@ namespace P3bble.Communication
         private async void Run(object host)
         {
 #endif
-                while (this._isRunning)
+            var readMutex = new AsyncLock();
+
+            while (this._isRunning)
             {
                 try
                 {
                     await this._reader.LoadAsync(4);
-                    uint payloadLength;
-                    uint endpoint;
 
-                    if (this._reader.UnconsumedBufferLength > 0)
+                    Logger.WriteLine("[message available]");
+                    using (await readMutex.LockAsync())
                     {
-                        IBuffer buffer = this._reader.ReadBuffer(4);
+                        Logger.WriteLine("[message unlocked]");
+                        uint payloadLength;
+                        uint endpoint;
 
-                        this.GetLengthAndEndpoint(buffer, out payloadLength, out endpoint);
-#if DEBUG
-                        Debug.WriteLine(">> RECEIVED MESSAGE FOR ENDPOINT: " + ((Endpoint)endpoint).ToString() + " (" + endpoint.ToString() + ") - " + payloadLength.ToString() + " bytes");
-#endif
-                        await this._reader.LoadAsync(payloadLength);
-                        IBuffer buf = this._reader.ReadBuffer(payloadLength);
-
-                        P3bbleMessage msg = await this.ReadMessage(buf, endpoint);
-
-                        if (msg != null && this.MessageReceived != null)
+                        if (this._reader.UnconsumedBufferLength > 0)
                         {
-                            this.MessageReceived(msg);
+                            IBuffer buffer = this._reader.ReadBuffer(4);
+
+                            this.GetLengthAndEndpoint(buffer, out payloadLength, out endpoint);
+                            Logger.WriteLine(">> RECEIVED MESSAGE FOR ENDPOINT: " + ((Endpoint)endpoint).ToString() + " (" + endpoint.ToString() + ") - " + payloadLength.ToString() + " bytes");
+                            if (endpoint > 0 && payloadLength > 0)
+                            {
+                                byte[] payload = new byte[payloadLength];
+                                await this._reader.LoadAsync(payloadLength);
+                                this._reader.ReadBytes(payload);
+
+                                P3bbleMessage msg = this.ReadMessage(payload, endpoint);
+
+                                if (msg != null && this.MessageReceived != null)
+                                {
+                                    this.MessageReceived(msg);
+                                }
+                            }
+                            else
+                            {
+                                Logger.WriteLine(">> RECEIVED MESSAGE WITH BAD ENDPOINT OR LENGTH: " + endpoint.ToString() + ", " + payloadLength.ToString());
+                            }
                         }
                     }
                 }
@@ -161,23 +204,12 @@ namespace P3bble.Communication
             endpoint = BitConverter.ToUInt16(endpo, 0);
         }
 
-        private Task<P3bbleMessage> ReadMessage(IBuffer buffer, uint endpoint)
+        private P3bbleMessage ReadMessage(byte[] payloadContent, uint endpoint)
         {
-            List<byte> lstBytes = new List<byte>();
-
-            byte[] payloadContentByte = new byte[buffer.Length];
-
-            using (var dr = DataReader.FromBuffer(buffer))
-            {
-                dr.ReadBytes(payloadContentByte);
-            }
-
-            lstBytes = payloadContentByte.ToList();
-#if DEBUG
+            List<byte> lstBytes = payloadContent.ToList();
             byte[] array = lstBytes.ToArray();
-            Debug.WriteLine(">> PAYLOAD: " + BitConverter.ToString(array));
-#endif
-            return Task.FromResult<P3bbleMessage>(P3bbleMessage.CreateMessage((Endpoint)endpoint, lstBytes));
+            Logger.WriteLine(">> PAYLOAD: " + BitConverter.ToString(array));
+            return P3bbleMessage.CreateMessage((Endpoint)endpoint, lstBytes);
         }
 
         private IBuffer GetBufferFromByteArray(byte[] package)

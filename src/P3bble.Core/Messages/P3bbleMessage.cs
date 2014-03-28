@@ -65,7 +65,6 @@ namespace P3bble
                     break;
 
                 case Endpoint.ApplicationMessage:
-                case Endpoint.Launcher:
                     frame = new AppMessage(endpoint);
                     break;
 

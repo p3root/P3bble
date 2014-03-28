@@ -17,6 +17,11 @@ namespace P3bble
         Task<bool> ConnectAsync();
 
         /// <summary>
+        /// Disconnects this instance.
+        /// </summary>
+        void Disconnect();
+
+        /// <summary>
         /// Pings the device.
         /// </summary>
         /// <returns>An async task to wait if required</returns>
@@ -69,6 +74,7 @@ namespace P3bble
         /// <param name="album">The album.</param>
         /// <param name="track">The track.</param>
         /// <returns>An async task to wait</returns>
+        /// <remarks>Using this method requires you set Pebble.IsMusicControlEnabled to true</remarks>
         Task SetNowPlayingAsync(string artist, string album, string track);
 
         /// <summary>

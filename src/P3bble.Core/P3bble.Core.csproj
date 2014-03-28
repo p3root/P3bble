@@ -90,6 +90,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AsyncLock.cs" />
     <Compile Include="Communication\Protocol.cs" />
     <Compile Include="Constants\Endpoint.cs" />
     <Compile Include="Constants\HardwareRevision.cs" />
@@ -100,6 +101,7 @@
     <Compile Include="Helper\ByteHelper.cs" />
     <Compile Include="Helper\Util.cs" />
     <Compile Include="IPebble.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Messages\AppManagerMessage.cs" />
     <Compile Include="Messages\AppMessage.cs" />
     <Compile Include="Messages\SystemMessage.cs" />

@@ -34,6 +34,9 @@ namespace P3bble
 
         private async Task TryConnection()
         {
+            Pebble.IsMusicControlEnabled = true;
+            Pebble.IsLoggingEnabled = true;
+
             List<Pebble> pebbles = await Pebble.DetectPebbles();
 
             if (pebbles.Count >= 1)
