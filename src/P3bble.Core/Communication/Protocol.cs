@@ -8,6 +8,7 @@ using P3bble.Constants;
 using Windows.Networking.Proximity;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
+using P3bble.PCL;
 
 namespace P3bble.Communication
 {
@@ -55,11 +56,20 @@ namespace P3bble.Communication
             // {00001101-0000-1000-8000-00805f9b34fb} specifies we want a Serial Port - see http://developer.nokia.com/Community/Wiki/Bluetooth_Services_for_Windows_Phone
             StreamSocket socket = new StreamSocket();
             await socket.ConnectAsync(peer.HostName, new Guid(0x00001101, 0x0000, 0x1000, 0x80, 0x00, 0x00, 0x80, 0x5F, 0x9B, 0x34, 0xFB).ToString("B"));
-#elif NETFX_CORE
-            StreamSocket socket = await PeerFinder.ConnectAsync(peer);
+            return new Protocol(socket);
 #endif
+
+            throw new NotImplementedException();
+        }
+
+#if NETFX_CORE
+        public static async Task<Protocol> CreateProtocolAsync(Windows.Devices.Bluetooth.Rfcomm.RfcommDeviceService peer)
+        {
+            StreamSocket socket = new StreamSocket();
+            await socket.ConnectAsync(peer.ConnectionHostName, new Guid(0x00001101, 0x0000, 0x1000, 0x80, 0x00, 0x00, 0x80, 0x5F, 0x9B, 0x34, 0xFB).ToString("B"), SocketProtectionLevel.PlainSocket);
             return new Protocol(socket);
         }
+#endif
 
         /// <summary>
         /// Sends a message to the Pebble.
@@ -73,8 +83,8 @@ namespace P3bble.Communication
                 this._mutex.WaitOne();
 
                 byte[] package = message.ToBuffer();
-                Logger.WriteLine("<< SEND MESSAGE FOR ENDPOINT " + ((Endpoint)message.Endpoint).ToString() + " (" + ((int)message.Endpoint).ToString() + ")");
-                Logger.WriteLine("<< PAYLOAD: " + BitConverter.ToString(package));
+                ServiceLocator.Logger.WriteLine("<< SEND MESSAGE FOR ENDPOINT " + ((Endpoint)message.Endpoint).ToString() + " (" + ((int)message.Endpoint).ToString() + ")");
+                ServiceLocator.Logger.WriteLine("<< PAYLOAD: " + BitConverter.ToString(package));
 
                 this._writer.WriteBytes(package);
                 this._writer.StoreAsync().AsTask().Wait();
@@ -130,10 +140,10 @@ namespace P3bble.Communication
                 {
                     await this._reader.LoadAsync(4);
 
-                    Logger.WriteLine("[message available]");
+                    ServiceLocator.Logger.WriteLine("[message available]");
                     using (await readMutex.LockAsync())
                     {
-                        Logger.WriteLine("[message unlocked]");
+                        ServiceLocator.Logger.WriteLine("[message unlocked]");
                         uint payloadLength;
                         uint endpoint;
 
@@ -142,7 +152,7 @@ namespace P3bble.Communication
                             IBuffer buffer = this._reader.ReadBuffer(4);
 
                             this.GetLengthAndEndpoint(buffer, out payloadLength, out endpoint);
-                            Logger.WriteLine(">> RECEIVED MESSAGE FOR ENDPOINT: " + ((Endpoint)endpoint).ToString() + " (" + endpoint.ToString() + ") - " + payloadLength.ToString() + " bytes");
+                            ServiceLocator.Logger.WriteLine(">> RECEIVED MESSAGE FOR ENDPOINT: " + ((Endpoint)endpoint).ToString() + " (" + endpoint.ToString() + ") - " + payloadLength.ToString() + " bytes");
                             if (endpoint > 0 && payloadLength > 0)
                             {
                                 byte[] payload = new byte[payloadLength];
@@ -158,7 +168,7 @@ namespace P3bble.Communication
                             }
                             else
                             {
-                                Logger.WriteLine(">> RECEIVED MESSAGE WITH BAD ENDPOINT OR LENGTH: " + endpoint.ToString() + ", " + payloadLength.ToString());
+                                ServiceLocator.Logger.WriteLine(">> RECEIVED MESSAGE WITH BAD ENDPOINT OR LENGTH: " + endpoint.ToString() + ", " + payloadLength.ToString());
                             }
                         }
                     }
@@ -208,7 +218,7 @@ namespace P3bble.Communication
         {
             List<byte> lstBytes = payloadContent.ToList();
             byte[] array = lstBytes.ToArray();
-            Logger.WriteLine(">> PAYLOAD: " + BitConverter.ToString(array));
+            ServiceLocator.Logger.WriteLine(">> PAYLOAD: " + BitConverter.ToString(array));
             return P3bbleMessage.CreateMessage((Endpoint)endpoint, lstBytes);
         }
 

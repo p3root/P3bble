@@ -1,4 +1,6 @@
-﻿using System;
+﻿using P3bble.PCL;
+using P3bble.PCL.Logger;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.IsolatedStorage;
@@ -10,23 +12,15 @@ namespace P3bble
     /// <summary>
     /// Logging to track down problems in production apps
     /// </summary>
-    internal static class Logger
+    internal class Logger : BaseLogger
     {
-        /// <summary>
-        /// Gets or sets a value indicating whether logging is enabled.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if logging is enabled; otherwise, <c>false</c>.
-        /// </value>
-        internal static bool IsEnabled { get; set; }
-
-        private static string FileName { get; set; }
+        private string FileName { get; set; }
 
         /// <summary>
         /// Writes a line to the debug log.
         /// </summary>
         /// <param name="message">The message.</param>
-        internal static void WriteLine(string message)
+        public override void WriteLine(string message)
         {
             Debug.WriteLine(message);
 
@@ -62,7 +56,7 @@ namespace P3bble
         /// <summary>
         /// Clears up the current log file.
         /// </summary>
-        internal static void ClearUp()
+        public override void ClearUp()
         {
             if (!string.IsNullOrEmpty(FileName))
             {

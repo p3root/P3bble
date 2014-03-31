@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using P3bble.Constants;
+using P3bble.PCL;
 
 namespace P3bble.Messages
 {
@@ -16,7 +17,7 @@ namespace P3bble.Messages
         public PhoneVersionMessage(bool musicControlEnabled)
             : base(Endpoint.PhoneVersion)
         {
-            Logger.WriteLine("PhoneVersionMessage musicControlEnabled=" + musicControlEnabled.ToString());
+            ServiceLocator.Logger.WriteLine("PhoneVersionMessage musicControlEnabled=" + musicControlEnabled.ToString());
             if (musicControlEnabled)
             {
                 this._remoteCaps = RemoteCapsMusicControl;

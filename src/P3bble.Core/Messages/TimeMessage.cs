@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using P3bble.Constants;
 using P3bble.Helper;
+using P3bble.PCL;
 
 namespace P3bble.Messages
 {
@@ -49,7 +50,7 @@ namespace P3bble.Messages
             }
             else
             {
-                Logger.WriteLine("Set Time to " + this.Time.ToString());
+                ServiceLocator.Logger.WriteLine("Set Time to " + this.Time.ToString());
 
                 byte[] rawTime = BitConverter.GetBytes(this.Time.AsEpoch());
                 if (BitConverter.IsLittleEndian)

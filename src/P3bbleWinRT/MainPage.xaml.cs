@@ -1,4 +1,5 @@
 ﻿using P3bble;
+using P3bble.PCL;
 using P3bble.Types;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace P3bbleWP8
 {
     public sealed partial class MainPage : Page
     {
-        private Pebble _pebble;
+        private P3bble.P3bble _pebble;
         private ProgressBar _currentProgressBar;
 
         public MainPage()
@@ -37,12 +38,13 @@ namespace P3bbleWP8
 
         private async void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
+            ServiceLocator.Logger = new P3bble.Logger();
             await TryConnection();
         }
 
         private async Task TryConnection()
         {
-            List<Pebble> pebbles = await Pebble.DetectPebbles();
+            List<P3bble.P3bble> pebbles = await P3bble.P3bble.DetectPebbles();
 
             if (pebbles.Count >= 1)
             {
@@ -181,7 +183,7 @@ namespace P3bbleWP8
         {
             if (_pebble != null && _pebble.IsConnected)
             {
-                await _pebble.LaunchApp(new Guid("deadefde-acfe-efbe-99ef-beefbeefbeef"));
+                await _pebble.LaunchAppAsync(new Guid("deadefde-acfe-efbe-99ef-beefbeefbeef"));
             }
         }
 
@@ -359,11 +361,11 @@ namespace P3bbleWP8
                     switch (bundle.BundleType)
                     {
                         case BundleType.Application:
-                            await this._pebble.InstallApp(bundle);
+                            await this._pebble.InstallAppAsync(bundle);
                             break;
 
                         case BundleType.Firmware:
-                            await this._pebble.InstallFirmware(bundle, false);
+                            await this._pebble.InstallFirmwareAsync(bundle, false);
                             break;
                     }
                 }

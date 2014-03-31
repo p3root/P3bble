@@ -12,6 +12,11 @@ using P3bble.Messages;
 using P3bble.Types;
 using Windows.Networking.Proximity;
 using Windows.Storage;
+using P3bble.PCL;
+
+#if NETFX_CORE
+using Windows.Devices.Bluetooth.Rfcomm;
+#endif
 
 namespace P3bble
 {
@@ -40,6 +45,10 @@ namespace P3bble
         private ManualResetEventSlim _pendingMessageSignal;
         private P3bbleMessage _pendingMessage;
 
+#if NETFX_CORE
+        private RfcommDeviceService _deviceService;
+#endif
+
         /// <summary>
         /// Initializes a new instance of the <see cref="P3bble"/> class.
         /// </summary>
@@ -48,6 +57,13 @@ namespace P3bble
         {
             PeerInformation = peerInformation;
         }
+
+#if NETFX_CORE
+        internal P3bble(RfcommDeviceService deviceService)
+        {
+            _deviceService = deviceService;
+        }
+#endif
 
         /// <summary>
         /// Gets or sets a value indicating whether logging is enabled.
@@ -59,12 +75,12 @@ namespace P3bble
         {
             get
             {
-                return Logger.IsEnabled;
+                return ServiceLocator.Logger.IsEnabled;
             }
 
             set
             {
-                Logger.IsEnabled = value;
+                ServiceLocator.Logger.IsEnabled = value;
             }
         }
 
@@ -151,13 +167,13 @@ namespace P3bble
         /// Detects any paired pebbles.
         /// </summary>
         /// <returns>A list of pebbles if some are found</returns>
-        public static Task<List<P3bble>> DetectPebbles()
+        public static async Task<List<P3bble>> DetectPebbles()
         {
 #if DEBUG
             // Turn on logging for debug builds by default
-            Logger.IsEnabled = true;
+            ServiceLocator.Logger.IsEnabled = true;
 #endif
-            return Task<List<P3bble>>.Factory.StartNew(() => FindPebbles());
+            return await FindPebbles();
         }
 
         /// <summary>
@@ -174,15 +190,20 @@ namespace P3bble
 
             try
             {
+#if NETFX_CORE
+                this._protocol = await Protocol.CreateProtocolAsync(_deviceService);
+#else
                 this._protocol = await Protocol.CreateProtocolAsync(PeerInformation);
+#endif
                 this._protocol.MessageReceived += this.ProtocolMessageReceived;
                 this.IsConnected = true;
 
                 // Now we're connected, request the Pebble version info...
                 await this.SendMessageAndAwaitResponseAsync<VersionMessage>(new VersionMessage());
             }
-            catch
+            catch(Exception e)
             {
+                ServiceLocator.Logger.WriteLine("Error connecting to pebble " + e.Message);
                 this.IsConnected = false;
             }
 
@@ -200,9 +221,9 @@ namespace P3bble
                 this._protocol = null;
             }
 
-            if (!Logger.IsEnabled)
+            if (!ServiceLocator.Logger.IsEnabled)
             {
-                Logger.ClearUp();
+                ServiceLocator.Logger.ClearUp();
             }
         }
 
@@ -290,7 +311,7 @@ namespace P3bble
         /// </returns>
         public async Task<InstalledApplications> GetInstalledAppsAsync()
         {
-            Logger.WriteLine("GetInstalledAppsAsync");
+            ServiceLocator.Logger.WriteLine("GetInstalledAppsAsync");
             var result = await this.SendMessageAndAwaitResponseAsync<AppManagerMessage>(new AppManagerMessage(AppManagerAction.ListApps));
             if (result != null)
             {
@@ -311,7 +332,7 @@ namespace P3bble
         /// </returns>
         public async Task<bool> RemoveAppAsync(InstalledApplication app)
         {
-            Logger.WriteLine("RemoveAppAsync");
+            ServiceLocator.Logger.WriteLine("RemoveAppAsync");
             var result = await this.SendMessageAndAwaitResponseAsync<AppManagerMessage>(new AppManagerMessage(AppManagerAction.RemoveApp, app.Id, app.Index));
             if (result != null)
             {
@@ -420,12 +441,12 @@ namespace P3bble
                 {
                     progress += partProgress;
                     int percentComplete = (int)(progress / totalBytes * 100);
-                    Logger.WriteLine("Installation " + percentComplete.ToString() + "% complete - " + progress.ToString() + " / " + totalBytes.ToString());
+                    ServiceLocator.Logger.WriteLine("Installation " + percentComplete.ToString() + "% complete - " + progress.ToString() + " / " + totalBytes.ToString());
                     this.InstallProgress(percentComplete);
                 });
             }
 
-            Logger.WriteLine(string.Format("Attempting to add app to bank {0} of {1}", firstFreeBank, installedApps.ApplicationBanks));
+            ServiceLocator.Logger.WriteLine(string.Format("Attempting to add app to bank {0} of {1}", firstFreeBank, installedApps.ApplicationBanks));
 
             PutBytesMessage binMsg = new PutBytesMessage(PutBytesTransferType.Binary, bundle.BinaryContent, handler, firstFreeBank);
 
@@ -532,7 +553,7 @@ namespace P3bble
                 {
                     progress += partProgress;
                     int percentComplete = (int)(progress / totalBytes * 100);
-                    Logger.WriteLine("Installation " + percentComplete.ToString() + "% complete - " + progress.ToString() + " / " + totalBytes.ToString());
+                    ServiceLocator.Logger.WriteLine("Installation " + percentComplete.ToString() + "% complete - " + progress.ToString() + " / " + totalBytes.ToString());
                     this.InstallProgress(percentComplete);
                 });
             }
@@ -747,18 +768,26 @@ namespace P3bble
         /// Finds paired pebbles.
         /// </summary>
         /// <returns>A list of pebbles</returns>
-        private static List<P3bble> FindPebbles()
+        private static async Task<List<P3bble>> FindPebbles()
         {
             List<P3bble> result = new List<P3bble>();
 
             try
             {
-                PeerFinder.AlternateIdentities["Bluetooth:Paired"] = string.Empty;
-
 #if NETFX_CORE
-            PeerFinder.Start();
-#endif
-                IReadOnlyList<PeerInformation> pairedDevices = PeerFinder.FindAllPeersAsync().AsTask().Result;
+                var devices = await Windows.Devices.Enumeration.DeviceInformation.FindAllAsync(RfcommDeviceService.GetDeviceSelector(RfcommServiceId.SerialPort));
+                foreach (var device in devices)
+                {
+                    if (device.Name.StartsWith("Pebble", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var service = await RfcommDeviceService.FromIdAsync(device.Id);
+
+                        result.Add(new P3bble(service));
+                    }
+                }
+#else
+                PeerFinder.AlternateIdentities["Bluetooth:Paired"] = string.Empty;
+                IReadOnlyList<PeerInformation> pairedDevices = await PeerFinder.FindAllPeersAsync();
 
                 // Filter to only devices that are named Pebble - right now, that's the only way to
                 // stop us getting headphones, etc. showing up...
@@ -772,13 +801,14 @@ namespace P3bble
 
                 if (pairedDevices.Count == 0)
                 {
-                    Logger.WriteLine("No paired devices were found.");
+                    ServiceLocator.Logger.WriteLine("No paired devices were found.");
                 }
+#endif
             }
             catch (Exception ex)
             {
                 // If Bluetooth is turned off, we will get an exception. We catch it to return a zero-count list.
-                Logger.WriteLine("Exception looking for Pebbles: " + ex.ToString());
+                ServiceLocator.Logger.WriteLine("Exception looking for Pebbles: " + ex.ToString());
             }
 
             return result;
@@ -790,7 +820,7 @@ namespace P3bble
         /// <param name="message">The message.</param>
         private async void ProtocolMessageReceived(P3bbleMessage message)
         {
-            Logger.WriteLine("ProtocolMessageReceived: " + message.Endpoint.ToString());
+            ServiceLocator.Logger.WriteLine("ProtocolMessageReceived: " + message.Endpoint.ToString());
 
             switch (message.Endpoint)
             {
@@ -809,7 +839,7 @@ namespace P3bble
                 case Endpoint.Logs:
                     if (message as LogsMessage != null)
                     {
-                        Logger.WriteLine("LOG: '" + (message as LogsMessage).Message + "'");
+                        ServiceLocator.Logger.WriteLine("LOG: '" + (message as LogsMessage).Message + "'");
                     }
 
                     break;
@@ -832,7 +862,7 @@ namespace P3bble
             {
                 if (this._pendingMessage.Endpoint == message.Endpoint)
                 {
-                    Logger.WriteLine("ProtocolMessageReceived: we were waiting for this type of message");
+                    ServiceLocator.Logger.WriteLine("ProtocolMessageReceived: we were waiting for this type of message");
 
                     // PutBytes messages are state machines, so need special treatment...
                     if (message.Endpoint == Endpoint.PutBytes)
@@ -919,11 +949,11 @@ namespace P3bble
 
                     if (pendingMessage != null)
                     {
-                        Logger.WriteLine(pendingMessage.GetType().Name + " message received back in " + timeTaken.ToString() + "ms");
+                        ServiceLocator.Logger.WriteLine(pendingMessage.GetType().Name + " message received back in " + timeTaken.ToString() + "ms");
                     }
                     else
                     {
-                        Logger.WriteLine(message.GetType().Name + " message timed out in " + timeTaken.ToString() + "ms - type received was " + pendingMessageType.ToString());
+                        ServiceLocator.Logger.WriteLine(message.GetType().Name + " message timed out in " + timeTaken.ToString() + "ms - type received was " + pendingMessageType.ToString());
                     }
 
                     return pendingMessage;

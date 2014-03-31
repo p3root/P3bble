@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using P3bble.Constants;
 using P3bble.Helper;
 using P3bble.Types;
+using P3bble.PCL;
 
 namespace P3bble.Messages
 {
@@ -134,7 +135,7 @@ namespace P3bble.Messages
                 this.Errored = true;
             }
 
-            Logger.WriteLine("PutBytes >>> incoming message for " + this._state.ToString());
+            ServiceLocator.Logger.WriteLine("PutBytes >>> incoming message for " + this._state.ToString());
 
             switch (this._state)
             {
@@ -170,7 +171,7 @@ namespace P3bble.Messages
                         if (this._leftToSend > 0)
                         {
                             // Still more to send, so we return false and the next chunk will go
-                            Logger.WriteLine(string.Format("Sent {0} of {1} bytes", this._buffer.Count - this._leftToSend, this._buffer.Count));
+                            ServiceLocator.Logger.WriteLine(string.Format("Sent {0} of {1} bytes", this._buffer.Count - this._leftToSend, this._buffer.Count));
                             if (this._progressHandler != null)
                             {
                                 // From PutBytes, we send the number of bytes we just sent rather than a percentage...
@@ -222,7 +223,7 @@ namespace P3bble.Messages
 
         protected override void AddContentToMessage(List<byte> payload)
         {
-            Logger.WriteLine("PutBytes <<< outgoing message for " + this._state.ToString());
+            ServiceLocator.Logger.WriteLine("PutBytes <<< outgoing message for " + this._state.ToString());
 
             switch (this._state)
             {
@@ -273,7 +274,7 @@ namespace P3bble.Messages
                         payload.AddRange(data);
                         this._leftToSend -= this._lastChunkSize;
 
-                        Logger.WriteLine("PutBytes - sending " + this._lastChunkSize.ToString() + " byte(s), " + this._leftToSend.ToString() + " byte(s) remain");
+                        ServiceLocator.Logger.WriteLine("PutBytes - sending " + this._lastChunkSize.ToString() + " byte(s), " + this._leftToSend.ToString() + " byte(s) remain");
                     }
 
                     break;
@@ -301,7 +302,7 @@ namespace P3bble.Messages
 
                         uint crc = this._buffer.Crc32();
                         byte[] crcBytes = BitConverter.GetBytes(crc);
-                        Logger.WriteLine(string.Format("Sending CRC of {0:X}", crc));
+                        ServiceLocator.Logger.WriteLine(string.Format("Sending CRC of {0:X}", crc));
 
                         if (BitConverter.IsLittleEndian)
                         {

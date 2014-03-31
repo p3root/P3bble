@@ -17,6 +17,8 @@
     <TargetPlatformVersion>8.1</TargetPlatformVersion>
     <MinimumVisualStudioVersion>12</MinimumVisualStudioVersion>
     <TargetFrameworkVersion />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -106,6 +108,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\P3bble.Core\AsyncLock.cs">
+      <Link>AsyncLock.cs</Link>
+    </Compile>
     <Compile Include="..\P3bble.Core\Communication\Protocol.cs">
       <Link>Communication\Protocol.cs</Link>
     </Compile>
@@ -136,8 +141,8 @@
     <Compile Include="..\P3bble.Core\Helper\Util.cs">
       <Link>Helper\Util.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\IPebble.cs">
-      <Link>IPebble.cs</Link>
+    <Compile Include="..\P3bble.Core\IP3bble.cs">
+      <Link>IP3bble.cs</Link>
     </Compile>
     <Compile Include="..\P3bble.Core\Messages\AppManagerMessage.cs">
       <Link>Messages\AppManagerMessage.cs</Link>
@@ -181,8 +186,8 @@
     <Compile Include="..\P3bble.Core\Messages\VersionMessage.cs">
       <Link>Messages\VersionMessage.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\Pebble.cs">
-      <Link>Pebble.cs</Link>
+    <Compile Include="..\P3bble.Core\P3bble.cs">
+      <Link>P3bble.cs</Link>
     </Compile>
     <Compile Include="..\P3bble.Core\Types\MusicControlAction.cs">
       <Link>Types\MusicControlAction.cs</Link>
@@ -223,6 +228,7 @@
     <Compile Include="..\P3bble.Core\Types\VersionInfo.cs">
       <Link>Types\VersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Logger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -235,6 +241,12 @@
     <Reference Include="System.Net.Http.Primitives">
       <HintPath>..\packages\Microsoft.Net.Http.2.2.18\lib\win8\System.Net.Http.Primitives.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\P3bble.PCL\P3bble.PCL.csproj">
+      <Project>{76e03460-2cd0-4580-ada0-a5fe68cb7e1c}</Project>
+      <Name>P3bble.PCL</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
@@ -275,4 +287,5 @@
   <PropertyGroup>
     <PrepareForBuildDependsOn Condition="!Exists('$(StyleCopMSBuildTargetsFile)')">StyleCopMSBuildTargetsNotFound;$(PrepareForBuildDependsOn)</PrepareForBuildDependsOn>
   </PropertyGroup>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 </Project>
