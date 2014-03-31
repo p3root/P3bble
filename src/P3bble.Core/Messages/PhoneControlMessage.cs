@@ -1,78 +1,100 @@
-﻿using P3bble.Core.Constants;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using P3bble.Constants;
 
-namespace P3bble.Core.Messages
+namespace P3bble.Messages
 {
+    /// <summary>
+    /// Represents the phone control type
+    /// </summary>
     internal enum PhoneControlType : byte
     {
-        ANSWER = 1,
-        HANGUP = 2,
-        GET_STATE = 3,
-        INCOMING_CALL = 4,
-        OUTGOING_CALL = 5,
-        MISSED_CALL = 6,
-        RING = 7,
-        START = 8,
-        END = 9
+        /// <summary>
+        /// Answer the phone
+        /// </summary>
+        Answer = 1,
+
+        /// <summary>
+        /// Hang up the phone
+        /// </summary>
+        HangUp = 2,
+
+        /// <summary>
+        /// Get state
+        /// </summary>
+        GetState = 3,
+
+        /// <summary>
+        /// Incoming call
+        /// </summary>
+        IncomingCall = 4,
+
+        /// <summary>
+        /// Outgoing call
+        /// </summary>
+        OutgoingCall = 5,
+
+        /// <summary>
+        /// Missed call
+        /// </summary>
+        MissedCall = 6,
+
+        /// <summary>
+        /// Ring the phone
+        /// </summary>
+        Ring = 7,
+
+        /// <summary>
+        /// Start the phone
+        /// </summary>
+        Start = 8,
+
+        /// <summary>
+        /// End the phone
+        /// </summary>
+        End = 9
     }
 
     internal class PhoneControlMessage : P3bbleMessage
     {
         private PhoneControlType _type;
         private List<string> _parts;
-        private ushort _length;
         private byte[] _cookie;
 
-        public PhoneControlMessage(PhoneControlType type, byte[] cookie, params String[] parts)
-            : base(P3bbleEndpoint.PhoneControl)
+        public PhoneControlMessage(PhoneControlType type, byte[] cookie, params string[] parts)
+            : base(Endpoint.PhoneControl)
         {
-            _type = type;
-            _parts = parts.ToList();
-            _length = 0;
-            _cookie = cookie;
+            this._type = type;
+            this._parts = parts.ToList();
+            this._cookie = cookie;
         }
 
         protected override void AddContentToMessage(List<byte> payload)
         {
-            //payload.Add(_type);
-            //payload.AddRange(_cookie);
+            string[] parts = this._parts.ToArray();
+            byte[] data = { (byte)this._type, };
 
-            string[] parts = _parts.ToArray();
-            byte[] data = { (byte)_type, };
+            data = data.Concat(this._cookie).ToArray();
 
-            data = data.Concat(_cookie).ToArray();
-
-            foreach (String part in parts)
+            foreach (string part in parts)
             {
-                byte[] _part = Encoding.UTF8.GetBytes(part);
-                if (_part.Length > 255)
+                byte[] bytePart = Encoding.UTF8.GetBytes(part);
+                if (bytePart.Length > 255)
                 {
-                    _part = _part.Take(255).ToArray();
+                    bytePart = bytePart.Take(255).ToArray();
                 }
-                byte[] len = { Convert.ToByte(_part.Length) };
-                data = data.Concat(len).Concat(_part).ToArray();
-            }
-            _length = (ushort)data.Length;
 
-            base.AddContentToMessage(payload);
+                byte[] len = { Convert.ToByte(bytePart.Length) };
+                data = data.Concat(len).Concat(bytePart).ToArray();
+            }
+
             payload.AddRange(data);
         }
 
         protected override void GetContentFromMessage(List<byte> payload)
         {
-            base.GetContentFromMessage(payload);
-        }
-
-        protected override ushort PayloadLength
-        {
-            get
-            {
-                return _length;
-            }
         }
     }
 }

@@ -8,6 +8,56 @@
     mc:Ignorable="d">
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
+        <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
+            <TextBlock Text="P3BBLE" Style="{StaticResource HeaderTextStyle}" Margin="12,0"/>
+            <TextBlock x:Name="PebbleName" Text="" Style="{StaticResource SubheaderTextStyle}"/>
+            <TextBlock x:Name="PebbleVersion" Text="" Style="{StaticResource BasicTextStyle}"/>
+            <Button x:Name="RetryConnection" Click="Retry_Click" Content="Retry Connection" HorizontalAlignment="Left" Visibility="Collapsed"/>
+        </StackPanel>
+
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+            <ScrollViewer>
+                <StackPanel Orientation="Vertical">
+
+                    <TextBlock Text="Time" Style="{StaticResource SubheaderTextStyle}" Margin="0,12"/>
+
+                    <Button Click="GetTime_Click" Content="Get Time"/>
+                    <Button Click="SetTime_Click" Content="Set Time"/>
+
+                    <TextBlock Text="Apps" Style="{StaticResource SubheaderTextStyle}" Margin="0,12"/>
+
+                    <Button Click="GetInstalledApps_Click" Content="List Apps"/>
+                    <Button Click="RemoveApp_Click" Content="Remove App"/>
+
+                    <Button Click="DownloadApp_Click" Content="Download &amp; Install Pixel Watchface"/>
+                    <ProgressBar x:Name="InstallAppProgress" Value="0" />
+                    <Button Click="LaunchApp_Click" Content="Launch Pixel Watchface"/>
+
+                    <TextBlock Text="Firmware" Style="{StaticResource SubheaderTextStyle}" Margin="0,12"/>
+
+                    <Button Click="CheckFirmware_Click" Content="Check for Latest Firmware"/>
+                    <Button Click="DownloadFirmware_Click" Content="Download &amp; Install Firmware"/>
+                    <ProgressBar x:Name="InstallFirmwareProgress" Value="0" />
+
+                    <TextBlock Text="Music Control" Style="{StaticResource SubheaderTextStyle}" Margin="0,12"/>
+
+                    <Button Click="PlayMusic_Click" Content="Music Control"/>
+
+                    <TextBlock Text="Notification Demos" Style="{StaticResource SubheaderTextStyle}" Margin="0,12"/>
+
+                    <Button Click="Ping_Click" Content="Ping"/>
+                    <Button Click="SmsNotification_Click" Content="SendSMS"/>
+                    <Button Click="EmailNotification_Click" Content="SendEMAIL"/>
+                    <Button Click="FacebookNotification_Click" Content="SendFacebookNot"/>
+                    <Button Click="PhoneCall_Click" Content="SimulatePhoneCall"/>
+
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
     </Grid>
 </Page>

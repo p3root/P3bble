@@ -3,16 +3,21 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace P3bble.Core.Helper
+namespace P3bble.Helper
 {
-    internal class Util
+    internal static class Util
     {
-        public static DateTime TimestampToDateTime(Int32 ts)
+        private static DateTime _epoch = new DateTime(1970, 1, 1);
+
+        public static DateTime AsDateTime(this int ts)
         {
-            return new DateTime(1970, 1, 1).AddSeconds(ts);
+            return _epoch.AddSeconds(ts);
+        }
+
+        public static int AsEpoch(this DateTime time)
+        {
+            return Convert.ToInt32((time - _epoch).TotalSeconds);
         }
 
         public static double DateTimeToTimeStamp(DateTime dateTime)
@@ -20,92 +25,101 @@ namespace P3bble.Core.Helper
             return (dateTime - new DateTime(1970, 1, 1).ToLocalTime()).TotalSeconds;
         }
 
-        public static T ReadStruct<T>(Stream fs) where T : struct
+        public static T AsStruct<T>(this Stream fs) where T : struct
         {
             // Borrowed from http://stackoverflow.com/a/1936208 because BitConverter-ing all of this would be a pain
+#if NETFX_CORE
+            byte[] buffer = new byte[Marshal.SizeOf<T>()];
+#else
             byte[] buffer = new byte[Marshal.SizeOf(typeof(T))];
+#endif
             fs.Read(buffer, 0, buffer.Length);
-            return ReadStruct<T>(buffer);
+            return AsStruct<T>(buffer);
         }
 
-        public static T ReadStruct<T>(byte[] bytes) where T : struct
+        public static T AsStruct<T>(this byte[] bytes) where T : struct
         {
+#if NETFX_CORE
+            if (bytes.Count() != Marshal.SizeOf<T>())
+#else
             if (bytes.Count() != Marshal.SizeOf(typeof(T)))
+#endif
             {
                 throw new ArgumentException("Byte array does not match size of target type.");
             }
+
             T ret;
             GCHandle hdl = GCHandle.Alloc(bytes, GCHandleType.Pinned);
             try
             {
+#if NETFX_CORE
+                ret = (T)Marshal.PtrToStructure<T>(hdl.AddrOfPinnedObject());
+#else
                 ret = (T)Marshal.PtrToStructure(hdl.AddrOfPinnedObject(), typeof(T));
+#endif
             }
             finally
             {
                 hdl.Free();
             }
+
             return ret;
         }
 
-        private class Version
+        public static Version AsVersion(this string version)
         {
-            private int _first;
-            private int _second;
-            private int _last;
-
-            public static Version ParseFromString(string version)
-            {
-                version = version.Remove(0, 1);
-
-                string[] split = version.Split('.');
-
-                if (split.Length == 3)
-                {
-                    Version vesr = new Version();
-                    vesr._first = Convert.ToInt32(split[0]);
-                    vesr._second = Convert.ToInt32(split[1]);
-                    vesr._last = Convert.ToInt32(split[2]);
-                    return vesr;
-                }
-
-                return null;
-            }
-
-            public static bool operator >(Version v1, Version v2)
-            {
-                if (v1._first > v2._first)
-                    return true;
-                if (v1._second > v2._second)
-                    return true;
-                if (v1._last > v2._last)
-                    return true;
-
-                return false;
-            }
-
-            public static bool operator <(Version v1, Version v2)
-            {
-                if (v1._first < v2._first)
-                    return true;
-                if (v1._second < v2._second)
-                    return true;
-                if (v1._last < v2._last)
-                    return true;
-
-                return false;
-            }
+            return new Version(version.Remove(0, 1));
         }
 
-        public static bool IsNewerVersionAvailable(string currentVersion, string serverVersion)
+        public static uint Crc32(this List<byte> data)
         {
-            Version current = Version.ParseFromString(currentVersion);
-            Version server = Version.ParseFromString(serverVersion);
+            return CrcProcessBuffer(data);
+        }
 
-            if (server > current)
-                return true;
+        private static uint CrcProcessBuffer(List<byte> data, uint crc = 0xffffffff)
+        {
+            int wordCount = data.Count / 4;
+            if (data.Count % 4 != 0)
+            {
+                wordCount += 1;
+            }
 
+            for (int i = 0; i < wordCount; i++)
+            {
+                byte[] word = new byte[4];
+                int len = Math.Min(data.Count - (i * 4), 4);
+                data.CopyTo(i * 4, word, 4 - len, len);
+                if (len < 4)
+                {
+                    Array.Reverse(word);
+                }
 
-            return false;
+                crc = CrcProcessWord(word, crc);
+            }
+
+            return crc;
+        }
+
+        private static uint CrcProcessWord(byte[] data, uint crc = 0xffffffff)
+        {
+            const uint CRC_POLY = 0x04C11DB7;
+            List<byte> dataArray = new List<byte>(data);
+
+            crc = crc ^ BitConverter.ToUInt32(dataArray.ToArray(), 0);
+
+            for (int i = 0; i < 32; i++)
+            {
+                if ((crc & 0x80000000) != 0)
+                {
+                    crc = (crc << 1) ^ CRC_POLY;
+                }
+                else
+                {
+                    crc = crc << 1;
+                }
+            }
+
+            return crc & 0xffffffff;
         }
     }
 }

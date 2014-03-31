@@ -1,35 +1,41 @@
-﻿using P3bble.Core.Constants;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using P3bble.Constants;
 
-namespace P3bble.Core.Messages
+namespace P3bble.Messages
 {
     internal class PhoneVersionMessage : P3bbleMessage
     {
-        uint sessionCaps = (uint)P3bbleSessionCaps.GAMMA_RAY;
-		// Use RemoteCaps Android to properly receive MusicControls messages.
-        uint remoteCaps = (uint)(P3bbleRemoteCaps.TELEPHONY | P3bbleRemoteCaps.SMS | P3bbleRemoteCaps.ANDROID);
-        ushort length;
+        private const uint PhoneSessionCaps = (uint)SessionCaps.GammaRay;
+        private const uint RemoteCapsMusicControl = (uint)(RemoteCaps.Telephony | RemoteCaps.Sms | RemoteCaps.Android | RemoteCaps.Gps);
+        private const uint RemoteCapsNormal = (uint)(RemoteCaps.Telephony | RemoteCaps.Sms | RemoteCaps.Windows | RemoteCaps.Gps);
 
-        public PhoneVersionMessage()
-            : base(P3bbleEndpoint.PhoneVersion)
+        private uint _remoteCaps;
+        
+        public PhoneVersionMessage(bool musicControlEnabled)
+            : base(Endpoint.PhoneVersion)
         {
-
+            Logger.WriteLine("PhoneVersionMessage musicControlEnabled=" + musicControlEnabled.ToString());
+            if (musicControlEnabled)
+            {
+                this._remoteCaps = RemoteCapsMusicControl;
+            }
+            else
+            {
+                this._remoteCaps = RemoteCapsNormal;
+            }
         }
 
         protected override void GetContentFromMessage(List<byte> payload)
         {
-            base.GetContentFromMessage(payload);
         }
 
         protected override void AddContentToMessage(List<byte> payload)
         {
             byte[] prefix = { 0x01, 0xFF, 0xFF, 0xFF, 0xFF };
-            byte[] session = BitConverter.GetBytes(sessionCaps);
-            byte[] remote = BitConverter.GetBytes(remoteCaps);
+            byte[] session = BitConverter.GetBytes(PhoneSessionCaps);
+            byte[] remote = BitConverter.GetBytes(this._remoteCaps);
             if (BitConverter.IsLittleEndian)
             {
                 Array.Reverse(session);
@@ -38,19 +44,8 @@ namespace P3bble.Core.Messages
 
             byte[] msg = new byte[0];
             msg = msg.Concat(prefix).Concat(session).Concat(remote).ToArray();
-            length = (ushort)msg.Length;
-
-            base.AddContentToMessage(payload);
 
             payload.AddRange(msg);
-        }
-
-        protected override ushort PayloadLength
-        {
-            get
-            {
-                return length;
-            }
         }
     }
 }

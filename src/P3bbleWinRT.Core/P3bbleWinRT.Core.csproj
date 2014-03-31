@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -14,6 +14,9 @@
     <DefaultLanguage>de-DE</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetPlatformVersion>8.1</TargetPlatformVersion>
+    <MinimumVisualStudioVersion>12</MinimumVisualStudioVersion>
+    <TargetFrameworkVersion />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -100,10 +103,32 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\P3bble.Core\Communication\Protocol.cs">
       <Link>Communication\Protocol.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Constants\Endpoint.cs">
+      <Link>Constants\Endpoint.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Constants\HardwareRevision.cs">
+      <Link>Constants\HardwareRevision.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Constants\RemoteCaps.cs">
+      <Link>Constants\RemoteCaps.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Constants\SessionCaps.cs">
+      <Link>Constants\SessionCaps.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Exceptions\CannotInstallException.cs">
+      <Link>Exceptions\CannotInstallException.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Exceptions\NotConnectedException.cs">
+      <Link>Exceptions\NotConnectedException.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Exceptions\ProtocolException.cs">
+      <Link>Exceptions\ProtocolException.cs</Link>
     </Compile>
     <Compile Include="..\P3bble.Core\Helper\ByteHelper.cs">
       <Link>Helper\ByteHelper.cs</Link>
@@ -111,11 +136,29 @@
     <Compile Include="..\P3bble.Core\Helper\Util.cs">
       <Link>Helper\Util.cs</Link>
     </Compile>
+    <Compile Include="..\P3bble.Core\IPebble.cs">
+      <Link>IPebble.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\AppManagerMessage.cs">
+      <Link>Messages\AppManagerMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\AppMessage.cs">
+      <Link>Messages\AppMessage.cs</Link>
+    </Compile>
     <Compile Include="..\P3bble.Core\Messages\LogsMessage.cs">
       <Link>Messages\LogsMessage.cs</Link>
     </Compile>
+    <Compile Include="..\P3bble.Core\Messages\MusicMessage.cs">
+      <Link>Messages\MusicMessage.cs</Link>
+    </Compile>
     <Compile Include="..\P3bble.Core\Messages\NotificationMessage.cs">
       <Link>Messages\NotificationMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\P3bbleMessage.cs">
+      <Link>Messages\P3bbleMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\PhoneControlMessage.cs">
+      <Link>Messages\PhoneControlMessage.cs</Link>
     </Compile>
     <Compile Include="..\P3bble.Core\Messages\PhoneVersionMessage.cs">
       <Link>Messages\PhoneVersionMessage.cs</Link>
@@ -123,11 +166,14 @@
     <Compile Include="..\P3bble.Core\Messages\PingMessage.cs">
       <Link>Messages\PingMessage.cs</Link>
     </Compile>
+    <Compile Include="..\P3bble.Core\Messages\PutBytesMessage.cs">
+      <Link>Messages\PutBytesMessage.cs</Link>
+    </Compile>
     <Compile Include="..\P3bble.Core\Messages\ResetMessage.cs">
       <Link>Messages\ResetMessage.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\Messages\SetMusicMessage.cs">
-      <Link>Messages\SetMusicMessage.cs</Link>
+    <Compile Include="..\P3bble.Core\Messages\SystemMessage.cs">
+      <Link>Messages\SystemMessage.cs</Link>
     </Compile>
     <Compile Include="..\P3bble.Core\Messages\TimeMessage.cs">
       <Link>Messages\TimeMessage.cs</Link>
@@ -135,30 +181,70 @@
     <Compile Include="..\P3bble.Core\Messages\VersionMessage.cs">
       <Link>Messages\VersionMessage.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\P3bble.cs">
-      <Link>P3bble.cs</Link>
+    <Compile Include="..\P3bble.Core\Pebble.cs">
+      <Link>Pebble.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\P3bbleEndpoint.cs">
-      <Link>P3bbleEndpoint.cs</Link>
+    <Compile Include="..\P3bble.Core\Types\MusicControlAction.cs">
+      <Link>Types\MusicControlAction.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\P3bbleMessage.cs">
-      <Link>P3bbleMessage.cs</Link>
+    <Compile Include="..\P3bble.Core\Types\ApplicationManifest.cs">
+      <Link>Types\ApplicationManifest.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\P3bbleState.cs">
-      <Link>P3bbleState.cs</Link>
+    <Compile Include="..\P3bble.Core\Types\ApplicationMetadata.cs">
+      <Link>Types\ApplicationMetadata.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\RemoteCaps.cs">
-      <Link>RemoteCaps.cs</Link>
+    <Compile Include="..\P3bble.Core\Types\Bundle.cs">
+      <Link>Types\Bundle.cs</Link>
     </Compile>
-    <Compile Include="..\P3bble.Core\SessionCaps.cs">
-      <Link>SessionCaps.cs</Link>
+    <Compile Include="..\P3bble.Core\Types\BundleManifest.cs">
+      <Link>Types\BundleManifest.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\FirmwareManifest.cs">
+      <Link>Types\FirmwareManifest.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\FirmwareRelease.cs">
+      <Link>Types\FirmwareRelease.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\FirmwareResponse.cs">
+      <Link>Types\FirmwareResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\FirmwareVersion.cs">
+      <Link>Types\FirmwareVersion.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\InstalledApplication.cs">
+      <Link>Types\InstalledApplication.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\InstalledApplications.cs">
+      <Link>Types\InstalledApplications.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\ResourcesManifest.cs">
+      <Link>Types\ResourcesManifest.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\VersionInfo.cs">
+      <Link>Types\VersionInfo.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
-    <VisualStudioVersion>11.0</VisualStudioVersion>
+  <ItemGroup>
+    <Reference Include="SharpCompress">
+      <HintPath>..\packages\sharpcompress.0.10.3\lib\netcore45\SharpCompress.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Extensions">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.18\lib\win8\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.18\lib\win8\System.Net.Http.Primitives.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
+    <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.13\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.13\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.13\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.13\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -166,4 +252,27 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <StyleCopMSBuildTargetsFile>..\packages\StyleCop.MSBuild.4.7.48.0\tools\StyleCop.targets</StyleCopMSBuildTargetsFile>
+  </PropertyGroup>
+  <Import Condition="Exists('$(StyleCopMSBuildTargetsFile)')" Project="$(StyleCopMSBuildTargetsFile)" />
+  <PropertyGroup>
+    <StyleCopMSBuildMessageMissing>Failed to import StyleCop.MSBuild targets from '$(StyleCopMSBuildTargetsFile)'. The StyleCop.MSBuild package was either missing or incomplete when the project was loaded. Ensure that the package is present and then restart the build. If you are using an IDE (e.g. Visual Studio), reload the project before restarting the build.</StyleCopMSBuildMessageMissing>
+    <StyleCopMSBuildMessagePresent>Failed to import StyleCop.MSBuild targets from '$(StyleCopMSBuildTargetsFile)'. The StyleCop.MSBuild package was either missing or incomplete when the project was loaded (but is now present). To fix this, restart the build. If you are using an IDE (e.g. Visual Studio), reload the project before restarting the build.</StyleCopMSBuildMessagePresent>
+    <StyleCopMSBuildMessageRestore>Failed to import StyleCop.MSBuild targets from '$(StyleCopMSBuildTargetsFile)'. The StyleCop.MSBuild package was either missing or incomplete when the project was loaded. To fix this, restore the package and then restart the build. If you are using an IDE (e.g. Visual Studio), you may need to reload the project before restarting the build. Note that regular NuGet package restore (during build) does not work with this package because the package needs to be present before the project is loaded. If this is an automated build (e.g. CI server), you may want to ensure that the build process restores the StyleCop.MSBuild package before the project is built.</StyleCopMSBuildMessageRestore>
+    <StyleCopMSBuildMessageRestored>Failed to import StyleCop.MSBuild targets from '$(StyleCopMSBuildTargetsFile)'. The StyleCop.MSBuild package was either missing or incomplete when the project was loaded (but is now present). To fix this, restart the build. If you are using an IDE (e.g. Visual Studio), reload the project before restarting the build. Note that when using regular NuGet package restore (during build) the package will not be available for the initial build because the package needs to be present before the project is loaded. If package restore executes successfully in the initial build then the package will be available for subsequent builds. If this is an automated build (e.g. CI server), you may want to ensure that the build process restores the StyleCop.MSBuild package before the initial build.</StyleCopMSBuildMessageRestored>
+  </PropertyGroup>
+  <Target Name="StyleCopMSBuildTargetsNotFound">
+    <Warning Condition="!Exists('$(StyleCopMSBuildTargetsFile)') And $(RestorePackages)!=true And $(StyleCopTreatErrorsAsWarnings)!=false" Text="$(StyleCopMSBuildMessageMissing)" />
+    <Warning Condition="Exists('$(StyleCopMSBuildTargetsFile)')  And $(RestorePackages)!=true And $(StyleCopTreatErrorsAsWarnings)!=false" Text="$(StyleCopMSBuildMessagePresent)" />
+    <Warning Condition="!Exists('$(StyleCopMSBuildTargetsFile)') And $(RestorePackages)==true And $(StyleCopTreatErrorsAsWarnings)!=false" Text="$(StyleCopMSBuildMessageRestore)" />
+    <Warning Condition="Exists('$(StyleCopMSBuildTargetsFile)')  And $(RestorePackages)==true And $(StyleCopTreatErrorsAsWarnings)!=false" Text="$(StyleCopMSBuildMessageRestored)" />
+    <Error Condition="!Exists('$(StyleCopMSBuildTargetsFile)') And $(RestorePackages)!=true And $(StyleCopTreatErrorsAsWarnings)==false" Text="$(StyleCopMSBuildMessageMissing)" />
+    <Error Condition="Exists('$(StyleCopMSBuildTargetsFile)')  And $(RestorePackages)!=true And $(StyleCopTreatErrorsAsWarnings)==false" Text="$(StyleCopMSBuildMessagePresent)" />
+    <Error Condition="!Exists('$(StyleCopMSBuildTargetsFile)') And $(RestorePackages)==true And $(StyleCopTreatErrorsAsWarnings)==false" Text="$(StyleCopMSBuildMessageRestore)" />
+    <Error Condition="Exists('$(StyleCopMSBuildTargetsFile)')  And $(RestorePackages)==true And $(StyleCopTreatErrorsAsWarnings)==false" Text="$(StyleCopMSBuildMessageRestored)" />
+  </Target>
+  <PropertyGroup>
+    <PrepareForBuildDependsOn Condition="!Exists('$(StyleCopMSBuildTargetsFile)')">StyleCopMSBuildTargetsNotFound;$(PrepareForBuildDependsOn)</PrepareForBuildDependsOn>
+  </PropertyGroup>
 </Project>

@@ -14,57 +14,58 @@
     shell:SystemTray.IsVisible="True">
 
     <!--LayoutRoot is the root grid where all page content is placed-->
-    <Grid x:Name="LayoutRoot" Background="Transparent">
+    <Grid x:Name="LayoutRoot" Background="Transparent" Margin="0,2,0,-2">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- LOCALIZATION NOTE:
-            To localize the displayed strings copy their values to appropriately named
-            keys in the app's neutral language resource file (AppResources.resx) then
-            replace the hard-coded text value between the attributes' quotation marks
-            with the binding clause whose path points to that string name.
-
-            For example:
-
-                Text="{Binding Path=LocalizedResources.ApplicationTitle, Source={StaticResource LocalizedStrings}}"
-
-            This binding points to the template's string resource named "ApplicationTitle".
-
-            Adding supported languages in the Project Properties tab will create a
-            new resx file per language that can carry the translated values of your
-            UI strings. The binding in these examples will cause the value of the
-            attributes to be drawn from the .resx file that matches the
-            CurrentUICulture of the app at run time.
-         -->
-
         <!--TitlePanel contains the name of the application and page title-->
         <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
             <TextBlock Text="{Binding Path=LocalizedResources.ApplicationTitle, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,0"/>
-            <TextBlock Text="page name" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
+            <TextBlock x:Name="PebbleName" Text="" Style="{StaticResource PhoneTextLargeStyle}"/>
+            <TextBlock x:Name="PebbleVersion" Text="" Style="{StaticResource PhoneTextNormalStyle}"/>
+            <Button x:Name="RetryConnection" Click="Retry_Click" Content="Retry Connection" HorizontalAlignment="Left" Visibility="Collapsed"/>
         </StackPanel>
 
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <ScrollViewer>
                 <StackPanel Orientation="Vertical">
-                <TextBlock x:Name="MusicControlTextBlock" TextAlignment="Center">Waiting for MusicControls events...</TextBlock>
-                <Button Click="Button_Click_1" Content="Ping"/>
-                <Button Click="Button_Click_2" Content="BadPing"/>
-                <Button Click="Button_Click_3" Content="SendSMS"/>
-                <Button Click="Button_Click_4" Content="SendEMAIL"/>
-                <Button Click="Button_Click_5" Content="SendNowPlaying"/>
-                <Button Click="Button_Click_6" Content="GetTime"/>
-                <Button Click="Button_Click" Content="SetTime"/>
-                <Button Click="Button_Click_7" Content="GetVersion"/>
-                <Button Click="Button_Click_8" Content="SendFacebookNot"/>
-                <Button Click="Button_Click_9" Content="SimulatePhoneCall"/>
 
-                <Button Click="Button_Click_10" Content="DownloadWatchAppFile"/>
-                <Button Click="Button_Click_11" Content="CheckForFirmwareUpdate"/>
+                    <TextBlock Text="Time" Style="{StaticResource PhoneTextSubtleStyle}"/>
 
-            </StackPanel>
+                    <Button Click="GetTime_Click" Content="Get Time"/>
+                    <Button Click="SetTime_Click" Content="Set Time"/>
+
+                    <TextBlock Text="Apps" Style="{StaticResource PhoneTextSubtleStyle}"/>
+
+                    <Button Click="GetInstalledApps_Click" Content="List Apps"/>
+                    <Button Click="RemoveApp_Click" Content="Remove App"/>
+
+                    <Button Click="DownloadApp_Click" Content="Download &amp; Install Pixel Watchface"/>
+                    <ProgressBar x:Name="InstallAppProgress" Value="0" />
+                    <Button Click="LaunchApp_Click" Content="Launch Pixel Watchface"/>
+
+                    <TextBlock Text="Firmware" Style="{StaticResource PhoneTextSubtleStyle}"/>
+                    
+                    <Button Click="CheckFirmware_Click" Content="Check for Latest Firmware"/>
+                    <Button Click="DownloadFirmware_Click" Content="Download &amp; Install Firmware"/>
+                    <ProgressBar x:Name="InstallFirmwareProgress" Value="0" />
+
+                    <TextBlock Text="Music Control" Style="{StaticResource PhoneTextSubtleStyle}"/>
+
+                    <Button Click="PlayMusic_Click" Content="Music Control"/>
+
+                    <TextBlock Text="Notification Demos" Style="{StaticResource PhoneTextSubtleStyle}"/>
+
+                    <Button Click="Ping_Click" Content="Ping"/>
+                    <Button Click="SmsNotification_Click" Content="SendSMS"/>
+                    <Button Click="EmailNotification_Click" Content="SendEMAIL"/>
+                    <Button Click="FacebookNotification_Click" Content="SendFacebookNot"/>
+                    <Button Click="PhoneCall_Click" Content="SimulatePhoneCall"/>
+
+                </StackPanel>
             </ScrollViewer>
         </Grid>
 

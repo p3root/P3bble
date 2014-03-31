@@ -94,6 +94,22 @@ namespace P3bble
         // Code to execute on Unhandled Exceptions
         private void Application_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e)
         {
+            var timedOut = e.ExceptionObject as TimeoutException;
+            if (timedOut != null)
+            {
+                MessageBox.Show(timedOut.Message);
+                e.Handled = true;
+                return;
+            }
+
+            var busy = e.ExceptionObject as InvalidOperationException;
+            if (busy != null)
+            {
+                MessageBox.Show(busy.Message);
+                e.Handled = true;
+                return;
+            }
+
             if (Debugger.IsAttached)
             {
                 // An unhandled exception has occurred; break into the debugger

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>P3bble</id>
+    <version>{VERSION_MADE_BY_SCRIPT}</version>
+    <title>P3bble</title>
+    <authors>Steve Robbins, Patrik Pfaffenbauer</authors>
+    <owners>Steve Robbins</owners>
+    <licenseUrl>https://github.com/srgb/P3bble/blob/master/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/srgb/P3bble</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>P3bble is a framework for connecting to Pebble SmartWatches from Windows Phone 8.</summary>
+    <description>P3bble is a framework for connecting to Pebble SmartWatches from Windows Phone 8.</description>
+    <language>en-US</language>
+    <copyright>Copyright (c) 2013 Patrik Pfaffenbauer, 2014 Steve Robbins</copyright>
+    <tags>Pebble WindowsPhone wp8</tags>
+    <dependencies>
+      <dependency id="Microsoft.Net.Http" version="2.2.18" />
+      <dependency id="sharpcompress" version="0.10.3" />
+    </dependencies>
+  </metadata>
+</package>

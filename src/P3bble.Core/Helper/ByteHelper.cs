@@ -4,23 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace P3bble.Core.Helper
+namespace P3bble.Helper
 {
     internal class ByteHelper
     {
-        public static byte[] ConvertToByteArray(Int32 I32)
+        public static byte[] ConvertToByteArray(int value)
         {
-            return BitConverter.GetBytes(I32);
+            return BitConverter.GetBytes(value);
         }
 
-        public static byte[] ConvertToByteArray(uint uin)
+        public static byte[] ConvertToByteArray(uint value)
         {
-            return BitConverter.GetBytes(uin);
+            return BitConverter.GetBytes(value);
         }
 
-        public static byte[] ConvertToByteArray(ushort uin)
+        public static byte[] ConvertToByteArray(ushort value)
         {
-            return BitConverter.GetBytes(uin);
+            return BitConverter.GetBytes(value);
         }
     }
 }

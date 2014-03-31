@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30304.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "P3bbleWinRT", "P3bbleWinRT\P3bbleWinRT.csproj", "{34FD5655-AE7C-4728-9AEE-82BFD17DC2C1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "P3bbleWinRT.Core", "P3bbleWinRT.Core\P3bbleWinRT.Core.csproj", "{FC39CA95-4125-418E-A0AB-3C1CF79689BC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|ARM = Debug|ARM
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|ARM = Release|ARM
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{34FD5655-AE7C-4728-9AEE-82BFD17DC2C1}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{34FD5655-AE7C-4728-9AEE-82BFD17DC2C1}.Debug|Any CPU.Build.0 = Debug|x64
+		{34FD5655-AE7C-4728-9AEE-82BFD17DC2C1}.Debug|Any CPU.Deploy.0 = Debug|x64
+		{34FD5655-AE7C-4728-9AEE-82BFD17DC2C1}.Debug|ARM.ActiveCfg = Debug|ARM
+		{34FD5655-AE7C-4728-9AEE-82BFD17DC2C1}.Debug|ARM.Build.0 = Debug|ARM
+		{34FD5655-AE7C-4728-9AEE-82BFD17DC2C1}.Debug|ARM.Deploy.0 = Debug|ARM
+		{34FD5655-AE7C-4728-9AEE-82BFD17DC2C1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{34FD5655-AE7C-4728-9AEE-82BFD17DC2C1}.Debug|x86.ActiveCfg = Debug|x86
+		{34FD5655-AE7C-4728-9AEE-82BFD17DC2C1}.Debug|x86.Build.0 = Debug|x86
+		{34FD5655-AE7C-4728-9AEE-82BFD17DC2C1}.Debug|x86.Deploy.0 = Debug|x86
+		{34FD5655-AE7C-4728-9AEE-82BFD17DC2C1}.Release|Any CPU.ActiveCfg = Release|ARM
+		{34FD5655-AE7C-4728-9AEE-82BFD17DC2C1}.Release|Any CPU.Build.0 = Release|ARM
+		{34FD5655-AE7C-4728-9AEE-82BFD17DC2C1}.Release|Any CPU.Deploy.0 = Release|ARM
+		{34FD5655-AE7C-4728-9AEE-82BFD17DC2C1}.Release|ARM.ActiveCfg = Release|ARM
+		{34FD5655-AE7C-4728-9AEE-82BFD17DC2C1}.Release|ARM.Build.0 = Release|ARM
+		{34FD5655-AE7C-4728-9AEE-82BFD17DC2C1}.Release|ARM.Deploy.0 = Release|ARM
+		{34FD5655-AE7C-4728-9AEE-82BFD17DC2C1}.Release|x64.ActiveCfg = Release|Any CPU
+		{34FD5655-AE7C-4728-9AEE-82BFD17DC2C1}.Release|x86.ActiveCfg = Release|x86
+		{34FD5655-AE7C-4728-9AEE-82BFD17DC2C1}.Release|x86.Build.0 = Release|x86
+		{34FD5655-AE7C-4728-9AEE-82BFD17DC2C1}.Release|x86.Deploy.0 = Release|x86
+		{FC39CA95-4125-418E-A0AB-3C1CF79689BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC39CA95-4125-418E-A0AB-3C1CF79689BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC39CA95-4125-418E-A0AB-3C1CF79689BC}.Debug|ARM.ActiveCfg = Debug|ARM
+		{FC39CA95-4125-418E-A0AB-3C1CF79689BC}.Debug|ARM.Build.0 = Debug|ARM
+		{FC39CA95-4125-418E-A0AB-3C1CF79689BC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FC39CA95-4125-418E-A0AB-3C1CF79689BC}.Debug|x86.ActiveCfg = Debug|x86
+		{FC39CA95-4125-418E-A0AB-3C1CF79689BC}.Debug|x86.Build.0 = Debug|x86
+		{FC39CA95-4125-418E-A0AB-3C1CF79689BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC39CA95-4125-418E-A0AB-3C1CF79689BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC39CA95-4125-418E-A0AB-3C1CF79689BC}.Release|ARM.ActiveCfg = Release|ARM
+		{FC39CA95-4125-418E-A0AB-3C1CF79689BC}.Release|ARM.Build.0 = Release|ARM
+		{FC39CA95-4125-418E-A0AB-3C1CF79689BC}.Release|x64.ActiveCfg = Release|Any CPU
+		{FC39CA95-4125-418E-A0AB-3C1CF79689BC}.Release|x86.ActiveCfg = Release|x86
+		{FC39CA95-4125-418E-A0AB-3C1CF79689BC}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

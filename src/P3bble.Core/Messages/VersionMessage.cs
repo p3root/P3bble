@@ -1,25 +1,25 @@
-﻿using P3bble.Core.Constants;
-using P3bble.Core.Firmware;
-using P3bble.Core.Helper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using P3bble.Constants;
+using P3bble.Types;
 
-namespace P3bble.Core.Messages
+namespace P3bble.Messages
 {
     internal class VersionMessage : P3bbleMessage
     {
         public VersionMessage()
-            : base(P3bbleEndpoint.Version)
+            : base(Endpoint.Version)
         {
-
         }
+
+        public FirmwareVersion Firmware { get; private set; }
+
+        public FirmwareVersion RecoveryFirmware { get; private set; }
 
         protected override void AddContentToMessage(List<byte> payload)
         {
-            base.AddContentToMessage(payload);
             payload.Add(0x00);
         }
 
@@ -31,33 +31,23 @@ namespace P3bble.Core.Messages
             this.RecoveryFirmware = ParseVersion(data.Skip(48).Take(47).ToArray());
         }
 
-        private static P3bbleFirmwareVersion ParseVersion(byte[] data)
+        private static FirmwareVersion ParseVersion(byte[] data)
         {
             byte[] _ts = data.Take(4).ToArray();
             if (BitConverter.IsLittleEndian)
             {
                 Array.Reverse(_ts);
             }
-            DateTime timestamp = Util.TimestampToDateTime(BitConverter.ToInt32(_ts, 0));
-            String version = Encoding.UTF8.GetString(data.Skip(4).Take(32).ToArray(), 0, 32);
-            String commit = Encoding.UTF8.GetString(data.Skip(36).Take(8).ToArray(), 0, 8);
+
+            int timestamp = BitConverter.ToInt32(_ts, 0);
+            string version = Encoding.UTF8.GetString(data.Skip(4).Take(32).ToArray(), 0, 32);
+            string commit = Encoding.UTF8.GetString(data.Skip(36).Take(8).ToArray(), 0, 8);
             version = version.Substring(0, version.IndexOf('\0'));
             commit = commit.Substring(0, commit.IndexOf('\0'));
-            Boolean is_recovery = BitConverter.ToBoolean(data, 44);
+            bool is_recovery = BitConverter.ToBoolean(data, 44);
             byte hardware_platform = data[45];
             byte metadata_ver = data[46];
-            return new P3bbleFirmwareVersion(timestamp, version, commit, is_recovery, hardware_platform, metadata_ver);
-        }
-
-        public P3bbleFirmwareVersion Firmware { get; private set; }
-        public P3bbleFirmwareVersion RecoveryFirmware { get; private set; }
-
-        protected override ushort PayloadLength
-        {
-            get
-            {
-                return 1;
-            }
+            return new FirmwareVersion(timestamp, version, commit, is_recovery, hardware_platform, metadata_ver);
         }
     }
 }

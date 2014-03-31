@@ -1,60 +1,67 @@
-﻿using P3bble.Core.Constants;
-using P3bble.Core.Helper;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
+using P3bble.Constants;
+using P3bble.Helper;
 
-namespace P3bble.Core.Messages
+namespace P3bble.Messages
 {
-    internal enum TimeMessageAction
+    /// <summary>
+    /// Represents the time message
+    /// </summary>
+    internal enum TimeMessageAction : byte
     {
+        /// <summary>
+        /// Get the time
+        /// </summary>
         GetTime = 0,
-        GetTimeResponse = 1,
-        SetTime =2
+
+        /// <summary>
+        /// Set the time
+        /// </summary>
+        SetTime = 2
     }
+
     internal class TimeMessage : P3bbleMessage
     {
         private TimeMessageAction _action;
-        private DateTime _dateTime;
-
+        
         public TimeMessage()
-            : base(P3bbleEndpoint.Time)
+            : base(Endpoint.Time)
         {
-            _action = TimeMessageAction.GetTime;
+            this._action = TimeMessageAction.GetTime;
+        }
 
-        }
-        public TimeMessage(TimeMessageAction action, DateTime dt)
-            : base(P3bbleEndpoint.Time)
+        public TimeMessage(DateTime time)
+            : base(Endpoint.Time)
         {
-            _dateTime = dt;
-            _action = action;
+            this._action = TimeMessageAction.SetTime;
+            this.Time = time;
         }
+
+        public DateTime Time { get; private set; }
 
         protected override void AddContentToMessage(List<byte> payload)
         {
-            if (_action == TimeMessageAction.GetTime)
+            if (this._action == TimeMessageAction.GetTime)
             {
-                base.AddContentToMessage(payload);
-                payload.Add((int)TimeMessageAction.GetTime);
-
+                payload.Add((byte)this._action);
             }
-            else if (_action == TimeMessageAction.SetTime)
+            else
             {
-                double timestamp = Util.DateTimeToTimeStamp(_dateTime);
+                Logger.WriteLine("Set Time to " + this.Time.ToString());
 
-                byte[] array = BitConverter.GetBytes((int)timestamp);
-
+                byte[] rawTime = BitConverter.GetBytes(this.Time.AsEpoch());
                 if (BitConverter.IsLittleEndian)
                 {
-                    Array.Reverse(array, 0, 4);
+                    Array.Reverse(rawTime);
                 }
-                base.AddContentToMessage(payload);
-                payload.Add((int)TimeMessageAction.SetTime);
-                payload.AddRange(array.ToList());
+
+                // Magic number required for the time to be set!
+                payload.Add((byte)this._action);
+
+                payload.AddRange(rawTime);
             }
-          
         }
 
         protected override void GetContentFromMessage(List<byte> payload)
@@ -66,21 +73,7 @@ namespace P3bble.Core.Messages
             }
 
             int timestamp = BitConverter.ToInt32(payloadArray, 1);
-            Time = Util.TimestampToDateTime(timestamp);
+            this.Time = timestamp.AsDateTime();
         }
-
-        protected override ushort PayloadLength
-        {
-            get
-            {
-                if (_action == TimeMessageAction.GetTime)
-                    return 1;
-                else if (_action == TimeMessageAction.SetTime)
-                    return 5;
-                return base.PayloadLength;
-            }
-        }
-
-        public DateTime Time { get; private set; }
     }
 }
