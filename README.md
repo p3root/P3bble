@@ -56,5 +56,5 @@ Version 1.0 created by [Patrik Pfaffenbauer](https://twitter.com/p3root) - see <
 License
 =======
 
-P3bble is released under the 3-clause license ("New BSD License" or "Modified BSD License") - see https://raw.github.com/srgb/P3bble/master/LICENSE.txt
+P3bble is released under the 3-clause license ("New BSD License" or "Modified BSD License") - see https://raw.githubusercontent.com/p3root/P3bble/master/LICENSE.txt
 
