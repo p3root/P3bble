@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>P3bble</id>
-    <version>{VERSION_MADE_BY_SCRIPT}</version>
+    <version>2.2.1.0</version>
     <title>P3bble</title>
     <authors>Steve Robbins, Patrik Pfaffenbauer</authors>
     <owners>Steve Robbins, Patrik Pfaffenbauer</owners>

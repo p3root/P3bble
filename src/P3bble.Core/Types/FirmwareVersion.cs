@@ -7,7 +7,7 @@ namespace P3bble.Types
     /// </summary>
     public class FirmwareVersion : VersionInfo
     {
-        private const string URL = "http://pebblefw.s3.amazonaws.com/pebble/{0}/{1}/latest.json";
+        private const string URL = "http://pebblefw.s3.amazonaws.com/pebble/{0}/{1}-v2/latest.json";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FirmwareVersion"/> class.
