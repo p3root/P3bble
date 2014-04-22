@@ -80,11 +80,11 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <ProjectReference Include="..\P3bble.Core-8.1\P3bble.Core-8.1.csproj">
+    <ProjectReference Include="..\..\P3bble.Core-8.1\P3bble.Core-8.1.csproj">
       <Project>{72e5aa0e-3986-42d2-b048-324dc046dd75}</Project>
       <Name>P3bble.Core-8.1</Name>
     </ProjectReference>
-    <ProjectReference Include="..\P3bble.PCL\P3bble.PCL.csproj">
+    <ProjectReference Include="..\..\P3bble.PCL\P3bble.PCL.csproj">
       <Project>{76e03460-2cd0-4580-ada0-a5fe68cb7e1c}</Project>
       <Name>P3bble.PCL</Name>
     </ProjectReference>

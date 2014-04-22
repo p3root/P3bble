@@ -1,17 +1,17 @@
 # TODO: Quieten mkdir
 $null = mkdir -Force package\lib\windowsphone8
-$null = mkdir -Force package\lib\windowsphone8.1
-$null = mkdir -Force package\lib\portable-sl4+wp71+windows8
+$null = mkdir -Force package\lib\wpa8.1
+$null = mkdir -Force package\lib\portable-sl4+wp71+windows8+wp8+wp81+wpa8.1
 
 copy P3bble.nuspec package
 
-copy ..\src\P3bble.Core\Bin\Release\wp8.1\P3bble.Core.dll package\lib\windowsphone8.1
-copy ..\src\P3bble.Core\Bin\Release\wp8.1\P3bble.Core.XML package\lib\windowsphone8.1
+copy ..\src\P3bble.Core-8.1\bin\Release\P3bble.Core.dll package\lib\wpa8.1
+copy ..\src\P3bble.Core-8.1\bin\Release\P3bble.Core.pri package\lib\wpa8.1
 
-copy ..\src\P3bble.Core\Bin\Release\wp8\P3bble.Core.dll package\lib\windowsphone8
-copy ..\src\P3bble.Core\Bin\Release\wp8\P3bble.Core.XML package\lib\windowsphone8
+copy ..\src\P3bble.Core\Bin\Release\P3bble.Core.dll package\lib\windowsphone8
+copy ..\src\P3bble.Core\Bin\Release\P3bble.Core.XML package\lib\windowsphone8
 
-copy ..\src\P3bble.PCL\Bin\Release\P3bble.PCL.dll package\lib\portable-sl4+wp71+windows8
+copy ..\src\P3bble.PCL\Bin\Release\P3bble.PCL.dll package\lib\portable-sl4+wp71+windows8+wp8+wp81+wpa8.1
 
 # Update version number to that of assembly...
 $ver = ls -fi .\package\lib\windowsphone8\P3bble.Core.dll | % { $_.versioninfo }

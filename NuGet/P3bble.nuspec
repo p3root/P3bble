@@ -16,7 +16,7 @@
     <tags>Pebble WindowsPhone wp8 wp8.1</tags>
     <dependencies>
       <dependency id="Microsoft.Net.Http" version="2.2.18" />
-      <dependency id="sharpcompress" version="0.10.3" />
+      <dependency id="p3-sharpcompress" version="0.10.5.1" />
     </dependencies>
   </metadata>
 </package>

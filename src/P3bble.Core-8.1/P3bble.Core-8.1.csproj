@@ -223,7 +223,7 @@
   <ItemGroup>
     <Reference Include="SharpCompress, Version=0.10.3.0, Culture=neutral, PublicKeyToken=64eb6448c87dfed9, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\sharpcompress.0.10.3\lib\portable-net4+sl5+wp8+win8+wp8.1\SharpCompress.dll</HintPath>
+      <HintPath>..\packages\p3-sharpcompress.0.10.5.1\lib\wpa8.1\SharpCompress.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http.Extensions">
       <HintPath>..\packages\Microsoft.Net.Http.2.2.20\lib\wpa81\System.Net.Http.Extensions.dll</HintPath>
