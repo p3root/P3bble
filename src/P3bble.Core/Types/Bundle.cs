@@ -154,8 +154,8 @@ namespace P3bble.Types
 
             this.FullPath = file.Path;
             this._bundle = ZipArchive.Open(await file.OpenStreamForReadAsync());
-
-            var manifestEntry = this._bundle.Entries.Where(e => string.Compare(e.FilePath, "manifest.json", StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
+           
+            var manifestEntry = this._bundle.Entries.Where(e => string.Compare(e.Key, "manifest.json", StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
             if (manifestEntry == null)
             {
                 throw new ArgumentException("manifest.json not found in archive - not a Pebble this.Bundle.");
@@ -178,7 +178,7 @@ namespace P3bble.Types
                 this.BinaryContent = await this.ReadFileToArray(this.Manifest.ApplicationManifest.Filename, this.Manifest.ApplicationManifest.Size);
 
                 // Convert first part to app manifest
-#if NETFX_CORE
+#if NETFX_CORE  && !WINDOWS_PHONE_APP
                 byte[] buffer = new byte[Marshal.SizeOf<ApplicationMetadata>()];
 #else
                 byte[] buffer = new byte[Marshal.SizeOf(typeof(ApplicationMetadata))];
@@ -196,7 +196,7 @@ namespace P3bble.Types
 
         private async Task<byte[]> ReadFileToArray(string file, int size)
         {
-            var entry = this._bundle.Entries.Where(e => string.Compare(e.FilePath, file, StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
+            var entry = this._bundle.Entries.Where(e => string.Compare(e.Key, file, StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
 
             if (entry == null)
             {

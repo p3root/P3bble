@@ -3,7 +3,10 @@ using P3bble.PCL.Logger;
 using System;
 using System.Diagnostics;
 using System.IO;
+#if WINDOWS_PHONE_APP
+#else
 using System.IO.IsolatedStorage;
+#endif
 using System.Threading;
 using Windows.Storage;
 

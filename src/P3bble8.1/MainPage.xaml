@@ -1,17 +1,12 @@
-﻿<phone:PhoneApplicationPage
+﻿<Page
     x:Class="P3bble.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
-    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:local="using:P3bble"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    FontFamily="{StaticResource PhoneFontFamilyNormal}"
-    FontSize="{StaticResource PhoneFontSizeNormal}"
-    Foreground="{StaticResource PhoneForegroundBrush}"
-    SupportedOrientations="Portrait" Orientation="Portrait"
-    shell:SystemTray.IsVisible="True">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent" Margin="0,2,0,-2">
@@ -22,9 +17,9 @@
 
         <!--TitlePanel contains the name of the application and page title-->
         <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
-            <TextBlock Text="{Binding Path=LocalizedResources.ApplicationTitle, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,0"/>
-            <TextBlock x:Name="PebbleName" Text="" Style="{StaticResource PhoneTextLargeStyle}"/>
-            <TextBlock x:Name="PebbleVersion" Text="" Style="{StaticResource PhoneTextNormalStyle}"/>
+            <TextBlock Text="" Margin="12,0"/>
+            <TextBlock x:Name="PebbleName" Text="" />
+            <TextBlock x:Name="PebbleVersion" Text=""/>
             <Button x:Name="RetryConnection" Click="Retry_Click" Content="Retry Connection" HorizontalAlignment="Left" Visibility="Collapsed"/>
         </StackPanel>
 
@@ -33,12 +28,12 @@
             <ScrollViewer>
                 <StackPanel Orientation="Vertical">
 
-                    <TextBlock Text="Time" Style="{StaticResource PhoneTextSubtleStyle}"/>
+                    <TextBlock Text="Time" />
 
                     <Button Click="GetTime_Click" Content="Get Time"/>
                     <Button Click="SetTime_Click" Content="Set Time"/>
 
-                    <TextBlock Text="Apps" Style="{StaticResource PhoneTextSubtleStyle}"/>
+                    <TextBlock Text="Apps"/>
 
                     <Button Click="GetInstalledApps_Click" Content="List Apps"/>
                     <Button Click="RemoveApp_Click" Content="Remove App"/>
@@ -47,17 +42,17 @@
                     <ProgressBar x:Name="InstallAppProgress" Value="0" />
                     <Button Click="LaunchApp_Click" Content="Launch Pixel Watchface"/>
 
-                    <TextBlock Text="Firmware" Style="{StaticResource PhoneTextSubtleStyle}"/>
-                    
+                    <TextBlock Text="Firmware"/>
+
                     <Button Click="CheckFirmware_Click" Content="Check for Latest Firmware"/>
                     <Button Click="DownloadFirmware_Click" Content="Download &amp; Install Firmware"/>
                     <ProgressBar x:Name="InstallFirmwareProgress" Value="0" />
 
-                    <TextBlock Text="Music Control" Style="{StaticResource PhoneTextSubtleStyle}"/>
+                    <TextBlock Text="Music Control"/>
 
                     <Button Click="PlayMusic_Click" Content="Music Control"/>
 
-                    <TextBlock Text="Notification Demos" Style="{StaticResource PhoneTextSubtleStyle}"/>
+                    <TextBlock Text="Notification Demos"/>
 
                     <Button Click="Ping_Click" Content="Ping"/>
                     <Button Click="SmsNotification_Click" Content="SendSMS"/>
@@ -78,4 +73,4 @@
         <!--<Image Source="/Assets/AlignmentGrid.png" VerticalAlignment="Top" Height="800" Width="480" Margin="0,-32,0,0" Grid.Row="0" Grid.RowSpan="2" IsHitTestVisible="False" />-->
     </Grid>
 
-</phone:PhoneApplicationPage>
+</Page>

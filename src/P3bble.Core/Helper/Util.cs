@@ -28,7 +28,7 @@ namespace P3bble.Helper
         public static T AsStruct<T>(this Stream fs) where T : struct
         {
             // Borrowed from http://stackoverflow.com/a/1936208 because BitConverter-ing all of this would be a pain
-#if NETFX_CORE
+#if NETFX_CORE  && !WINDOWS_PHONE_APP
             byte[] buffer = new byte[Marshal.SizeOf<T>()];
 #else
             byte[] buffer = new byte[Marshal.SizeOf(typeof(T))];
@@ -39,7 +39,7 @@ namespace P3bble.Helper
 
         public static T AsStruct<T>(this byte[] bytes) where T : struct
         {
-#if NETFX_CORE
+#if NETFX_CORE  && !WINDOWS_PHONE_APP
             if (bytes.Count() != Marshal.SizeOf<T>())
 #else
             if (bytes.Count() != Marshal.SizeOf(typeof(T)))
@@ -52,7 +52,7 @@ namespace P3bble.Helper
             GCHandle hdl = GCHandle.Alloc(bytes, GCHandleType.Pinned);
             try
             {
-#if NETFX_CORE
+#if NETFX_CORE  && !WINDOWS_PHONE_APP
                 ret = (T)Marshal.PtrToStructure<T>(hdl.AddrOfPinnedObject());
 #else
                 ret = (T)Marshal.PtrToStructure(hdl.AddrOfPinnedObject(), typeof(T));

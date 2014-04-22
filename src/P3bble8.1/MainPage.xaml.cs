@@ -1,19 +1,31 @@
-﻿using Microsoft.Phone.Controls;
-using Microsoft.Xna.Framework.Media;
-using P3bble;
-using P3bble.Types;
+﻿using P3bble.Types;
 using System;
 using System.Collections.Generic;
-using System.Net;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+using Windows.Media.Playback;
+using Windows.UI.Popups;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Navigation;
+
+// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=391641
 
 namespace P3bble
 {
-    public partial class MainPage : PhoneApplicationPage
+    /// <summary>
+    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// </summary>
+    public sealed partial class MainPage : Page
     {
         private P3bble _pebble;
         private ProgressBar _currentProgressBar;
@@ -24,7 +36,8 @@ namespace P3bble
 
             Loaded += MainPage_Loaded;
 
-            MediaPlayer.ActiveSongChanged += MediaPlayer_ActiveSongChanged;
+           // MediaPlayer player = new MediaPlayer();
+           // player.S.ActiveSongChanged += MediaPlayer_ActiveSongChanged;
         }
 
         private async void MainPage_Loaded(object sender, RoutedEventArgs e)
@@ -50,7 +63,7 @@ namespace P3bble
                     _pebble.InstallProgress += new InstallProgressHandler(this.InstallProgressReceived);
 
                     PebbleName.Text = "Connected to Pebble " + _pebble.DisplayName;
-                    PebbleVersion.Text = "Version " + _pebble.FirmwareVersion.Version + " - " + _pebble.FirmwareVersion.Timestamp.ToShortDateString();
+                    PebbleVersion.Text = "Version " + _pebble.FirmwareVersion.Version + " - " + _pebble.FirmwareVersion.Timestamp.ToString();
                     RetryConnection.Visibility = Visibility.Collapsed;
                 }
                 else
@@ -134,10 +147,10 @@ namespace P3bble
                 var apps = await _pebble.GetInstalledAppsAsync();
                 if (apps != null && apps.ApplicationsInstalled.Count > 0)
                 {
-                    if (MessageBox.Show("This example will remove the first app found: " + apps.ApplicationsInstalled[0].Name + " - are you sure you want to continue?", "DANGER!", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                   /*Ü if (MessageBox.Show("This example will remove the first app found: " + apps.ApplicationsInstalled[0].Name + " - are you sure you want to continue?", "DANGER!", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
                     {
                         await _pebble.RemoveAppAsync(apps.ApplicationsInstalled[0]);
-                    }
+                    }*/
                 }
                 else
                 {
@@ -154,22 +167,22 @@ namespace P3bble
         {
             //const string InstallUrl = "http://pebble-static.s3.amazonaws.com/watchfaces/apps/simplicity.pbw";
             const string InstallUrl = "http://u.jdiez.me/pixel.pbw";
-            
+
             this._currentProgressBar = this.InstallAppProgress;
             await InstallBundle(InstallUrl);
         }
 
-        private void InstallProgressReceived(int percentComplete)
+        private async void InstallProgressReceived(int percentComplete)
         {
-            Dispatcher.BeginInvoke(() =>
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                this._currentProgressBar.IsIndeterminate = false;
+                this._currentProgressBar.Value = percentComplete;
+                if (percentComplete == 0 || percentComplete == 100)
                 {
-                    this._currentProgressBar.IsIndeterminate = false;
-                    this._currentProgressBar.Value = percentComplete;
-                    if (percentComplete == 0 || percentComplete == 100)
-                    {
-                        this._currentProgressBar.Value = 0;
-                    }
-                });
+                    this._currentProgressBar.Value = 0;
+                }
+            });
         }
 
         private async void LaunchApp_Click(object sender, RoutedEventArgs e)
@@ -212,7 +225,7 @@ namespace P3bble
         private async void DownloadFirmware_Click(object sender, RoutedEventArgs e)
         {
             //const string InstallUrl = "http://pebblebits.com/firmware/2.0.1-ev2_4-battery-sym+en.pbz";
-            const string InstallUrl = "https://pebblefw.s3.amazonaws.com/pebble/ev2_4/release/pbz/normal_ev2_4_v1.14.1_release-v1.x-34.pbz";
+            const string InstallUrl = "https://pebblefw.s3.amazonaws.com/pebble/ev2_4/release-v2/pbz/Pebble-2.0.2-ev2_4.pbz";
 
             this._currentProgressBar = this.InstallFirmwareProgress;
             await InstallBundle(InstallUrl);
@@ -227,9 +240,9 @@ namespace P3bble
         {
             if (_pebble != null && _pebble.IsConnected)
             {
-                MediaLibrary lib = new MediaLibrary();
-                MediaPlayer.Play(lib.Songs, new Random().Next(lib.Songs.Count));
-                MediaPlayer.IsShuffled = true;
+               // MediaLibrary lib = new MediaLibrary();
+               // MediaPlayer.Play(lib.Songs, new Random().Next(lib.Songs.Count));
+               // MediaPlayer.IsShuffled = true;
             }
             else
             {
@@ -239,14 +252,14 @@ namespace P3bble
 
         private async void MediaPlayer_ActiveSongChanged(object sender, EventArgs e)
         {
-            if (MediaPlayer.Queue.ActiveSong != null)
+            /*if (MediaPlayer.Queue.ActiveSong != null)
             {
                 await _pebble.SetNowPlayingAsync(MediaPlayer.Queue.ActiveSong.Artist.Name, MediaPlayer.Queue.ActiveSong.Album.Name, MediaPlayer.Queue.ActiveSong.Name);
             }
             else
             {
                 await _pebble.SetNowPlayingAsync(string.Empty, string.Empty, string.Empty);
-            }
+            }*/
         }
 
         private void MusicControlReceived(MusicControlAction action)
@@ -254,23 +267,23 @@ namespace P3bble
             switch (action)
             {
                 case MusicControlAction.PlayPause:
-                    if (MediaPlayer.State == MediaState.Playing)
+                  /*  if (MediaPlayer.State == MediaState.Playing)
                     {
                         MediaPlayer.Pause();
                     }
                     else
                     {
                         MediaPlayer.Resume();
-                    }
+                    }*/
 
                     break;
 
                 case MusicControlAction.Next:
-                    MediaPlayer.MoveNext();
+                    //MediaPlayer.MoveNext();
                     break;
 
                 case MusicControlAction.Previous:
-                    MediaPlayer.MovePrevious();
+                    //MediaPlayer.MovePrevious();
                     break;
             }
         }

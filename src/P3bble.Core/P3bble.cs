@@ -14,7 +14,7 @@ using Windows.Networking.Proximity;
 using Windows.Storage;
 using P3bble.PCL;
 
-#if NETFX_CORE
+#if NETFX_CORE  && !WINDOWS_PHONE_APP
 using Windows.Devices.Bluetooth.Rfcomm;
 #endif
 
@@ -45,7 +45,7 @@ namespace P3bble
         private ManualResetEventSlim _pendingMessageSignal;
         private P3bbleMessage _pendingMessage;
 
-#if NETFX_CORE
+#if NETFX_CORE && !WINDOWS_PHONE_APP
         private RfcommDeviceService _deviceService;
 #endif
 
@@ -58,7 +58,7 @@ namespace P3bble
             PeerInformation = peerInformation;
         }
 
-#if NETFX_CORE
+#if NETFX_CORE && !WINDOWS_PHONE_APP
         internal P3bble(RfcommDeviceService deviceService)
         {
             _deviceService = deviceService;
@@ -190,7 +190,7 @@ namespace P3bble
 
             try
             {
-#if NETFX_CORE
+#if NETFX_CORE && !WINDOWS_PHONE_APP
                 this._protocol = await Protocol.CreateProtocolAsync(_deviceService);
 #else
                 this._protocol = await Protocol.CreateProtocolAsync(PeerInformation);
@@ -774,7 +774,7 @@ namespace P3bble
 
             try
             {
-#if NETFX_CORE
+#if NETFX_CORE  && !WINDOWS_PHONE_APP
                 var devices = await Windows.Devices.Enumeration.DeviceInformation.FindAllAsync(RfcommDeviceService.GetDeviceSelector(RfcommServiceId.SerialPort));
                 foreach (var device in devices)
                 {

@@ -52,7 +52,7 @@ namespace P3bble.Communication
         /// <returns>A protocol object</returns>
         public static async Task<Protocol> CreateProtocolAsync(PeerInformation peer)
         {
-#if WINDOWS_PHONE
+#if WINDOWS_PHONE || WINDOWS_PHONE_APP
             // {00001101-0000-1000-8000-00805f9b34fb} specifies we want a Serial Port - see http://developer.nokia.com/Community/Wiki/Bluetooth_Services_for_Windows_Phone
             StreamSocket socket = new StreamSocket();
             await socket.ConnectAsync(peer.HostName, new Guid(0x00001101, 0x0000, 0x1000, 0x80, 0x00, 0x00, 0x80, 0x5F, 0x9B, 0x34, 0xFB).ToString("B"));
@@ -62,7 +62,7 @@ namespace P3bble.Communication
             throw new NotImplementedException();
         }
 
-#if NETFX_CORE
+#if NETFX_CORE  && !WINDOWS_PHONE_APP
         public static async Task<Protocol> CreateProtocolAsync(Windows.Devices.Bluetooth.Rfcomm.RfcommDeviceService peer)
         {
             StreamSocket socket = new StreamSocket();
@@ -122,7 +122,7 @@ namespace P3bble.Communication
             }
         }
 
-#if NETFX_CORE
+#if NETFX_CORE  && !WINDOWS_PHONE_APP
         private void Run(object host)
         {
             Task.Factory.StartNew(
@@ -176,11 +176,11 @@ namespace P3bble.Communication
                 catch
                 {
                 }
-#if NETFX_CORE
+#if NETFX_CORE  && !WINDOWS_PHONE_APP
                     await Task.Delay(100);
 #endif
             }
-#if NETFX_CORE
+#if NETFX_CORE  && !WINDOWS_PHONE_APP
             },
             TaskCreationOptions.LongRunning);
 #endif

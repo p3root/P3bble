@@ -1,0 +1,255 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{72E5AA0E-3986-42D2-B048-324DC046DD75}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>P3bble.Core</RootNamespace>
+    <AssemblyName>P3bble.Core</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{76F1466A-8B6D-4E39-A767-685A06062A39};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <TargetPlatformIdentifier>WindowsPhoneApp</TargetPlatformIdentifier>
+    <TargetPlatformVersion>8.1</TargetPlatformVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_PHONE_APP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_PHONE_APP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_PHONE_APP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_PHONE_APP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_PHONE_APP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_PHONE_APP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <ProjectReference Include="..\P3bble.PCL\P3bble.PCL.csproj">
+      <Project>{76e03460-2cd0-4580-ada0-a5fe68cb7e1c}</Project>
+      <Name>P3bble.PCL</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\P3bble.Core\AsyncLock.cs">
+      <Link>AsyncLock.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Communication\Protocol.cs">
+      <Link>Communication\Protocol.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Constants\Endpoint.cs">
+      <Link>Constants\Endpoint.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Constants\HardwareRevision.cs">
+      <Link>Constants\HardwareRevision.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Constants\MusicControls.cs">
+      <Link>Constants\MusicControls.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Constants\RemoteCaps.cs">
+      <Link>Constants\RemoteCaps.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Constants\SessionCaps.cs">
+      <Link>Constants\SessionCaps.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Exceptions\CannotInstallException.cs">
+      <Link>Exceptions\CannotInstallException.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Exceptions\NotConnectedException.cs">
+      <Link>Exceptions\NotConnectedException.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Exceptions\ProtocolException.cs">
+      <Link>Exceptions\ProtocolException.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Helper\ByteHelper.cs">
+      <Link>Helper\ByteHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Helper\Util.cs">
+      <Link>Helper\Util.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\IP3bble.cs">
+      <Link>IP3bble.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\AppManagerMessage.cs">
+      <Link>Messages\AppManagerMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\AppMessage.cs">
+      <Link>Messages\AppMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\LogsMessage.cs">
+      <Link>Messages\LogsMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\MusicMessage.cs">
+      <Link>Messages\MusicMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\NotificationMessage.cs">
+      <Link>Messages\NotificationMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\P3bbleMessage.cs">
+      <Link>Messages\P3bbleMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\PhoneControlMessage.cs">
+      <Link>Messages\PhoneControlMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\PhoneVersionMessage.cs">
+      <Link>Messages\PhoneVersionMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\PingMessage.cs">
+      <Link>Messages\PingMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\PutBytesMessage.cs">
+      <Link>Messages\PutBytesMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\ResetMessage.cs">
+      <Link>Messages\ResetMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\SystemMessage.cs">
+      <Link>Messages\SystemMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\TimeMessage.cs">
+      <Link>Messages\TimeMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\VersionMessage.cs">
+      <Link>Messages\VersionMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\P3bble.cs">
+      <Link>P3bble.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\ApplicationManifest.cs">
+      <Link>Types\ApplicationManifest.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\ApplicationMetadata.cs">
+      <Link>Types\ApplicationMetadata.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\Bundle.cs">
+      <Link>Types\Bundle.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\BundleManifest.cs">
+      <Link>Types\BundleManifest.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\FirmwareManifest.cs">
+      <Link>Types\FirmwareManifest.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\FirmwareRelease.cs">
+      <Link>Types\FirmwareRelease.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\FirmwareResponse.cs">
+      <Link>Types\FirmwareResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\FirmwareVersion.cs">
+      <Link>Types\FirmwareVersion.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\InstalledApplication.cs">
+      <Link>Types\InstalledApplication.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\InstalledApplications.cs">
+      <Link>Types\InstalledApplications.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\MusicControlAction.cs">
+      <Link>Types\MusicControlAction.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\ResourcesManifest.cs">
+      <Link>Types\ResourcesManifest.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\VersionInfo.cs">
+      <Link>Types\VersionInfo.cs</Link>
+    </Compile>
+    <Compile Include="Logger.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="SharpCompress, Version=0.10.3.0, Culture=neutral, PublicKeyToken=64eb6448c87dfed9, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\sharpcompress.0.10.3\lib\portable-net4+sl5+wp8+win8+wp8.1\SharpCompress.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Extensions">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.20\lib\wpa81\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
+    <VisualStudioVersion>12.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
