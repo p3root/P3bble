@@ -20,7 +20,7 @@ To use the library with Windows Phone 8.1 and WinRT (WinRT not finished currentl
       </m2:Device>
     </m2:DeviceCapability>
 ```
-in your Package.appxmanifest beetween the <Capabilities></Capabilities>.
+in your Package.appxmanifest beetween the "<Capabilities></Capabilities>".
 
 ```
 var pebbles = await P3bble.Pebble.DetectPebbles();
