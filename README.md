@@ -11,6 +11,17 @@ Getting Started:
 * Add `ID_CAP_PROXIMITY` to WMAppManifest.xml to allow connections from your app.
 * Detect and connect to the first Pebble found: 
 
+To use the library with Windows Phone 8.1 and WinRT (WinRT not finished currently), you need to add this 
+
+```
+    <m2:DeviceCapability Name="bluetooth.rfcomm">
+      <m2:Device Id="any">
+        <m2:Function Type="serviceId:00001101-0000-1000-8000-00805F9B34FB"/>
+      </m2:Device>
+    </m2:DeviceCapability>
+```
+in your Package.appxmanifest beetween the <Capabilities></Capabilities>.
+
 ```
 var pebbles = await P3bble.Pebble.DetectPebbles();
 if (pebbles != null && pebbles.Count > 0)
@@ -26,6 +37,11 @@ if (pebbles != null && pebbles.Count > 0)
     }
 }
 ```
+Version 2.2 features:
+=====================
+* Added support for Windows Phone Silverlight 8.1
+* Added support for Windows Phone 8.1
+
 
 
 Version 2.0 features:

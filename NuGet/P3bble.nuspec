@@ -15,8 +15,9 @@
     <copyright>Copyright (c) 2013-2014 Patrik Pfaffenbauer, 2014 Steve Robbins</copyright>
     <tags>Pebble WindowsPhone wp8 wp8.1</tags>
     <dependencies>
-      <dependency id="Microsoft.Net.Http" version="2.2.18" />
+      <dependency id="Microsoft.Net.Http" version="2.2.20" />
       <dependency id="p3-sharpcompress" version="0.10.5.1" />
+	  <dependency id="P3bble.PCL" version="1.0.1.1" />
     </dependencies>
   </metadata>
 </package>

@@ -23,6 +23,7 @@
     <RestorePackages>true</RestorePackages>
     <TargetFrameworkProfile />
     <DefaultLanguage>en-US</DefaultLanguage>
+    <NuGetPackageImportStamp>149706f3</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup>
     <SourceAnalysisOverrideSettingsFile>$(SolutionDir)\Settings.StyleCop</SourceAnalysisOverrideSettingsFile>
@@ -42,13 +43,13 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>Bin\Release\wp8.1\</OutputPath>
+    <OutputPath>Bin\Release\</OutputPath>
     <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>Bin\Release\wp8.1\P3bble.Core.xml</DocumentationFile>
+    <DocumentationFile>Bin\Release\P3bble.Core.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -97,72 +98,156 @@
     <PlatformTarget />
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AsyncLock.cs" />
-    <Compile Include="Communication\Protocol.cs" />
-    <Compile Include="Constants\Endpoint.cs" />
-    <Compile Include="Constants\HardwareRevision.cs" />
-    <Compile Include="Constants\RemoteCaps.cs" />
-    <Compile Include="Constants\SessionCaps.cs" />
-    <Compile Include="Exceptions\CannotInstallException.cs" />
-    <Compile Include="Exceptions\ProtocolException.cs" />
-    <Compile Include="Helper\ByteHelper.cs" />
-    <Compile Include="Helper\Util.cs" />
-    <Compile Include="IP3bble.cs" />
-    <Compile Include="Logger.cs" />
-    <Compile Include="Messages\AppManagerMessage.cs" />
-    <Compile Include="Messages\AppMessage.cs" />
-    <Compile Include="Messages\SystemMessage.cs" />
-    <Compile Include="Messages\LogsMessage.cs" />
-    <Compile Include="Messages\MusicMessage.cs" />
-    <Compile Include="Messages\NotificationMessage.cs" />
-    <Compile Include="Messages\P3bbleMessage.cs" />
-    <Compile Include="Messages\PhoneControlMessage.cs" />
-    <Compile Include="Messages\PhoneVersionMessage.cs" />
-    <Compile Include="Messages\PingMessage.cs" />
-    <Compile Include="Messages\PutBytesMessage.cs" />
-    <Compile Include="Messages\ResetMessage.cs" />
-    <Compile Include="Messages\TimeMessage.cs" />
-    <Compile Include="Messages\VersionMessage.cs" />
-    <Compile Include="Exceptions\NotConnectedException.cs" />
-    <Compile Include="P3bble.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Types\ApplicationManifest.cs" />
-    <Compile Include="Types\ApplicationMetadata.cs" />
-    <Compile Include="Types\Bundle.cs" />
-    <Compile Include="Types\BundleManifest.cs" />
-    <Compile Include="Types\FirmwareManifest.cs" />
-    <Compile Include="Types\FirmwareRelease.cs" />
-    <Compile Include="Types\FirmwareResponse.cs" />
-    <Compile Include="Types\FirmwareVersion.cs" />
-    <Compile Include="Types\InstalledApplication.cs" />
-    <Compile Include="Types\InstalledApplications.cs" />
-    <Compile Include="Types\MusicControlAction.cs" />
-    <Compile Include="Types\ResourcesManifest.cs" />
-    <Compile Include="Types\VersionInfo.cs" />
+    <Compile Include="..\P3bble.Core\AsyncLock.cs">
+      <Link>AsyncLock.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Communication\Protocol.cs">
+      <Link>Communication\Protocol.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Constants\Endpoint.cs">
+      <Link>Constants\Endpoint.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Constants\HardwareRevision.cs">
+      <Link>Constants\HardwareRevision.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Constants\MusicControls.cs">
+      <Link>Constants\MusicControls.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Constants\RemoteCaps.cs">
+      <Link>Constants\RemoteCaps.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Constants\SessionCaps.cs">
+      <Link>Constants\SessionCaps.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Exceptions\CannotInstallException.cs">
+      <Link>Exceptions\CannotInstallException.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Exceptions\NotConnectedException.cs">
+      <Link>Exceptions\NotConnectedException.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Exceptions\ProtocolException.cs">
+      <Link>Exceptions\ProtocolException.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Helper\ByteHelper.cs">
+      <Link>Helper\ByteHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Helper\Util.cs">
+      <Link>Helper\Util.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\IP3bble.cs">
+      <Link>IP3bble.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Logger.cs">
+      <Link>Logger.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\AppManagerMessage.cs">
+      <Link>Messages\AppManagerMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\AppMessage.cs">
+      <Link>Messages\AppMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\LogsMessage.cs">
+      <Link>Messages\LogsMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\MusicMessage.cs">
+      <Link>Messages\MusicMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\NotificationMessage.cs">
+      <Link>Messages\NotificationMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\P3bbleMessage.cs">
+      <Link>Messages\P3bbleMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\PhoneControlMessage.cs">
+      <Link>Messages\PhoneControlMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\PhoneVersionMessage.cs">
+      <Link>Messages\PhoneVersionMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\PingMessage.cs">
+      <Link>Messages\PingMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\PutBytesMessage.cs">
+      <Link>Messages\PutBytesMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\ResetMessage.cs">
+      <Link>Messages\ResetMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\SystemMessage.cs">
+      <Link>Messages\SystemMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\TimeMessage.cs">
+      <Link>Messages\TimeMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Messages\VersionMessage.cs">
+      <Link>Messages\VersionMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\P3bble.cs">
+      <Link>P3bble.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\ApplicationManifest.cs">
+      <Link>Types\ApplicationManifest.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\ApplicationMetadata.cs">
+      <Link>Types\ApplicationMetadata.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\Bundle.cs">
+      <Link>Types\Bundle.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\BundleManifest.cs">
+      <Link>Types\BundleManifest.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\FirmwareManifest.cs">
+      <Link>Types\FirmwareManifest.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\FirmwareRelease.cs">
+      <Link>Types\FirmwareRelease.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\FirmwareResponse.cs">
+      <Link>Types\FirmwareResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\FirmwareVersion.cs">
+      <Link>Types\FirmwareVersion.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\InstalledApplication.cs">
+      <Link>Types\InstalledApplication.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\InstalledApplications.cs">
+      <Link>Types\InstalledApplications.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\MusicControlAction.cs">
+      <Link>Types\MusicControlAction.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\ResourcesManifest.cs">
+      <Link>Types\ResourcesManifest.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Types\VersionInfo.cs">
+      <Link>Types\VersionInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\P3bble.Core\Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="SharpCompress, Version=0.10.3.0, Culture=neutral, PublicKeyToken=64eb6448c87dfed9, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <ProjectReference Include="..\P3bble.PCL\P3bble.PCL.csproj">
+      <Project>{76e03460-2cd0-4580-ada0-a5fe68cb7e1c}</Project>
+      <Name>P3bble.PCL</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="SharpCompress">
       <HintPath>..\packages\p3-sharpcompress.0.10.5.1\lib\portable-net4+sl5+wp8+wp8.1+win8\SharpCompress.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http">
-      <HintPath>..\packages\Microsoft.Net.Http.2.2.18\lib\sl4-windowsphone71\System.Net.Http.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.20\lib\sl4-windowsphone71\System.Net.Http.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http.Extensions">
-      <HintPath>..\packages\Microsoft.Net.Http.2.2.18\lib\sl4-windowsphone71\System.Net.Http.Extensions.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.20\lib\sl4-windowsphone71\System.Net.Http.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http.Primitives">
-      <HintPath>..\packages\Microsoft.Net.Http.2.2.18\lib\sl4-windowsphone71\System.Net.Http.Primitives.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.20\lib\sl4-windowsphone71\System.Net.Http.Primitives.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\P3bble.PCL\P3bble.PCL.csproj">
-      <Project>{76E03460-2CD0-4580-ADA0-A5FE68CB7E1C}</Project>
-      <Name>P3bble.PCL</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />
@@ -208,5 +293,12 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+    <Error Condition="!Exists('..\packages\StyleCop.MSBuild.4.7.49.0\build\StyleCop.MSBuild.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\StyleCop.MSBuild.4.7.49.0\build\StyleCop.MSBuild.Targets'))" />
+  </Target>
+  <Import Project="..\packages\StyleCop.MSBuild.4.7.49.0\build\StyleCop.MSBuild.Targets" Condition="Exists('..\packages\StyleCop.MSBuild.4.7.49.0\build\StyleCop.MSBuild.Targets')" />
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
   </Target>
 </Project>

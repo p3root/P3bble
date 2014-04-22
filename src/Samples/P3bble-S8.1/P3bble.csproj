@@ -156,9 +156,13 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\P3bble.Core\P3bble.Core-8.1.csproj">
+    <ProjectReference Include="..\..\P3bble.Core-S8.1\P3bble.Core-S8.1.csproj">
       <Project>{F5894170-64DE-4859-AFF8-B4F01CBCAFB3}</Project>
       <Name>P3bble.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\P3bble.PCL\P3bble.PCL.csproj">
+      <Project>{76e03460-2cd0-4580-ada0-a5fe68cb7e1c}</Project>
+      <Name>P3bble.PCL</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -167,7 +171,9 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Net.Http, Version=1.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">

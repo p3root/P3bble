@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>P3bble.PCL</id>
+    <version>1.0.1.0</version>
+    <title>P3bble</title>
+    <authors>Patrik Pfaffenbauer</authors>
+    <owners>Patrik Pfaffenbauer</owners>
+    <licenseUrl>https://raw.githubusercontent.com/p3root/P3bble/master/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/p3root/P3bble</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>P3bble.PCL is needed to use P3bble library.</summary>
+    <description>P3bble.PCL is needed to use P3bble library.</description>
+    <language>en-US</language>
+    <copyright>Copyright (c) 2013-2014 Patrik Pfaffenbauer</copyright>
+    <tags>Pebble WindowsPhone wp8 wp8.1</tags>
+  </metadata>
+</package>
