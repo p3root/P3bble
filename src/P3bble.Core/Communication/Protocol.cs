@@ -54,8 +54,9 @@ namespace P3bble.Communication
         {
 #if WINDOWS_PHONE || WINDOWS_PHONE_APP
             // {00001101-0000-1000-8000-00805f9b34fb} specifies we want a Serial Port - see http://developer.nokia.com/Community/Wiki/Bluetooth_Services_for_Windows_Phone
+            // {00000000-deca-fade-deca-deafdecacaff} Fix ServiceID for WP8.1 Update 2
             StreamSocket socket = new StreamSocket();
-            await socket.ConnectAsync(peer.HostName, new Guid(0x00001101, 0x0000, 0x1000, 0x80, 0x00, 0x00, 0x80, 0x5F, 0x9B, 0x34, 0xFB).ToString("B"));
+            await socket.ConnectAsync(peer.HostName, Guid.Parse("00000000-deca-fade-deca-deafdecacaff").ToString("B"));
             return new Protocol(socket);
 #endif
 

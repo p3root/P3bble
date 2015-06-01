@@ -16,7 +16,7 @@ To use the library with Windows Phone 8.1 and WinRT (WinRT not finished currentl
 ```
     <m2:DeviceCapability Name="bluetooth.rfcomm">
       <m2:Device Id="any">
-        <m2:Function Type="serviceId:00001101-0000-1000-8000-00805F9B34FB"/>
+        <m2:Function Type="serviceId:00000000-deca-fade-deca-deafdecacaff"/>
       </m2:Device>
     </m2:DeviceCapability>
 ```
