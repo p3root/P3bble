@@ -3,6 +3,12 @@ P3bble
 
 P3bble is a framework for connecting to Pebble SmartWatches from Windows Phone 8.
 
+## Donate
+[![Donate with Bitcoin](https://en.cryptobadges.io/badge/micro/1Ck4XgAxys3aBjdesKQQ62zx7m4vozUest)](https://en.cryptobadges.io/donate/1Ck4XgAxys3aBjdesKQQ62zx7m4vozUest)
+
+Donate DogeCoin: DPVz6RSAJrXZqTF4sGXpS1dqwvU36hSaAQ
+
+
 
 Getting Started:
 ================
